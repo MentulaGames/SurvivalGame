@@ -80,6 +80,7 @@ namespace Mentula.SurvivalGameServer
         {
             Console.SetBufferSize(1080, 1920);
             Console.ForegroundColor = ConsoleColor.White;
+            Console.Title = string.Format("{0}_Sever", Resources.AppName);
         }
 
         private static void InitServer()
