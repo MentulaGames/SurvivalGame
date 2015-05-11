@@ -1,5 +1,6 @@
 ﻿using Lidgren.Network;
 using Mentula.General;
+using Mentula.General.Res;
 using System;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 
@@ -18,31 +19,52 @@ namespace Mentula.Network.Xna
             message.Write(value.Walkable);
         }
 
-        public static void Write(this NetBuffer message, CTile[] value)
-        {
-            message.Write(value.Length);
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                message.Write(value[i]);
-            }
-        }
-
         public static CTile ReadTile(this NetBuffer message)
         {
             IntVector2 pos = new IntVector2(message.ReadInt32(), message.ReadInt32());
             IntVector2 chunkPos = new IntVector2(message.ReadInt32(), message.ReadInt32());
-            return new CTile(chunkPos, pos, message.ReadInt32(), message.ReadInt32(), message.ReadBoolean());
+            return new CTile(chunkPos, pos, message.ReadByte(), message.ReadByte(), message.ReadBoolean());
+        }
+
+        public static void Write(this NetBuffer message, CTile[] value)
+        {
+            message.Write(value.Length);
+
+            CTile baseT = value[0];
+            message.Write(baseT.ChunkPos);      // chunk pos.
+            message.Write(baseT.Pos);           // Initial tile pos.
+            message.Write(baseT.Layer);
+
+            for (int i = 0; i < value.Length; i++)
+            {
+                CTile curT = value[i];
+                message.Write(curT.TextureId);
+                message.Write(curT.Walkable);
+            }
         }
 
         public static CTile[] ReadTileArr(this NetBuffer message)
         {
             int length = message.ReadInt32();
+            int chunkLength = int.Parse(Resources.ChunkSize);
             CTile[] result = new CTile[length];
+
+            IntVector2 chunkPos = message.ReadVector();
+            IntVector2 pos = message.ReadVector();
+            byte layer = message.ReadByte();
 
             for (int i = 0; i < length; i++)
             {
-                result[i] = message.ReadTile();
+                CTile newTile = new CTile(chunkPos, pos, message.ReadByte(), layer, message.ReadBoolean());
+                result[i] = newTile;
+
+                pos.X++;
+
+                if (pos.X >= chunkLength)
+                {
+                    pos.X = 0;
+                    pos.Y++;
+                }
             }
 
             return result;
@@ -63,42 +85,42 @@ namespace Mentula.Network.Xna
         {
             string mode = "";
 
-            switch(nimt)
+            switch (nimt)
             {
-                case(NIMT.ConnectionApproval):
+                case (NIMT.ConnectionApproval):
                     mode = "Approval";
                     break;
-                case(NIMT.ConnectionLatencyUpdated):
+                case (NIMT.ConnectionLatencyUpdated):
                     mode = "LatencyUpdate";
                     break;
-                case(NIMT.Data):
+                case (NIMT.Data):
                 case (NIMT.UnconnectedData):
                     mode = "Data";
                     break;
-                case(NIMT.DebugMessage):
-                case(NIMT.VerboseDebugMessage):
+                case (NIMT.DebugMessage):
+                case (NIMT.VerboseDebugMessage):
                     mode = "Debug";
                     break;
-                case(NIMT.DiscoveryRequest):
+                case (NIMT.DiscoveryRequest):
                 case (NIMT.DiscoveryResponse):
                     mode = "Discovery";
                     break;
-                case(NIMT.Error):
-                case(NIMT.ErrorMessage):
+                case (NIMT.Error):
+                case (NIMT.ErrorMessage):
                     Console.ForegroundColor = ConsoleColor.Red;
                     mode = "Error";
                     break;
-                case(NIMT.NatIntroductionSuccess):
+                case (NIMT.NatIntroductionSuccess):
                     mode = "NAT";
                     break;
-                case(NIMT.Receipt):
+                case (NIMT.Receipt):
                     mode = "Receipt";
                     break;
-                case(NIMT.StatusChanged):
+                case (NIMT.StatusChanged):
                     Console.ForegroundColor = ConsoleColor.Green;
                     mode = "Status";
                     break;
-                case(NIMT.WarningMessage):
+                case (NIMT.WarningMessage):
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     mode = "Warning";
                     break;

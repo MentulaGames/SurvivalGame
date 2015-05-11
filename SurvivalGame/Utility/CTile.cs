@@ -4,7 +4,7 @@
     {
         public IntVector2 ChunkPos;
 
-        public CTile(IntVector2 chunkPos, IntVector2 pos, int texture)
+        public CTile(IntVector2 chunkPos, IntVector2 pos, byte texture)
             : base(pos, texture)
         {
             ChunkPos = chunkPos;
@@ -16,7 +16,7 @@
             ChunkPos = chunkPos;
         }
 
-        public CTile(IntVector2 chunkPos, IntVector2 pos, int texture, int layer, bool walkable)
+        public CTile(IntVector2 chunkPos, IntVector2 pos, byte texture, byte layer, bool walkable)
             : base(pos, texture, layer, walkable)
         {
             ChunkPos = chunkPos;

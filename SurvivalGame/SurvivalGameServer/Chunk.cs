@@ -21,7 +21,7 @@ namespace Mentula.SurvivalGameServer
             this.Tiles = Tiles;
         }
 
-        public void Generate(int id)
+        public void Generate(byte id)
         {
             int size = int.Parse(Resources.ChunkSize);
 

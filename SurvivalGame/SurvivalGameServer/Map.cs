@@ -1,9 +1,7 @@
 ﻿using Mentula.General;
+using Mentula.General.Res;
 using System;
 using System.Collections.Generic;
-using Mentula.General.Res;
-using Mentula.Network.Xna;
-using NIMT = Lidgren.Network.NetIncomingMessageType;
 
 namespace Mentula.SurvivalGameServer
 {
@@ -21,6 +19,7 @@ namespace Mentula.SurvivalGameServer
                 for (int x = -RTL; x <= RTL; x++)
                 {
                     bool chunkexists = false;
+
                     for (int i = 0; i < ChunkList.Count; i++)
                     {
                         if (ChunkList[i].Pos.X == x + pos.X && ChunkList[i].Pos.Y == y + pos.Y)
@@ -40,27 +39,29 @@ namespace Mentula.SurvivalGameServer
 
         public void LoadChunks(IntVector2 pos)
         {
-            bool extraLoad = false;
-
             for (int y = -RTL; y <= RTL; y++)
             {
                 for (int x = -RTL; x <= RTL; x++)
                 {
                     for (int i = 0; i < ChunkList.Count; i++)
                     {
-                        Chunk tChunk = ChunkList[i];
-
-                        if (tChunk.Pos.X == x + pos.X && tChunk.Pos.Y == y + pos.Y)
+                        if (ChunkList[i].Pos.X == x + pos.X && ChunkList[i].Pos.Y == y + pos.Y)
                         {
-                            if (LoadedChunks.Find(c => c.Pos == tChunk.Pos) == null)
+                            bool chunkisloaded = false;
+
+                            for (int j = 0; j < LoadedChunks.Count; j++)
                             {
-                                LoadedChunks.Add(tChunk);
+                                if (LoadedChunks[j] == ChunkList[i])
+                                {
+                                    chunkisloaded = true;
+                                }
                             }
-                            else if(!extraLoad)
+
+                            if (!chunkisloaded)
                             {
-                                extraLoad = true;
-                                MentulaExtensions.WriteLine(NIMT.WarningMessage, "Server try'd to load loaded chunks for position {0}", pos);
+                                LoadedChunks.Add(ChunkList[i]);
                             }
+
                         }
                     }
                 }
@@ -75,7 +76,7 @@ namespace Mentula.SurvivalGameServer
 
             for (int i = 0; i < length; i++)
             {
-                if (Math.Abs(LoadedChunks[i].Pos.X - pos.X) <= RTLC && Math.Abs(LoadedChunks[i].Pos.Y - pos.Y) <= RTLC)
+                if (Math.Abs(LoadedChunks[i].Pos.X - pos.X) <= RTLC & Math.Abs(LoadedChunks[i].Pos.Y - pos.Y) <= RTLC)
                 {
                     for (int j = 0; j < cSize * cSize; j++)
                     {

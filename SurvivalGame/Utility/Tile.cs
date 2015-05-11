@@ -3,19 +3,19 @@
     public class Tile
     {
         public IntVector2 Pos;
-        public int TextureId;
-        public int Layer;
+        public byte TextureId;
+        public byte Layer;
         public bool Walkable;
 
         public Tile()
         {
             Pos = new IntVector2();
-            TextureId = -1;
+            TextureId = 0;
             Layer = 0;
             Walkable = false;
         }
 
-        public Tile(IntVector2 pos, int texture)
+        public Tile(IntVector2 pos, byte texture)
         {
             Pos = pos;
             TextureId = texture;
@@ -23,7 +23,7 @@
             Walkable = true;
         }
 
-        public Tile(IntVector2 pos, int texture, int layer, bool walkable)
+        public Tile(IntVector2 pos, byte texture, byte layer, bool walkable)
         {
             Pos = pos;
             TextureId = texture;

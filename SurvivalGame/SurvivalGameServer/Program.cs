@@ -65,7 +65,7 @@ namespace Mentula.SurvivalGameServer
 
                             NOM nom = server.CreateMessage();
                             nom.Write(map.GetChunks(chunkPos));
-                            server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.Unreliable);
+                            server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
                             break;
                     }
 
@@ -96,7 +96,7 @@ namespace Mentula.SurvivalGameServer
         {
             map = new Map();
             map.Generate(IntVector2.Zero);
-            MentulaExtensions.WriteLine(NIMT.Data, "Renerated at: {0}.", IntVector2.Zero);
+            MentulaExtensions.WriteLine(NIMT.Data, "Generated at: {0}.", IntVector2.Zero);
             map.LoadChunks(IntVector2.Zero);
         }
     }
