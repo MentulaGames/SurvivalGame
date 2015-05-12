@@ -23,30 +23,26 @@ namespace Mentula.SurvivalGame
         private SpriteBatch spriteBatch;
         private NetClient client;
         private SpriteFont font;
+
+        private Camera cam;
         private FPS counter;
         private GameState state;
 
         private Player player;
         private Texture2D Playertexture;
         private Texture2D[] textures;
-        private Actor drawPos;
-        private Camera camera;
 
         private List<CTile> tiles;
-        private List<CTile> tilesToDraw;
 
         public Main()
         {
             state = GameState.Constructing;
             graphics = new GraphicsDeviceManager(this) { PreferredBackBufferWidth = 1280, PreferredBackBufferHeight = 720, SynchronizeWithVerticalRetrace = false };
             IsFixedTimeStep = false;
-            camera = new Camera(IntVector2.Zero, IntVector2.Zero, new IntVector2(1280, 720));
             IsMouseVisible = true;
             Content.RootDirectory = "Content";
-            drawPos = new Actor(IntVector2.Zero, Vector2.Zero);
             NPConf config = new NPConf(Resources.AppName);
             config.EnableMessageType(NIMT.DiscoveryResponse);
-            tilesToDraw = new List<CTile>();
             client = new NetClient(config);
             client.Start();
         }
@@ -55,6 +51,7 @@ namespace Mentula.SurvivalGame
         {
             state = GameState.Initializing;
             counter = new FPS();
+            cam = new Camera(Vector2.Zero, Rectangle.Empty);
             tiles = new List<CTile>();
 #if LOCAL
             client.DiscoverLocalPeers(Ips.PORT);
@@ -102,8 +99,8 @@ namespace Mentula.SurvivalGame
             else if (state.IsKeyDown(Keys.S)) inp.Y = 1;
             if (state.IsKeyDown(Keys.A)) inp.X = -1;
             else if (state.IsKeyDown(Keys.D)) inp.X = 1;
-
-            camera.SetTilePos(camera.GetTilePos() + inp);
+            cam.Move(inp);
+            cam.Update();
 
             if (client.ConnectionStatus == NetConnectionStatus.Connected && this.state == GameState.Loading)
             {
@@ -135,22 +132,6 @@ namespace Mentula.SurvivalGame
                 }
             }
 
-            IntVector2 cameratilepos = new IntVector2(camera.GetTilePos());
-            IntVector2 drawtilepos = new IntVector2(drawPos.GetTilePos());
-            //if (camera.ChunkPos != drawPos.ChunkPos | new IntVector2(camera.GetTilePos()) != new IntVector2(drawPos.GetTilePos()) | tilesToDraw.Count == 0) ;
-            //{
-            //    int cSize = int.Parse(Resources.ChunkSize);
-            //    tilesToDraw = new List<CTile>();
-            //    for (int i = 0; i < tiles.Count; i++)
-            //    {
-            //        Vector2 tilepos = tiles[i].ChunkPos * cSize + tiles[i].Pos;
-            //        Vector2 campos = camera.GetTotalPos();
-            //        if (tilepos.X >= campos.X - 1 && tilepos.Y >= campos.Y - 1 && tilepos.X <= campos.X + camera.Bounds.X / 32 + 2 && tilepos.Y <= campos.Y + camera.Bounds.Y / 32 + 2)
-            //        {
-            //            tilesToDraw.Add(tiles[i]);
-            //        }
-            //    }
-            //}
             base.Update(gameTime);
         }
 
@@ -163,8 +144,8 @@ namespace Mentula.SurvivalGame
             {
                 for (int i = 0; i < tiles.Count; i++)
                 {
-                    Vector2 p = (tiles[i].GetTotalPos().ToVector2() - camera.GetTotalPos()) * 32;
-                    spriteBatch.Draw(textures[tiles[i].TextureId], p, Color.White);
+                    CTile t = tiles[i];
+                    spriteBatch.Draw(textures[t.TextureId], cam.GetRelativePosition(t.ChunkPos, t.Pos), Color.White);
                 }
             }
 
