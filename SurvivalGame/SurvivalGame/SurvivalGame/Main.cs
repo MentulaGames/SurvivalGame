@@ -109,7 +109,12 @@ namespace Mentula.SurvivalGame
                         client.Connect(msg.SenderEndPoint, nom);
                         break;
                     case (NIMT.Data):
-                        tiles = msg.ReadTileArr().ToList();
+                        int length = msg.ReadInt32();
+
+                        for (int i = 0; i < length; i++)
+                        {
+                            tiles.AddRange(msg.ReadTileArr());
+                        }
                         break;
                 }
             }

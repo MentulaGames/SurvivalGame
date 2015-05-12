@@ -66,6 +66,7 @@ namespace Mentula.SurvivalGameServer
                             NOM nom = server.CreateMessage();
                             Chunk[] chunks = map.GetChunks(chunkPos);
 
+                            nom.Write(chunks.Length);
                             for (int i = 0; i < chunks.Length; i++)
                             {
                                 nom.Write(chunks[i]);
