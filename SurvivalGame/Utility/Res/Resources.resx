@@ -123,4 +123,7 @@
   <data name="ChunkSize" xml:space="preserve">
     <value>32</value>
   </data>
+  <data name="TileSize" xml:space="preserve">
+    <value>32</value>
+  </data>
 </root>

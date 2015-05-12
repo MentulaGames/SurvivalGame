@@ -15,27 +15,29 @@ namespace Mentula.SurvivalGameServer
             float xHigh = (float)Math.Ceiling(x / frequency) * frequency;
             float yLow = (float)Math.Floor(y / frequency) * frequency;
             float yHigh = (float)Math.Ceiling(y / frequency) * frequency;
-            float yLowNoise;
-            float yHighNoise;
-
-            if (float.IsNaN((x - xLow) / (xHigh - xLow)))
+            float x0y0 = GetNoise(xLow, yLow);
+            float x0y1 = GetNoise(xLow, yHigh);
+            float x1y0 = GetNoise(xHigh, yLow);
+            float x1y1 = GetNoise(xHigh, yHigh);
+            float x0Noise;
+            float x1Noise;
+            if (yLow==yHigh)
             {
-                yLowNoise = MEx.Lerp((RNG.RFloatFromString(xLow + yLow)), (RNG.RFloatFromString(xHigh + yLow)), 0);
-                yHighNoise = MEx.Lerp((RNG.RFloatFromString(xLow + yHigh)), (RNG.RFloatFromString(xHigh + yHigh)), 0);
+                x0Noise = x0y0;
+                x1Noise = x1y0;
             }
             else
             {
-                yLowNoise = MEx.Lerp((GetNoise(xLow, yLow)), (GetNoise(xHigh, yLow)), MEx.InvLerp(xLow, xHigh, x));
-                yHighNoise = MEx.Lerp((GetNoise(xLow, yHigh)), (GetNoise(xHigh, yHigh)), MEx.InvLerp(xLow, xHigh, x));
+                x0Noise = MEx.Lerp(x0y0, x0y1, MEx.InvLerp(yLow, yHigh, y));
+                x1Noise = MEx.Lerp(x1y0, x1y1, MEx.InvLerp(yLow, yHigh, y));
             }
-
-            if (float.IsNaN((y - yLow) / (yHigh - yLow)))
+            if (x0Noise==x1Noise)
             {
-                return MEx.Lerp(yLowNoise, yHighNoise, 0) * weight;
+                return x0Noise * weight;
             }
             else
             {
-                return MEx.Lerp(yLowNoise, yHighNoise, MEx.InvLerp(yLow, yHigh, y)) * weight;
+                return MEx.Lerp(x0Noise, x1Noise, MEx.InvLerp(xLow, xHigh, x))*weight;
             }
         }
 
