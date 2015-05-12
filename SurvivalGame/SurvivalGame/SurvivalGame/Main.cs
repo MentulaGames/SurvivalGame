@@ -22,17 +22,20 @@ namespace Mentula.SurvivalGame
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private NetClient client;
-
         private Player player;
+        private Actor drawPos;
+        private Camera camera;
         private Texture2D texture;
         private List<CTile> tiles;
+        private List<CTile> tilesToDraw;
         private bool first;
 
         public Main()
         {
-            graphics = new GraphicsDeviceManager(this);
+            graphics = new GraphicsDeviceManager(this) { PreferredBackBufferWidth = 1280, PreferredBackBufferHeight = 720 };
+            camera = new Camera(new IntVector2(0, 0), new Vector2(0, 0), new IntVector2(1280, 720));
             Content.RootDirectory = "Content";
-
+            drawPos = new Actor(IntVector2.Zero, Vector2.Zero);
             NPConf config = new NPConf(Resources.AppName);
             config.EnableMessageType(NIMT.DiscoveryResponse);
 
@@ -118,7 +121,22 @@ namespace Mentula.SurvivalGame
                         break;
                 }
             }
-
+            IntVector2 cameratilepos = new IntVector2(camera.GetTilePos());
+            IntVector2 drawtilepos = new IntVector2(drawPos.GetTilePos());
+            if (camera.ChunkPos != drawPos.ChunkPos | new IntVector2(camera.GetTilePos()) != new IntVector2(drawPos.GetTilePos()) | tilesToDraw.Count == 0) ;
+            {
+                int cSize = int.Parse(Resources.ChunkSize);
+                tilesToDraw = new List<CTile>();
+                for (int i = 0; i < tiles.Count; i++)
+                {
+                    Vector2 tilepos = tiles[i].ChunkPos * cSize + tiles[i].Pos;
+                    Vector2 campos = camera.ChunkPos.ToVector2() * cSize + camera.GetTilePos();
+                    if (tilepos.X >= campos.X - 1 && tilepos.Y >= campos.Y - 1 && tilepos.X <= campos.X + camera.Bounds.X / 32 + 1 && tilepos.Y <= campos.Y + camera.Bounds.Y / 32 + 1)
+                    {
+                        tilesToDraw.Add(tiles[i]);
+                    }
+                }
+            }
             base.Update(gameTime);
         }
 

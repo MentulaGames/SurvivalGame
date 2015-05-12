@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actor.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="CTile.cs" />
     <Compile Include="Extentions\MathExtensions.cs" />
     <Compile Include="Extentions\MentulaExtensions.cs" />
