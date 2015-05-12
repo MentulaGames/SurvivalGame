@@ -45,7 +45,7 @@ namespace Mentula.SurvivalGameServer
                             MentulaExtensions.WriteLine(msg.MessageType, "{0}", msg.ReadString());
                             break;
                         case (NIMT.StatusChanged):
-                            NCS status = (NCS)msg.ReadByte();
+                            NCS status = msg.ReadEnum<NCS>();
 
                             switch (status)
                             {

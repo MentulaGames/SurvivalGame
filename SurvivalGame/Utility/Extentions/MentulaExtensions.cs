@@ -81,6 +81,11 @@ namespace Mentula.Network.Xna
             return new IntVector2(message.ReadInt32(), message.ReadInt32());
         }
 
+        public static TEnum ReadEnum<TEnum>(this NetBuffer message)
+        {
+            return (TEnum)Enum.ToObject(typeof(TEnum), message.ReadByte());
+        }
+
         public static void WriteLine(NIMT nimt, string format, params object[] arg)
         {
             string mode = "";
