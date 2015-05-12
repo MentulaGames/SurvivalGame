@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace Mentula.General
 {
-    public class Camera:Actor
+    public class Camera : Actor
     {
         public IntVector2 Bounds;
         public Camera()
@@ -15,8 +15,8 @@ namespace Mentula.General
         {
             this.Bounds = new IntVector2();
         }
-        public Camera(IntVector2 ChunkPos,Vector2 tilePos, IntVector2 Bounds)
-            :base(ChunkPos,tilePos)
+        public Camera(IntVector2 ChunkPos, Vector2 tilePos, IntVector2 Bounds)
+            : base(ChunkPos, tilePos)
         {
             this.Bounds = Bounds;
         }

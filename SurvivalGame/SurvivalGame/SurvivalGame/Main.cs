@@ -22,6 +22,9 @@ namespace Mentula.SurvivalGame
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private NetClient client;
+        private SpriteFont font;
+        private FPS counter;
+        private GameState state;
 
         private Player player;
         private Texture2D Playertexture;
@@ -31,12 +34,14 @@ namespace Mentula.SurvivalGame
 
         private List<CTile> tiles;
         private List<CTile> tilesToDraw;
-        private bool first;
 
         public Main()
         {
-            graphics = new GraphicsDeviceManager(this) { PreferredBackBufferWidth = 1280, PreferredBackBufferHeight = 720 };
-            camera = new Camera(new IntVector2(0, 0), new Vector2(0, 0), new IntVector2(1280, 720));
+            state = GameState.Constructing;
+            graphics = new GraphicsDeviceManager(this) { PreferredBackBufferWidth = 1280, PreferredBackBufferHeight = 720, SynchronizeWithVerticalRetrace = false };
+            IsFixedTimeStep = false;
+            camera = new Camera(IntVector2.Zero, IntVector2.Zero, new IntVector2(1280, 720));
+            IsMouseVisible = true;
             Content.RootDirectory = "Content";
             drawPos = new Actor(IntVector2.Zero, Vector2.Zero);
             NPConf config = new NPConf(Resources.AppName);
@@ -48,6 +53,8 @@ namespace Mentula.SurvivalGame
 
         protected override void Initialize()
         {
+            state = GameState.Initializing;
+            counter = new FPS();
             tiles = new List<CTile>();
 #if LOCAL
             client.DiscoverLocalPeers(Ips.PORT);
@@ -60,8 +67,10 @@ namespace Mentula.SurvivalGame
 
         protected override void LoadContent()
         {
+            state = GameState.Loading;
             spriteBatch = new SpriteBatch(GraphicsDevice);
             Playertexture = new Texture2D(GraphicsDevice, 32, 32);
+            font = Content.Load<SpriteFont>("ConsoleFont");
 
             textures = new Texture2D[4];
             textures[0] = Content.Load<Texture2D>("Tiles/Desert_Temp");
@@ -95,17 +104,10 @@ namespace Mentula.SurvivalGame
             else if (state.IsKeyDown(Keys.D)) inp.X = 1;
 
             camera.SetTilePos(camera.GetTilePos() + inp);
-            //if (inp.X != 0 || inp.Y != 0)
-            //{
-            //    inp.Normalize();
-            //    NOM nom = client.CreateMessage();
-            //    nom.Write(inp);
-            //    client.SendMessage(nom, NetDeliveryMethod.Unreliable);
-            //}
 
-            if (client.ConnectionStatus == NetConnectionStatus.Connected && first == false)
+            if (client.ConnectionStatus == NetConnectionStatus.Connected && this.state == GameState.Loading)
             {
-                first = true;
+                this.state = GameState.MainMenu;
                 NOM nom = client.CreateMessage();
                 nom.Write(player.ChunkPos);
                 client.SendMessage(nom, NetDeliveryMethod.Unreliable);
@@ -128,9 +130,11 @@ namespace Mentula.SurvivalGame
                         {
                             tiles.AddRange(msg.ReadTileArr());
                         }
+                        this.state = GameState.Game;
                         break;
                 }
             }
+
             IntVector2 cameratilepos = new IntVector2(camera.GetTilePos());
             IntVector2 drawtilepos = new IntVector2(drawPos.GetTilePos());
             //if (camera.ChunkPos != drawPos.ChunkPos | new IntVector2(camera.GetTilePos()) != new IntVector2(drawPos.GetTilePos()) | tilesToDraw.Count == 0) ;
@@ -152,12 +156,20 @@ namespace Mentula.SurvivalGame
 
         protected override void Draw(GameTime gameTime)
         {
+            counter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             spriteBatch.Begin();
-            for (int i = 0; i < tiles.Count; i++)
+
+            if (state == GameState.Game)
             {
-                Vector2 p = (tiles[i].GetTotalPos().ToVector2() - camera.GetTotalPos())*32;
-                spriteBatch.Draw(textures[tiles[i].TextureId], p, Color.White);
+                for (int i = 0; i < tiles.Count; i++)
+                {
+                    Vector2 p = (tiles[i].GetTotalPos().ToVector2() - camera.GetTotalPos()) * 32;
+                    spriteBatch.Draw(textures[tiles[i].TextureId], p, Color.White);
+                }
             }
+
+            spriteBatch.DrawString(font, string.Format("State: {0}", state), Vector2.Zero, Color.Red);
+            spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.Avarage), new Vector2(0, 16), Color.Red);
             spriteBatch.End();
             base.Draw(gameTime);
         }
