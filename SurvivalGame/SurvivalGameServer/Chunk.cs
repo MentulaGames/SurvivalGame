@@ -1,5 +1,6 @@
 ﻿using Mentula.General;
 using Mentula.General.Res;
+using System.Linq;
 
 namespace Mentula.SurvivalGameServer
 {
@@ -15,6 +16,7 @@ namespace Mentula.SurvivalGameServer
             int size = int.Parse(Resources.ChunkSize);
             Tiles = new Tile[size * size];
         }
+
         public Chunk(IntVector2 pos, Tile[] Tiles)
         {
             Pos = pos;
@@ -32,6 +34,11 @@ namespace Mentula.SurvivalGameServer
                     Tiles[x + (y * size)] = new Tile(new IntVector2(x, y), id);
                 }
             }
+        }
+
+        public static implicit operator CTile[](Chunk chunk)
+        {
+            return chunk.Tiles.Select(t => new CTile(chunk.Pos, t)).ToArray();
         }
     }
 }

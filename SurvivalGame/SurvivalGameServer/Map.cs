@@ -10,7 +10,7 @@ namespace Mentula.SurvivalGameServer
         public List<Chunk> ChunkList = new List<Chunk>();
         public List<Chunk> LoadedChunks = new List<Chunk>();
         public int RTL = 2;
-        public int RTLC = 1;
+        public int RTL_C = 1;
 
         public void Generate(IntVector2 pos)
         {
@@ -67,26 +67,29 @@ namespace Mentula.SurvivalGameServer
                 }
             }
         }
-        public CTile[] GetChunks(IntVector2 pos)
+        
+        public Chunk[] GetChunks(IntVector2 pos)
         {
             int cSize = int.Parse(Resources.ChunkSize);
-            CTile[] Ctilearray = new CTile[(RTLC * 2 + 1) * (RTLC * 2 + 1) * cSize * cSize];
             int c = 0;
-            int length = LoadedChunks.Count;
+            Chunk[] result = new Chunk[(RTL_C * 2 + 1) * (RTL_C * 2 + 1)];
 
-            for (int i = 0; i < length; i++)
+            for (int y = -RTL_C; y <= RTL_C; y++)
             {
-                if (Math.Abs(LoadedChunks[i].Pos.X - pos.X) <= RTLC & Math.Abs(LoadedChunks[i].Pos.Y - pos.Y) <= RTLC)
+                for (int x = -RTL_C; x <= RTL_C; x++)
                 {
-                    for (int j = 0; j < cSize * cSize; j++)
+                    for (int i = 0; i < LoadedChunks.Count; i++)
                     {
-                        Ctilearray[c] = new CTile(LoadedChunks[i].Pos, LoadedChunks[i].Tiles[j]);
-                        c++;
+                        if (LoadedChunks[i].Pos.X == x + pos.X && LoadedChunks[i].Pos.Y == y + pos.Y)
+                        {
+                            result[c] = LoadedChunks[i];
+                            c++;
+                        }
                     }
                 }
             }
 
-            return Ctilearray;
+            return result;
         }
 
         public void UnloadChunks()

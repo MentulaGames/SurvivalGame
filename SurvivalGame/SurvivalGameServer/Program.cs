@@ -32,39 +32,45 @@ namespace Mentula.SurvivalGameServer
 
                 while ((msg = server.ReadMessage()) != null)
                 {
-                    switch(msg.MessageType)
+                    switch (msg.MessageType)
                     {
-                        case(NIMT.DiscoveryRequest):
+                        case (NIMT.DiscoveryRequest):
                             server.SendDiscoveryResponse(null, msg.SenderEndPoint);
                             MentulaExtensions.WriteLine(msg.MessageType, "{0} discovered the service.", msg.SenderEndPoint);
                             break;
-                        case(NIMT.VerboseDebugMessage):
-                        case(NIMT.DebugMessage):
-                        case(NIMT.WarningMessage):
-                        case(NIMT.ErrorMessage):
+                        case (NIMT.VerboseDebugMessage):
+                        case (NIMT.DebugMessage):
+                        case (NIMT.WarningMessage):
+                        case (NIMT.ErrorMessage):
                             MentulaExtensions.WriteLine(msg.MessageType, "{0}", msg.ReadString());
                             break;
-                        case(NIMT.StatusChanged):
+                        case (NIMT.StatusChanged):
                             NCS status = (NCS)msg.ReadByte();
 
-                            switch(status)
+                            switch (status)
                             {
-                                case(NCS.Connected):
+                                case (NCS.Connected):
                                     MentulaExtensions.WriteLine(msg.MessageType, "{0} connected!", NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier));
                                     break;
-                                case(NCS.Disconnected):
+                                case (NCS.Disconnected):
                                     MentulaExtensions.WriteLine(msg.MessageType, "{0} disconnected!", NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier));
                                     break;
                             }
 
                             break;
-                        case(NIMT.Data):
+                        case (NIMT.Data):
                             IntVector2 chunkPos = msg.ReadVector();
                             map.Generate(chunkPos);
                             map.LoadChunks(chunkPos);
 
                             NOM nom = server.CreateMessage();
-                            nom.Write(map.GetChunks(chunkPos));
+                            Chunk[] chunks = map.GetChunks(chunkPos);
+
+                            for (int i = 0; i < chunks.Length; i++)
+                            {
+                                nom.Write(chunks[i]);
+                            }
+
                             server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
                             break;
                     }
@@ -91,7 +97,7 @@ namespace Mentula.SurvivalGameServer
             config.EnableUPnP = true;
             server = new NetServer(config);
         }
-        
+
         private static void InitMap()
         {
             map = new Map();
