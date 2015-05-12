@@ -30,5 +30,6 @@
             Layer = layer;
             Walkable = walkable;
         }
+
     }
 }

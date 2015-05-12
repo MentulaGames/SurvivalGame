@@ -1,4 +1,5 @@
-﻿namespace Mentula.General
+﻿using Mentula.General.Res;
+namespace Mentula.General
 {
     public class CTile : Tile
     {
@@ -20,6 +21,10 @@
             : base(pos, texture, layer, walkable)
         {
             ChunkPos = chunkPos;
+        }
+        public IntVector2 GetTotalPos()
+        {
+            return this.ChunkPos * int.Parse(Resources.ChunkSize) + this.Pos;
         }
     }
 }

@@ -19,7 +19,24 @@ namespace Mentula.SurvivalGameServer
                 float rain = 0;
                 rain += PerlinNoise.Generate(75, cSize * 4, x, y);
                 rain += PerlinNoise.Generate(25, cSize / 2, x, y);
-                Tiles[i] = new Tile(new IntVector2(x, y), (byte)Math.Round((rain / 25)));
+                int textureid=-1;
+                if (rain>=0&&rain<25)
+                {
+                    textureid = 0;
+                }
+                else if (rain>=25&&rain<50)
+                {
+                    textureid = 1;
+                }
+                else if (rain>=50&&rain <75)
+                {
+                    textureid = 2;
+                }
+                else if (rain >=75 && rain <=100)
+                {
+                    textureid = 3;
+                }
+                Tiles[i] = new Tile(new IntVector2(i%cSize, i/cSize), (byte)textureid);
             }
             return new Chunk(pos, Tiles);
         }

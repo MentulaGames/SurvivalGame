@@ -27,6 +27,10 @@ namespace Mentula.General
             this.tilePos = tilePos;
             FormatPos();
         }
+        public Vector2 GetTotalPos()
+        {
+            return this.ChunkPos.ToVector2() * int.Parse(Resources.ChunkSize) + this.tilePos;
+        }
 
         public Vector2 GetTilePos()
         {

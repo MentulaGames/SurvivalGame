@@ -41,7 +41,7 @@ namespace Mentula.SurvivalGame
             drawPos = new Actor(IntVector2.Zero, Vector2.Zero);
             NPConf config = new NPConf(Resources.AppName);
             config.EnableMessageType(NIMT.DiscoveryResponse);
-
+            tilesToDraw = new List<CTile>();
             client = new NetClient(config);
             client.Start();
         }
@@ -65,9 +65,9 @@ namespace Mentula.SurvivalGame
 
             textures = new Texture2D[4];
             textures[0] = Content.Load<Texture2D>("Tiles/Desert_Temp");
-            textures[1] = Content.Load<Texture2D>("Tiles/Forest_Temp");
+            textures[1] = Content.Load<Texture2D>("Tiles/Savana_Temp");
             textures[2] = Content.Load<Texture2D>("Tiles/Grassland_Temp");
-            textures[3] = Content.Load<Texture2D>("Tiles/Savana_Temp");
+            textures[3] = Content.Load<Texture2D>("Tiles/Forest_Temp");
 
             Color[] data = new Color[Playertexture.Height * Playertexture.Width];
             for (int y = 0; y < Playertexture.Height; y++)
@@ -94,6 +94,7 @@ namespace Mentula.SurvivalGame
             if (state.IsKeyDown(Keys.A)) inp.X = -1;
             else if (state.IsKeyDown(Keys.D)) inp.X = 1;
 
+            camera.SetTilePos(camera.GetTilePos() + inp);
             //if (inp.X != 0 || inp.Y != 0)
             //{
             //    inp.Normalize();
@@ -132,26 +133,31 @@ namespace Mentula.SurvivalGame
             }
             IntVector2 cameratilepos = new IntVector2(camera.GetTilePos());
             IntVector2 drawtilepos = new IntVector2(drawPos.GetTilePos());
-            if (camera.ChunkPos != drawPos.ChunkPos | new IntVector2(camera.GetTilePos()) != new IntVector2(drawPos.GetTilePos()) | tilesToDraw.Count == 0) ;
-            {
-                int cSize = int.Parse(Resources.ChunkSize);
-                tilesToDraw = new List<CTile>();
-                for (int i = 0; i < tiles.Count; i++)
-                {
-                    Vector2 tilepos = tiles[i].ChunkPos * cSize + tiles[i].Pos;
-                    Vector2 campos = camera.ChunkPos.ToVector2() * cSize + camera.GetTilePos();
-                    if (tilepos.X >= campos.X - 1 && tilepos.Y >= campos.Y - 1 && tilepos.X <= campos.X + camera.Bounds.X / 32 + 1 && tilepos.Y <= campos.Y + camera.Bounds.Y / 32 + 1)
-                    {
-                        tilesToDraw.Add(tiles[i]);
-                    }
-                }
-            }
+            //if (camera.ChunkPos != drawPos.ChunkPos | new IntVector2(camera.GetTilePos()) != new IntVector2(drawPos.GetTilePos()) | tilesToDraw.Count == 0) ;
+            //{
+            //    int cSize = int.Parse(Resources.ChunkSize);
+            //    tilesToDraw = new List<CTile>();
+            //    for (int i = 0; i < tiles.Count; i++)
+            //    {
+            //        Vector2 tilepos = tiles[i].ChunkPos * cSize + tiles[i].Pos;
+            //        Vector2 campos = camera.GetTotalPos();
+            //        if (tilepos.X >= campos.X - 1 && tilepos.Y >= campos.Y - 1 && tilepos.X <= campos.X + camera.Bounds.X / 32 + 2 && tilepos.Y <= campos.Y + camera.Bounds.Y / 32 + 2)
+            //        {
+            //            tilesToDraw.Add(tiles[i]);
+            //        }
+            //    }
+            //}
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                Vector2 p = (tiles[i].GetTotalPos().ToVector2() - camera.GetTotalPos())*32;
+                spriteBatch.Draw(textures[tiles[i].TextureId], p, Color.White);
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
