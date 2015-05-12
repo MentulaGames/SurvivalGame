@@ -22,10 +22,13 @@ namespace Mentula.SurvivalGame
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private NetClient client;
+
         private Player player;
+        private Texture2D Playertexture;
+        private Texture2D[] textures;
         private Actor drawPos;
         private Camera camera;
-        private Texture2D texture;
+
         private List<CTile> tiles;
         private List<CTile> tilesToDraw;
         private bool first;
@@ -58,17 +61,23 @@ namespace Mentula.SurvivalGame
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            texture = new Texture2D(GraphicsDevice, 32, 32);
+            Playertexture = new Texture2D(GraphicsDevice, 32, 32);
 
-            Color[] data = new Color[texture.Height * texture.Width];
-            for (int y = 0; y < texture.Height; y++)
+            textures = new Texture2D[4];
+            textures[0] = Content.Load<Texture2D>("Tiles/Desert_Temp");
+            textures[1] = Content.Load<Texture2D>("Tiles/Forest_Temp");
+            textures[2] = Content.Load<Texture2D>("Tiles/Grassland_Temp");
+            textures[3] = Content.Load<Texture2D>("Tiles/Savana_Temp");
+
+            Color[] data = new Color[Playertexture.Height * Playertexture.Width];
+            for (int y = 0; y < Playertexture.Height; y++)
             {
-                for (int x = 0; x < texture.Width; x++)
+                for (int x = 0; x < Playertexture.Width; x++)
                 {
-                    data[x + (y * texture.Height)] = Color.Red;
+                    data[x + (y * Playertexture.Height)] = Color.Red;
                 }
             }
-            texture.SetData<Color>(data);
+            Playertexture.SetData<Color>(data);
 
             player = new Player("Arzana", new IntVector2(), new Vector2(10, 10));
         }
