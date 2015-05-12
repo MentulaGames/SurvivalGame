@@ -8,7 +8,7 @@ namespace Mentula.SurvivalGameServer
     public static class PerlinNoise
     {
         private static Dictionary<string, float> NoiseDict = new Dictionary<string, float>();
-        private static string seed = "2";
+        private static string seed = "1";
         public static float Generate(float weight, float frequency, float x, float y)
         {
             float xLow = (float)Math.Floor(x / frequency) * frequency;

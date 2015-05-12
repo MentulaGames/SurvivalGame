@@ -14,6 +14,7 @@ namespace Mentula.SurvivalGame
         private Vector2 CameraOffset;
         private Rectangle GraphicsBounds;
         private int TS;
+        private int CS;
 
         public Camera(Vector2 startPos, Rectangle graphicalBounds)
         {
@@ -21,7 +22,8 @@ namespace Mentula.SurvivalGame
             DesiredPosition = startPos;
 
             CameraOffset = Vector2.Zero;
-            TS = int.Parse(Resources.ChunkSize);
+            TS = int.Parse(Resources.TileSize);
+            CS = int.Parse(Resources.ChunkSize);
 
             GraphicsBounds = graphicalBounds;
             CameraWorld = graphicalBounds;
@@ -42,8 +44,8 @@ namespace Mentula.SurvivalGame
         {
             if (Position != DesiredPosition) Position = Vector2.SmoothStep(Position, DesiredPosition, 1f);
 
-            CameraWorld = new Rectangle((int)Position.X, (int)Position.Y, (int)((GraphicsBounds.Width / TS) + Position.X), (int)((GraphicsBounds.Height / TS) + Position.Y));
-            CameraOffset = new Vector2(CameraWorld.X * TS, CameraWorld.Y * TS);
+            CameraWorld = new Rectangle((int)Position.X, (int)Position.Y, (int)((GraphicsBounds.Width) + Position.X), (int)((GraphicsBounds.Height) + Position.Y));
+            CameraOffset = new Vector2(CameraWorld.X, CameraWorld.Y);
         }
 
         public void Update(Vector2 lookAt, Rectangle mapBounds)
@@ -61,8 +63,7 @@ namespace Mentula.SurvivalGame
 
         public Vector2 GetRelativePosition(IntVector2 chunkPos, IntVector2 position)
         {
-            int cS = int.Parse(Resources.ChunkSize);
-            Vector2 pos = chunkPos * cS * cS + position * cS;
+            Vector2 pos = (chunkPos * CS) * TS + (position * TS);
             return pos - CameraOffset;
         }
     }

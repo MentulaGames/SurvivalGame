@@ -51,7 +51,7 @@ namespace Mentula.SurvivalGame
         {
             state = GameState.Initializing;
             counter = new FPS();
-            cam = new Camera(Vector2.Zero, Rectangle.Empty);
+            cam = new Camera(Vector2.Zero, GraphicsDevice.Viewport.Bounds);
             tiles = new List<CTile>();
 #if LOCAL
             client.DiscoverLocalPeers(Ips.PORT);
@@ -90,6 +90,7 @@ namespace Mentula.SurvivalGame
 
         protected override void Update(GameTime gameTime)
         {
+            float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
             Vector2 inp = new Vector2();
             KeyboardState state = Keyboard.GetState();
 
@@ -138,7 +139,7 @@ namespace Mentula.SurvivalGame
         protected override void Draw(GameTime gameTime)
         {
             counter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Texture, BlendState.AlphaBlend);
 
             if (state == GameState.Game)
             {
