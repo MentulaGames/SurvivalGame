@@ -1,5 +1,6 @@
 ﻿using Mentula.General;
 using Mentula.General.Res;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Mentula.SurvivalGameServer
@@ -9,6 +10,7 @@ namespace Mentula.SurvivalGameServer
         public int ChunkType;
         public IntVector2 Pos;
         public Tile[] Tiles;
+        public List<Destructible> Destructibles;
 
         public Chunk(IntVector2 pos)
         {
@@ -21,6 +23,13 @@ namespace Mentula.SurvivalGameServer
         {
             Pos = pos;
             this.Tiles = Tiles;
+        }
+
+        public Chunk(IntVector2 pos, Tile[] Tiles, List<Destructible> Destructibles)
+        {
+            Pos = pos;
+            this.Tiles = Tiles;
+            this.Destructibles = Destructibles;
         }
 
         public void Generate(byte id)
