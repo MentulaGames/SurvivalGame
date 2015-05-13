@@ -86,13 +86,14 @@ namespace Mentula.Network.Xna
             return (TEnum)Enum.ToObject(typeof(TEnum), message.ReadByte());
         }
 
-        public static void WriteLine(NIMT nimt, string format, params object[] arg)
+        public static void WriteLine(this NIMT nimt, string format, params object[] arg)
         {
             string mode = "";
 
             switch (nimt)
             {
                 case (NIMT.ConnectionApproval):
+                    Console.ForegroundColor = ConsoleColor.Green;
                     mode = "Approval";
                     break;
                 case (NIMT.ConnectionLatencyUpdated):

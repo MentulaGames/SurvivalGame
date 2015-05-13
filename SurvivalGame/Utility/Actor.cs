@@ -15,9 +15,9 @@ namespace Mentula.General
             this.tilePos = new Vector2();
         }
 
-        public Actor(IntVector2 ChunkPos, Vector2 tilePos)
+        public Actor(IntVector2 chunkPos, Vector2 tilePos)
         {
-            this.ChunkPos = ChunkPos;
+            ChunkPos = chunkPos;
             this.tilePos = tilePos;
             FormatPos();
         }
@@ -27,6 +27,13 @@ namespace Mentula.General
             this.tilePos = tilePos;
             FormatPos();
         }
+
+        public void ReSet(IntVector2 chunkPos, Vector2 tilePos)
+        {
+            ChunkPos = chunkPos;
+            this.tilePos = tilePos;
+        }
+
         public Vector2 GetTotalPos()
         {
             return this.ChunkPos.ToVector2() * int.Parse(Resources.ChunkSize) + this.tilePos;

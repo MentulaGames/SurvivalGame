@@ -1,4 +1,5 @@
 #define LOCAL
+//#define PLAYER
 
 using Lidgren.Network;
 using Mentula.General;
@@ -9,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Linq;
+using Lidgren.Network.Xna;
 using System.Collections.Generic;
 using NIM = Lidgren.Network.NetIncomingMessage;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
@@ -28,11 +30,19 @@ namespace Mentula.SurvivalGame
         private FPS counter;
         private GameState state;
 
-        private Player player;
+        private Dictionary<string, Player> players;
         private Texture2D Playertexture;
         private Texture2D[] textures;
 
         private List<CTile> tiles;
+        private double nextSend;
+
+#if PLAYER
+        private const string Name = "Naxaras";
+#endif
+#if !PLAYER
+        private const string Name = "Arzana";
+#endif
 
         public Main()
         {
@@ -53,12 +63,14 @@ namespace Mentula.SurvivalGame
             counter = new FPS();
             cam = new Camera(Vector2.Zero, GraphicsDevice.Viewport.Bounds);
             tiles = new List<CTile>();
+
 #if LOCAL
             client.DiscoverLocalPeers(Ips.PORT);
 #endif
 #if !LOCAL
             client.DiscoverKnownPeer(Ips.EndJoëll);
 #endif
+
             base.Initialize();
         }
 
@@ -85,7 +97,8 @@ namespace Mentula.SurvivalGame
             }
             Playertexture.SetData<Color>(data);
 
-            player = new Player("Arzana", new IntVector2(), new Vector2(10, 10));
+            players = new Dictionary<string, Player>();
+            players.Add(Name, new Player(Name, IntVector2.Zero, Vector2.Zero));
         }
 
         protected override void Update(GameTime gameTime)
@@ -101,13 +114,27 @@ namespace Mentula.SurvivalGame
             if (state.IsKeyDown(Keys.A)) inp.X = -1;
             else if (state.IsKeyDown(Keys.D)) inp.X = 1;
             cam.Move(inp);
+            players[Name].SetTilePos(players[Name].GetTilePos() + inp);
             cam.Update();
 
             if (client.ConnectionStatus == NetConnectionStatus.Connected && this.state == GameState.Loading)
             {
                 this.state = GameState.MainMenu;
+                nextSend = NetTime.Now;
                 NOM nom = client.CreateMessage();
-                nom.Write(player.ChunkPos);
+                nom.Write((byte)DataType.InitialMap);
+                nom.Write(players[Name].ChunkPos);
+                client.SendMessage(nom, NetDeliveryMethod.Unreliable);
+            }
+
+            double now = NetTime.Now;
+            if (now > nextSend)
+            {
+                NOM nom = client.CreateMessage();
+                nom.Write((byte)DataType.PlayerUpdate);
+                Player p = players[Name];
+                nom.Write(p.ChunkPos);
+                nom.Write(p.GetTilePos());
                 client.SendMessage(nom, NetDeliveryMethod.Unreliable);
             }
 
@@ -118,17 +145,27 @@ namespace Mentula.SurvivalGame
                 {
                     case (NIMT.DiscoveryResponse):
                         NOM nom = client.CreateMessage();
-                        nom.Write(player.Name);
+                        nom.Write(players[Name].Name);
                         client.Connect(msg.SenderEndPoint, nom);
                         break;
                     case (NIMT.Data):
-                        int length = msg.ReadInt32();
-
-                        for (int i = 0; i < length; i++)
+                        switch (msg.ReadEnum<DataType>())
                         {
-                            tiles.AddRange(msg.ReadTileArr());
+                            case (DataType.InitialMap):
+                                int length = msg.ReadInt32();
+
+                                for (int i = 0; i < length; i++)
+                                {
+                                    tiles.AddRange(msg.ReadTileArr());
+                                }
+                                this.state = GameState.Game;
+                                break;
+                            case (DataType.PlayerUpdate):
+                                string name = msg.ReadString();
+                                if (players.FirstOrDefault(p => p.Key == name).Value != null) players[name].ReSet(msg.ReadVector(), msg.ReadVector2());
+                                else players.Add(name, new Player(name, msg.ReadVector(), msg.ReadVector2()));
+                                break;
                         }
-                        this.state = GameState.Game;
                         break;
                 }
             }
@@ -152,6 +189,10 @@ namespace Mentula.SurvivalGame
 
             spriteBatch.DrawString(font, string.Format("State: {0}", state), Vector2.Zero, Color.Red);
             spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.Avarage), new Vector2(0, 16), Color.Red);
+            for (int i = 0; i < players.Count; i++)
+            {
+                spriteBatch.DrawString(font, string.Format("Pos({0}): {1}", players.ElementAt(i).Value.Name, players.ElementAt(i).Value.GetTotalPos()), new Vector2(0, 32 + (i * 16)), Color.Red);
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
