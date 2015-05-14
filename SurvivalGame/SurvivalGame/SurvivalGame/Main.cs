@@ -34,6 +34,7 @@ namespace Mentula.SurvivalGame
         private Texture2D Playertexture;
         private Texture2D[] textures;
 
+        private IntVector2 oldPos;
         private List<CTile> tiles;
         private double nextSend;
 
@@ -122,8 +123,18 @@ namespace Mentula.SurvivalGame
                 {
                     p.Move(inp * delta * 5);
                 }
-
                 cam.Update(p.ChunkPos, p.GetTilePos());
+                if (oldPos!=p.ChunkPos)
+                {
+                    CTile[] t= new CTile[1];//request new ctiles from server
+                    for (int i = 0; i < t.Length; i++)
+                    {
+                        tiles.Add(t[i]);
+                        UnloadCTiles(p.ChunkPos);
+                        oldPos = p.ChunkPos;
+                    }
+
+                }
 
             }
             else if (client.ConnectionStatus == NetConnectionStatus.Connected && this.state == GameState.Loading)
@@ -214,6 +225,20 @@ namespace Mentula.SurvivalGame
         {
             client.Shutdown("bye");
             base.OnExiting(sender, args);
+        }
+        private void UnloadCTiles(IntVector2 pos)
+        {
+            for (int i = 0; i < tiles.Count;)
+            {
+                if (Math.Abs(tiles[i].ChunkPos.X-pos.X)>1|Math.Abs(tiles[i].ChunkPos.Y-pos.Y)>1)
+                {
+                    tiles.RemoveAt(i);
+                }
+                else
+                {
+                    i++;
+                }
+            }
         }
     }
 }

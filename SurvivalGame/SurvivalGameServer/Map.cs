@@ -67,7 +67,7 @@ namespace Mentula.SurvivalGameServer
                 }
             }
         }
-        
+
         public Chunk[] GetChunks(IntVector2 pos)
         {
             int cSize = int.Parse(Resources.ChunkSize);
@@ -90,6 +90,25 @@ namespace Mentula.SurvivalGameServer
             }
 
             return result;
+        }
+
+        public List<Chunk> GetChunks(IntVector2 oldPos, IntVector2 newPos)
+        {
+            List<Chunk> r = new List<Chunk>();
+            for (int x = RTL_C * -1; x <= RTL_C; x++)
+            {
+                for (int y = RTL_C * -1; y <= RTL_C; y++)
+                {
+                    for (int i = 0; i < ChunkList.Count; i++)
+                    {
+                        if (Math.Abs(newPos.X + x - oldPos.X) < RTL_C | Math.Abs(newPos.Y + y - oldPos.Y) < RTL_C)
+                        {
+                            r.Add(ChunkList[i]);
+                        }
+                    }
+                }
+            }
+            return r;
         }
 
         public void UnloadChunks()
