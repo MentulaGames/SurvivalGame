@@ -106,7 +106,20 @@ namespace Mentula.SurvivalGameServer
                 {
                     for (int i = 0; i < ChunkList.Count; i++)
                     {
-                        if (Math.Abs(newPos.X + x - oldPos.X) < RTL_C | Math.Abs(newPos.Y + y - oldPos.Y) < RTL_C)
+                        bool isloaded = false;
+                        for (int j = 0; j < r.Count; j++)
+                        {
+                            if (r[j] == ChunkList[i])
+                            {
+                                isloaded = true;
+                            }
+                        }
+                        //if its not next to the old pos
+                        //and it is next to the new pos
+                        //and it is not already loaded
+                        if ((Math.Abs(ChunkList[i].Pos.X - oldPos.X) > RTL_C | Math.Abs(ChunkList[i].Pos.Y - oldPos.Y) > RTL_C) &
+                            (Math.Abs(ChunkList[i].Pos.X - newPos.X) <= RTL_C & Math.Abs(ChunkList[i].Pos.Y - newPos.Y) <= RTL_C) &
+                            !isloaded)
                         {
                             r.Add(ChunkList[i]);
                         }
