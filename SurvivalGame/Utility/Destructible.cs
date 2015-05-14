@@ -1,6 +1,6 @@
 ﻿using Mentula.General;
 
-namespace Mentula.SurvivalGameServer
+namespace Mentula.General
 {
     public class Destructible : Tile
     {
@@ -10,6 +10,13 @@ namespace Mentula.SurvivalGameServer
         {
             this.Health = 0;
         }
+
+        public Destructible(float health, IntVector2 pos, byte texture, byte layer, bool walkable)
+            :base(pos, texture, layer, walkable)
+        {
+            Health = health;
+        }
+
         public Destructible(float Health, Tile t)
             : base(t.Pos, t.TextureId, t.Layer, t.Walkable)
         {

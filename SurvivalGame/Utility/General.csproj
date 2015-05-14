@@ -46,8 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actor.cs" />
-    <Compile Include="CTile.cs" />
+    <Compile Include="C\C_Destrucible.cs" />
+    <Compile Include="C\C_Tile.cs" />
     <Compile Include="DataType.cs" />
+    <Compile Include="Destructible.cs" />
     <Compile Include="Extentions\MathExtensions.cs" />
     <Compile Include="Extentions\MentulaExtensions.cs" />
     <Compile Include="IntVector2.cs" />

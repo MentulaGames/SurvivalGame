@@ -45,9 +45,14 @@ namespace Mentula.SurvivalGameServer
             }
         }
 
-        public static implicit operator CTile[](Chunk chunk)
+        public static explicit operator C_Tile[](Chunk chunk)
         {
-            return chunk.Tiles.Select(t => new CTile(chunk.Pos, t)).ToArray();
+            return chunk.Tiles.Select(t => new C_Tile(chunk.Pos, t)).ToArray();
+        }
+
+        public static explicit operator C_Destrucible[](Chunk chunk)
+        {
+            return chunk.Destructibles.Select(d => new C_Destrucible(chunk.Pos, d)).ToArray();
         }
     }
 }

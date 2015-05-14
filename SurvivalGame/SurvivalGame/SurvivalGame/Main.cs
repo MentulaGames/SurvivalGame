@@ -16,6 +16,7 @@ using NIM = Lidgren.Network.NetIncomingMessage;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 using NOM = Lidgren.Network.NetOutgoingMessage;
 using NPConf = Lidgren.Network.NetPeerConfiguration;
+using System.Threading;
 
 namespace Mentula.SurvivalGame
 {
@@ -35,7 +36,8 @@ namespace Mentula.SurvivalGame
         private Texture2D[] textures;
 
         private IntVector2 oldPos;
-        private List<CTile> tiles;
+        private List<C_Tile> tiles;
+        private List<C_Destrucible> dest;
         private double nextSend;
 
 #if PLAYER
@@ -63,7 +65,8 @@ namespace Mentula.SurvivalGame
             state = GameState.Initializing;
             counter = new FPS();
             cam = new Camera(GraphicsDevice, IntVector2.Zero, Vector2.Zero);
-            tiles = new List<CTile>();
+            tiles = new List<C_Tile>();
+            dest = new List<C_Destrucible>();
 
 #if LOCAL
             client.DiscoverLocalPeers(Ips.PORT);
@@ -82,11 +85,12 @@ namespace Mentula.SurvivalGame
             Playertexture = new Texture2D(GraphicsDevice, 32, 32);
             font = Content.Load<SpriteFont>("ConsoleFont");
 
-            textures = new Texture2D[4];
+            textures = new Texture2D[5];
             textures[0] = Content.Load<Texture2D>("Tiles/Desert_Temp");
             textures[1] = Content.Load<Texture2D>("Tiles/Savana_Temp");
             textures[2] = Content.Load<Texture2D>("Tiles/Grassland_Temp");
             textures[3] = Content.Load<Texture2D>("Tiles/Forest_Temp");
+            textures[4] = Content.Load<Texture2D>("Tiles/Tree_Temp");
 
             Color[] data = new Color[Playertexture.Height * Playertexture.Width];
             for (int y = 0; y < Playertexture.Height; y++)
@@ -134,6 +138,7 @@ namespace Mentula.SurvivalGame
                     nom.Write(p.ChunkPos);
                     nom.Write(oldPos);
                     client.SendMessage(nom, NetDeliveryMethod.Unreliable);
+                    oldPos = p.ChunkPos;
                 }
 
             }
@@ -156,6 +161,7 @@ namespace Mentula.SurvivalGame
                 nom.Write(p.ChunkPos);
                 nom.Write(p.GetTilePos());
                 client.SendMessage(nom, NetDeliveryMethod.Unreliable);
+                nextSend += (1f / 30f);
             }
 
             NIM msg;
@@ -178,18 +184,29 @@ namespace Mentula.SurvivalGame
                                 {
                                     tiles.AddRange(msg.ReadTileArr());
                                 }
+
+                                for (int i = 0; i < length; i++)
+                                {
+                                    dest.AddRange(msg.ReadDesArr());
+                                }
+
                                 this.state = GameState.Game;
                                 break;
                             case (DataType.ChunkRequest):
-                                UnloadCTiles(players[Name].ChunkPos);
-                                oldPos = players[Name].ChunkPos;
-
                                 length = msg.ReadInt32();
 
                                 for (int i = 0; i < length; i++)
                                 {
                                     tiles.AddRange(msg.ReadTileArr());
                                 }
+
+                                for (int i = 0; i < length; i++)
+                                {
+                                    dest.AddRange(msg.ReadDesArr());
+                                }
+
+                                UnloadCTiles(players[Name].ChunkPos);
+                                UnLoadCDest(players[Name].ChunkPos);
                                 break;
                             case (DataType.PlayerUpdate):
                                 string name = msg.ReadString();
@@ -201,6 +218,7 @@ namespace Mentula.SurvivalGame
                 }
             }
 
+            Thread.Sleep(1);
             base.Update(gameTime);
         }
 
@@ -213,10 +231,18 @@ namespace Mentula.SurvivalGame
             {
                 for (int i = 0; i < tiles.Count; i++)
                 {
-                    CTile t = tiles[i];
+                    C_Tile t = tiles[i];
                     Vector2 relPos;
 
-                    if (cam.TryGetRelativePosition(t.ChunkPos, t.Pos, out relPos)) spriteBatch.Draw(textures[t.TextureId], relPos, Color.White);
+                    if (cam.TryGetRelativePosition(t.ChunkPos, t.Pos, out relPos)) spriteBatch.Draw(textures[t.TextureId], relPos, Color.White, t.Layer);
+                }
+
+                for (int i = 0; i < dest.Count; i++)
+                {
+                    C_Destrucible d = dest[i];
+                    Vector2 relPos;
+
+                    if (cam.TryGetRelativePosition(d.ChunkPos, d.Pos, out relPos)) spriteBatch.Draw(textures[d.TextureId], relPos, Color.White, d.Layer);
                 }
             }
 
@@ -224,11 +250,12 @@ namespace Mentula.SurvivalGame
             {
                 Player p = players.ElementAt(i).Value;
                 spriteBatch.Draw(Playertexture, cam.GetRelativePosition(p.ChunkPos, p.GetTilePos()), Color.White);
-                spriteBatch.DrawString(font, string.Format("Pos({0}): {1}", p.Name, p.GetTotalPos()), new Vector2(0, 32 + (i * 16)), Color.Red);
+                spriteBatch.DrawString(font, string.Format("Pos({0}): {1}", p.Name, p.GetTotalPos()), new Vector2(0, 48 + (i * 16)), Color.Red);
             }
 
             spriteBatch.DrawString(font, string.Format("State: {0}", state), Vector2.Zero, Color.Red);
             spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.ToString()), new Vector2(0, 16), Color.Red);
+            spriteBatch.DrawString(font, string.Format("Dest: {0}", dest.Count), new Vector2(0, 32), Color.Red);
 
             spriteBatch.End();
             base.Draw(gameTime);
@@ -239,6 +266,7 @@ namespace Mentula.SurvivalGame
             client.Shutdown("bye");
             base.OnExiting(sender, args);
         }
+
         private void UnloadCTiles(IntVector2 pos)
         {
             for (int i = 0; i < tiles.Count; )
@@ -246,6 +274,21 @@ namespace Mentula.SurvivalGame
                 if (Math.Abs(tiles[i].ChunkPos.X - pos.X) > 1 | Math.Abs(tiles[i].ChunkPos.Y - pos.Y) > 1)
                 {
                     tiles.RemoveAt(i);
+                }
+                else
+                {
+                    i++;
+                }
+            }
+        }
+
+        private void UnLoadCDest(IntVector2 pos)
+        {
+            for (int i = 0; i < dest.Count; )
+            {
+                if(Math.Abs(dest[i].ChunkPos.X - pos.X) > 1 | Math.Abs(dest[i].ChunkPos.Y - pos.Y) > 1)
+                {
+                    dest.RemoveAt(i);
                 }
                 else
                 {

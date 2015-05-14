@@ -81,7 +81,12 @@ namespace Mentula.SurvivalGameServer
                                     nom.Write(chunks.Length);
                                     for (int i = 0; i < chunks.Length; i++)
                                     {
-                                        nom.Write(chunks[i]);
+                                        nom.Write((C_Tile[])chunks[i]);
+                                    }
+
+                                    for (int i = 0; i < chunks.Length; i++)
+                                    {
+                                        nom.Write((C_Destrucible[])chunks[i]);
                                     }
 
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
@@ -98,10 +103,15 @@ namespace Mentula.SurvivalGameServer
 
                                     for (int i = 0; i < chunk.Count; i++)
                                     {
-                                        nom.Write(chunk[i]);
+                                        nom.Write((C_Tile[])chunk[i]);
                                     }
 
-                                    server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+                                    for (int i = 0; i < chunk.Count; i++)
+                                    {
+                                        nom.Write((C_Destrucible[])chunk[i]);
+                                    }
+
+                                    server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
                                     break;
                                 case (DataType.PlayerUpdate):
                                     chunkPos = msg.ReadVector();

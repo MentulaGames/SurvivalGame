@@ -19,34 +19,34 @@ namespace Mentula.SurvivalGameServer
                 x = i % cSize + pos.X * cSize;
                 y = i / cSize + pos.Y * cSize;
                 float rain = 0;
-                rain += PerlinNoise.Generate(70, cSize * 16, x, y,"1");
-                rain += PerlinNoise.Generate(20, cSize, x, y,"2");
-                rain += PerlinNoise.Generate(10, cSize/4, x, y,"3");
-                int textureid=-1;
-                if (rain>=0&&rain<25)
+                rain += PerlinNoise.Generate(70, cSize * 4, x, y, "1");
+                rain += PerlinNoise.Generate(20, cSize, x, y, "2");
+                rain += PerlinNoise.Generate(10, cSize / 4, x, y, "3");
+                int textureid = -1;
+                if (rain >= 0 && rain < 25)
                 {
                     textureid = 0;
                 }
-                else if (rain>=25&&rain<50)
+                else if (rain >= 25 && rain < 50)
                 {
                     textureid = 1;
                 }
-                else if (rain>=50&&rain <75)
+                else if (rain >= 50 && rain < 75)
                 {
                     textureid = 2;
                 }
-                else if (rain >=75 && rain <=100)
+                else if (rain >= 75 && rain <= 100)
                 {
                     textureid = 3;
                 }
                 float chance = Math.Max(rain - 15, 0) / 10;
-                if (RNG.RFloatFromString(x,y)<=chance)
+                if (RNG.RFloatFromString(x, y) <= chance)
                 {
-                    destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize,i/cSize),4,1,true)));
+                    destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize, i / cSize), 4, 1, true)));
                 }
-                Tiles[i] = new Tile(new IntVector2(i%cSize, i/cSize), (byte)textureid);
+                Tiles[i] = new Tile(new IntVector2(i % cSize, i / cSize), (byte)textureid);
             }
-            return new Chunk(pos, Tiles,destructibles);
+            return new Chunk(pos, Tiles, destructibles);
         }
     }
 }
