@@ -100,6 +100,7 @@ namespace Mentula.SurvivalGame
 
             players = new Dictionary<string, Player>();
             players.Add(Name, new Player(Name, IntVector2.Zero, new Vector2(0, -.5f)));
+            oldPos = players[Name].ChunkPos;
             cam.Update(IntVector2.Zero, new Vector2(0, -.5f));
         }
 

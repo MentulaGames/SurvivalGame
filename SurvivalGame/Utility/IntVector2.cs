@@ -95,8 +95,8 @@ namespace Mentula.General
         public static IntVector2 operator *(IntVector2 sender, IntVector2 caller) { return new IntVector2(sender.X * caller.X, sender.Y * caller.Y); }
         public static IntVector2 operator /(IntVector2 sender, float devider) { return new IntVector2((int)(sender.X / devider), (int)(sender.Y / devider)); }
         public static IntVector2 operator /(IntVector2 sender, IntVector2 caller) { return new IntVector2((int)(sender.X / caller.X), (int)(sender.Y / caller.Y)); }
-        public static bool operator !=(IntVector2 sender, IntVector2 caller) { return (sender.X != caller.X) && (sender.Y != caller.Y); }
-        public static bool operator ==(IntVector2 sender, IntVector2 caller) { return (sender.X == caller.X) && (sender.Y == caller.Y); }
+        public static bool operator !=(IntVector2 sender, IntVector2 caller) { return (sender.X != caller.X || sender.Y != caller.Y); }
+        public static bool operator ==(IntVector2 sender, IntVector2 caller) { return (sender.X == caller.X && sender.Y == caller.Y); }
 
         /// <summary> Adds two vectors. </summary>
         /// <param name="value1"> Source vector. </param>
