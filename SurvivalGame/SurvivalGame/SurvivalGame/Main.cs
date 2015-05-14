@@ -125,16 +125,14 @@ namespace Mentula.SurvivalGame
                     p.Move(inp * delta * 5);
                 }
                 cam.Update(p.ChunkPos, p.GetTilePos());
-                if (oldPos!=p.ChunkPos)
+                if (oldPos != p.ChunkPos)
                 {
-                    CTile[] t= new CTile[1];//request new ctiles from server
-                    for (int i = 0; i < t.Length; i++)
-                    {
-                        tiles.Add(t[i]);
-                        UnloadCTiles(p.ChunkPos);
-                        oldPos = p.ChunkPos;
-                    }
+                    NOM nom = client.CreateMessage();
+                    nom.Write((byte)DataType.ChunkRequest);
 
+                    nom.Write(p.ChunkPos);
+                    nom.Write(oldPos);
+                    client.SendMessage(nom, NetDeliveryMethod.Unreliable);
                 }
 
             }
@@ -180,6 +178,17 @@ namespace Mentula.SurvivalGame
                                     tiles.AddRange(msg.ReadTileArr());
                                 }
                                 this.state = GameState.Game;
+                                break;
+                            case (DataType.ChunkRequest):
+                                UnloadCTiles(players[Name].ChunkPos);
+                                oldPos = players[Name].ChunkPos;
+
+                                length = msg.ReadInt32();
+
+                                for (int i = 0; i < length; i++)
+                                {
+                                    tiles.AddRange(msg.ReadTileArr());
+                                }
                                 break;
                             case (DataType.PlayerUpdate):
                                 string name = msg.ReadString();
@@ -231,9 +240,9 @@ namespace Mentula.SurvivalGame
         }
         private void UnloadCTiles(IntVector2 pos)
         {
-            for (int i = 0; i < tiles.Count;)
+            for (int i = 0; i < tiles.Count; )
             {
-                if (Math.Abs(tiles[i].ChunkPos.X-pos.X)>1|Math.Abs(tiles[i].ChunkPos.Y-pos.Y)>1)
+                if (Math.Abs(tiles[i].ChunkPos.X - pos.X) > 1 | Math.Abs(tiles[i].ChunkPos.Y - pos.Y) > 1)
                 {
                     tiles.RemoveAt(i);
                 }

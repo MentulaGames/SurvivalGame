@@ -88,13 +88,19 @@ namespace Mentula.SurvivalGameServer
                                     break;
                                 case (DataType.ChunkRequest):
                                     chunkPos = msg.ReadVector();
+                                    IntVector2 oldPos = msg.ReadVector();
 
                                     nom = server.CreateMessage();
                                     nom.Write((byte)DataType.ChunkRequest);
-                                    Chunk chunk = map.LoadedChunks.FirstOrDefault(c => c.Pos == chunkPos);
 
-                                    if (chunk != null) nom.Write(chunk);
-                                    else nom.Write(false);
+                                    List<Chunk> chunk = map.GetChunks(oldPos, chunkPos);
+                                    nom.Write(chunk.Count);
+
+                                    for (int i = 0; i < chunk.Count; i++)
+                                    {
+                                        nom.Write(chunk[i]);
+                                    }
+
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
                                     break;
                                 case (DataType.PlayerUpdate):
