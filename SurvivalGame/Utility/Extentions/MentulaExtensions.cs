@@ -175,7 +175,7 @@ namespace Mentula.Network.Xna
         
         public static void Draw(this SpriteBatch batch, Texture2D texture, Vector2 position, Color color, byte layer)
         {
-            batch.Draw(texture, position, null, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f / layer);
+            batch.Draw(texture, position, null, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f / (layer + 1));
         }
     }
 }

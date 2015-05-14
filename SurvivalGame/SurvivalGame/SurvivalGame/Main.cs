@@ -225,7 +225,7 @@ namespace Mentula.SurvivalGame
         protected override void Draw(GameTime gameTime)
         {
             counter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-            spriteBatch.Begin(SpriteSortMode.Texture, BlendState.AlphaBlend);
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
 
             if (state == GameState.Game)
             {
