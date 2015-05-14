@@ -102,7 +102,7 @@ namespace Mentula.SurvivalGameServer
                                     Vector2 pos = msg.ReadVector2();
                                     players[msg.SenderConnection.RemoteUniqueIdentifier].ReSet(chunkPos, pos);
 
-                                    map.Generate(chunkPos);
+                                    if (map.Generate(chunkPos)) msg.MessageType.WriteLine("Generated for: {0}.", chunkPos);
                                     map.LoadChunks(chunkPos);
 
                                     for (int i = 0; i < players.Count; i++)

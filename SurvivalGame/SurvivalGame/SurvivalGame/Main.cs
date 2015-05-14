@@ -100,6 +100,7 @@ namespace Mentula.SurvivalGame
 
             players = new Dictionary<string, Player>();
             players.Add(Name, new Player(Name, IntVector2.Zero, new Vector2(0, -.5f)));
+            cam.Update(IntVector2.Zero, new Vector2(0, -.5f));
         }
 
         protected override void Update(GameTime gameTime)
@@ -209,14 +210,16 @@ namespace Mentula.SurvivalGame
                 }
             }
 
-            spriteBatch.DrawString(font, string.Format("State: {0}", state), Vector2.Zero, Color.Red);
-            spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.ToString()), new Vector2(0, 16), Color.Red);
             for (int i = 0; i < players.Count; i++)
             {
                 Player p = players.ElementAt(i).Value;
-                spriteBatch.DrawString(font, string.Format("Pos({0}): {1}", p.Name, p.GetTotalPos()), new Vector2(0, 32 + (i * 16)), Color.Red);
                 spriteBatch.Draw(Playertexture, cam.GetRelativePosition(p.ChunkPos, p.GetTilePos()), Color.White);
+                spriteBatch.DrawString(font, string.Format("Pos({0}): {1}", p.Name, p.GetTotalPos()), new Vector2(0, 32 + (i * 16)), Color.Red);
             }
+
+            spriteBatch.DrawString(font, string.Format("State: {0}", state), Vector2.Zero, Color.Red);
+            spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.ToString()), new Vector2(0, 16), Color.Red);
+
             spriteBatch.End();
             base.Draw(gameTime);
         }

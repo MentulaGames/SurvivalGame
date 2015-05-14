@@ -2,11 +2,7 @@
 
 namespace Mentula.SurvivalGameServer
 {
-<<<<<<< HEAD
     public class Destructible : Tile
-=======
-    public class Destructible:Tile
->>>>>>> origin/master
     {
         public float Health;
         public Destructible()

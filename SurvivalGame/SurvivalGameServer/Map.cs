@@ -12,8 +12,10 @@ namespace Mentula.SurvivalGameServer
         public int RTL = 2;
         public int RTL_C = 1;
 
-        public void Generate(IntVector2 pos)
+        public bool Generate(IntVector2 pos)
         {
+            bool gen = false;
+
             for (int y = -RTL; y <= RTL; y++)
             {
                 for (int x = -RTL; x <= RTL; x++)
@@ -30,11 +32,14 @@ namespace Mentula.SurvivalGameServer
                     }
                     if (!chunkexists)
                     {
+                        gen = true;
                         Chunk generatedChunk = MapGenerator.GenerateTerrain(new IntVector2(x + pos.X, y + pos.Y));
                         ChunkList.Add(generatedChunk);
                     }
                 }
             }
+
+            return gen;
         }
 
         public void LoadChunks(IntVector2 pos)
