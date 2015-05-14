@@ -1,6 +1,7 @@
 ﻿using Lidgren.Network;
 using Mentula.General;
 using Mentula.General.Res;
+using Microsoft.Xna.Framework;
 using System;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 
@@ -84,6 +85,11 @@ namespace Mentula.Network.Xna
         public static TEnum ReadEnum<TEnum>(this NetBuffer message)
         {
             return (TEnum)Enum.ToObject(typeof(TEnum), message.ReadByte());
+        }
+
+        public static Vector2 Middel(this Rectangle rec)
+        {
+            return new Vector2(rec.Width / 2, rec.Height / 2);
         }
 
         public static void WriteLine(this NIMT nimt, string format, params object[] arg)

@@ -30,5 +30,10 @@ namespace Mentula.SurvivalGame
 
             Avarage = buffer.Average();
         }
+
+        public override string ToString()
+        {
+            return ((int)Current).ToString();
+        }
     }
 }

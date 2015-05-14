@@ -1,70 +1,85 @@
 ﻿using Mentula.General;
 using Mentula.General.Res;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Mentula.SurvivalGame
 {
     public class Camera
     {
-        public Rectangle CameraWorld { get; private set; }
+        public Rectangle CameraWorld;
 
         private Vector2 Position;
         private Vector2 DesiredPosition;
 
         private Vector2 CameraOffset;
-        private Rectangle GraphicsBounds;
-        private int TS;
-        private int CS;
+        private Point LookAtOffset;
 
-        public Camera(Vector2 startPos, Rectangle graphicalBounds)
+        private readonly int TS;
+        private readonly int CS;
+        private readonly Func<IntVector2, Vector2, Vector2> GetTotalPos;
+
+        public Camera(GraphicsDevice device, IntVector2 startChunk, Vector2 startPos)
         {
-            Position = startPos;
-            DesiredPosition = startPos;
-
-            CameraOffset = Vector2.Zero;
-            TS = int.Parse(Resources.TileSize);
             CS = int.Parse(Resources.ChunkSize);
+            TS = int.Parse(Resources.TileSize);
+            GetTotalPos = (IntVector2 v1, Vector2 v2) => (Vector2)(v1 * CS) * TS + v2 * TS;
 
-            GraphicsBounds = graphicalBounds;
-            CameraWorld = graphicalBounds;
+            Position = GetTotalPos(startChunk, startPos);
+            DesiredPosition = Position;
+
+            CameraOffset = Position;
+            CameraWorld = new Rectangle(-TS, -TS, device.Viewport.Width + TS, device.Viewport.Height + TS);
+            LookAtOffset = new Point(CameraWorld.Width >> 1, CameraWorld.Height >> 1);
         }
 
         public void Move(Vector2 unitMove)
         {
-            DesiredPosition = Position + unitMove;
+            DesiredPosition += unitMove;
         }
 
-        public void Teleport(Vector2 newPos)
+        public void Teleport(Vector2 unitMove)
         {
-            Position = new Vector2(newPos.X, newPos.Y);
+            Position += unitMove;
             DesiredPosition = Position;
+        }
+
+        public void Teleport(IntVector2 chunk, Vector2 pos)
+        {
+            DesiredPosition = GetTotalPos(chunk, pos);
         }
 
         public void Update()
         {
-            if (Position != DesiredPosition) Position = Vector2.SmoothStep(Position, DesiredPosition, 1f);
-
-            CameraWorld = new Rectangle((int)Position.X, (int)Position.Y, (int)((GraphicsBounds.Width) + Position.X), (int)((GraphicsBounds.Height) + Position.Y));
-            CameraOffset = new Vector2(CameraWorld.X, CameraWorld.Y);
+            if (Position == DesiredPosition) return;
+            
+            Position = Vector2.SmoothStep(Position, DesiredPosition, .5f);
+            CameraOffset = Position;
         }
 
-        public void Update(Vector2 lookAt, Rectangle mapBounds)
+        public void Update(IntVector2 cPos, Vector2 pos)
         {
-            Vector2 relativeLookAt = new Vector2((lookAt.X - (GraphicsBounds.Width >> 1)) / TS, (lookAt.Y - (GraphicsBounds.Height >> 1)) / TS);
+            pos = GetTotalPos(cPos, pos);
+            DesiredPosition = new Vector2(pos.X - LookAtOffset.X, pos.Y - LookAtOffset.Y);
 
-            if ((lookAt.X - (GraphicsBounds.Width >> 1)) >= 0 && (lookAt.X + (GraphicsBounds.Width >> 1)) <= mapBounds.Width * TS)
-                Position = new Vector2(relativeLookAt.X, Position.Y);
-            if ((lookAt.Y - (GraphicsBounds.Height >> 1)) >= 0 && (lookAt.Y + (GraphicsBounds.Height >> 1)) <= mapBounds.Height * TS)
-                Position = new Vector2(Position.X, relativeLookAt.Y);
+            if (Position == DesiredPosition) return;
 
-            CameraWorld = new Rectangle((int)Position.X, (int)Position.Y, (int)((GraphicsBounds.Width / TS) + Position.X), (int)((GraphicsBounds.Height / TS) + Position.Y));
-            CameraOffset = new Vector2(CameraWorld.X * TS, CameraWorld.Y * TS);
+            Position = Vector2.SmoothStep(Position, DesiredPosition, .5f);
+            CameraOffset = Position;
         }
 
-        public Vector2 GetRelativePosition(IntVector2 chunkPos, IntVector2 position)
+        public Vector2 GetRelativePosition(IntVector2 chunkPos, Vector2 position)
         {
-            Vector2 pos = (chunkPos * CS) * TS + (position * TS);
+            Vector2 pos = GetTotalPos(chunkPos, position);
             return pos - CameraOffset;
+        }
+
+        public bool TryGetRelativePosition(IntVector2 chunkPos, Vector2 position, out Vector2 relative)
+        {
+            Vector2 pos = (Vector2)(chunkPos * CS) * TS + position * TS;
+            relative = pos - CameraOffset;
+            return CameraWorld.Contains((int)relative.X, (int)relative.Y);
         }
     }
 }

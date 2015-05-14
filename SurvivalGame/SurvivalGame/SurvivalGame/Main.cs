@@ -61,7 +61,7 @@ namespace Mentula.SurvivalGame
         {
             state = GameState.Initializing;
             counter = new FPS();
-            cam = new Camera(Vector2.Zero, GraphicsDevice.Viewport.Bounds);
+            cam = new Camera(GraphicsDevice, IntVector2.Zero, Vector2.Zero);
             tiles = new List<CTile>();
 
 #if LOCAL
@@ -98,26 +98,35 @@ namespace Mentula.SurvivalGame
             Playertexture.SetData<Color>(data);
 
             players = new Dictionary<string, Player>();
-            players.Add(Name, new Player(Name, IntVector2.Zero, Vector2.Zero));
+            players.Add(Name, new Player(Name, IntVector2.Zero, new Vector2(0, -.5f)));
         }
 
         protected override void Update(GameTime gameTime)
         {
-            float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Vector2 inp = new Vector2();
-            KeyboardState state = Keyboard.GetState();
+            if (state == GameState.Game && IsActive)
+            {
+                float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                Vector2 inp = new Vector2();
+                KeyboardState k_state = Keyboard.GetState();
 
-            if (state.IsKeyDown(Keys.Escape)) this.Exit();
+                if (k_state.IsKeyDown(Keys.Escape)) this.Exit();
 
-            if (state.IsKeyDown(Keys.W)) inp.Y = -1;
-            else if (state.IsKeyDown(Keys.S)) inp.Y = 1;
-            if (state.IsKeyDown(Keys.A)) inp.X = -1;
-            else if (state.IsKeyDown(Keys.D)) inp.X = 1;
-            cam.Move(inp);
-            players[Name].SetTilePos(players[Name].GetTilePos() + inp);
-            cam.Update();
+                if (k_state.IsKeyDown(Keys.W)) inp.Y = -1;
+                else if (k_state.IsKeyDown(Keys.S)) inp.Y = 1;
+                if (k_state.IsKeyDown(Keys.A)) inp.X = -1;
+                else if (k_state.IsKeyDown(Keys.D)) inp.X = 1;
 
-            if (client.ConnectionStatus == NetConnectionStatus.Connected && this.state == GameState.Loading)
+                Player p = players[Name];
+
+                if (inp != Vector2.Zero)
+                {
+                    p.Move(inp * delta * 5);
+                }
+
+                cam.Update(p.ChunkPos, p.GetTilePos());
+
+            }
+            else if (client.ConnectionStatus == NetConnectionStatus.Connected && this.state == GameState.Loading)
             {
                 this.state = GameState.MainMenu;
                 nextSend = NetTime.Now;
@@ -183,15 +192,19 @@ namespace Mentula.SurvivalGame
                 for (int i = 0; i < tiles.Count; i++)
                 {
                     CTile t = tiles[i];
-                    spriteBatch.Draw(textures[t.TextureId], cam.GetRelativePosition(t.ChunkPos, t.Pos), Color.White);
+                    Vector2 relPos;
+
+                    if (cam.TryGetRelativePosition(t.ChunkPos, t.Pos, out relPos)) spriteBatch.Draw(textures[t.TextureId], relPos, Color.White);
                 }
             }
 
             spriteBatch.DrawString(font, string.Format("State: {0}", state), Vector2.Zero, Color.Red);
-            spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.Avarage), new Vector2(0, 16), Color.Red);
+            spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.ToString()), new Vector2(0, 16), Color.Red);
             for (int i = 0; i < players.Count; i++)
             {
-                spriteBatch.DrawString(font, string.Format("Pos({0}): {1}", players.ElementAt(i).Value.Name, players.ElementAt(i).Value.GetTotalPos()), new Vector2(0, 32 + (i * 16)), Color.Red);
+                Player p = players.ElementAt(i).Value;
+                spriteBatch.DrawString(font, string.Format("Pos({0}): {1}", p.Name, p.GetTotalPos()), new Vector2(0, 32 + (i * 16)), Color.Red);
+                spriteBatch.Draw(Playertexture, cam.GetRelativePosition(p.ChunkPos, p.GetTilePos()), Color.White);
             }
             spriteBatch.End();
             base.Draw(gameTime);

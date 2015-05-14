@@ -28,6 +28,12 @@ namespace Mentula.General
             FormatPos();
         }
 
+        public void Move(Vector2 unit)
+        {
+            tilePos += unit;
+            FormatPos();
+        }
+
         public void ReSet(IntVector2 chunkPos, Vector2 tilePos)
         {
             ChunkPos = chunkPos;
