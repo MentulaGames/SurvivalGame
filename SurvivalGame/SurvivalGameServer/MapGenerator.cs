@@ -47,7 +47,7 @@ namespace Mentula.SurvivalGameServer
 
                 if (lakeyness > 80)
                 {
-                    destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize, i / cSize), 5, 1, true)));
+                    destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize, i / cSize), 5, 1, false)));
                 }
                 else if (RNG.RFloatFromString(x, y)*100 <= chanceToSpawnTree)
                 {

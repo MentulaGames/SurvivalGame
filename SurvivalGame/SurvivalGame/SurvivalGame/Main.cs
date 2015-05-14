@@ -1,4 +1,4 @@
-#define LOCAL
+//#define LOCAL
 //#define PLAYER
 
 using Lidgren.Network;
@@ -85,12 +85,13 @@ namespace Mentula.SurvivalGame
             Playertexture = new Texture2D(GraphicsDevice, 32, 32);
             font = Content.Load<SpriteFont>("ConsoleFont");
 
-            textures = new Texture2D[5];
+            textures = new Texture2D[6];
             textures[0] = Content.Load<Texture2D>("Tiles/Desert_Temp");
             textures[1] = Content.Load<Texture2D>("Tiles/Savana_Temp");
             textures[2] = Content.Load<Texture2D>("Tiles/Grassland_Temp");
             textures[3] = Content.Load<Texture2D>("Tiles/Forest_Temp");
             textures[4] = Content.Load<Texture2D>("Tiles/Tree_Temp");
+            textures[5] = Content.Load<Texture2D>("Tiles/Water_Temp");
 
             Color[] data = new Color[Playertexture.Height * Playertexture.Width];
             for (int y = 0; y < Playertexture.Height; y++)
@@ -110,7 +111,7 @@ namespace Mentula.SurvivalGame
 
         protected override void Update(GameTime gameTime)
         {
-            if (state == GameState.Game && IsActive)
+            if (state == GameState.Game & IsActive)
             {
                 float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
                 Vector2 inp = new Vector2();
@@ -153,7 +154,8 @@ namespace Mentula.SurvivalGame
             }
 
             double now = NetTime.Now;
-            if (now > nextSend)
+            if (client.ConnectionStatus == NetConnectionStatus.Disconnected & state == GameState.Game) Exit();
+            else if (now > nextSend)
             {
                 NOM nom = client.CreateMessage();
                 nom.Write((byte)DataType.PlayerUpdate);
