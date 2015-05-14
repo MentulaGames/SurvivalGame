@@ -19,9 +19,9 @@ namespace Mentula.SurvivalGameServer
                 x = i % cSize + pos.X * cSize;
                 y = i / cSize + pos.Y * cSize;
                 float rain = 0;
-                rain += PerlinNoise.Generate(70, cSize * 16, x, y);
-                rain += PerlinNoise.Generate(20, cSize, x, y);
-                rain += PerlinNoise.Generate(10, cSize/4, x, y);
+                rain += PerlinNoise.Generate(70, cSize * 16, x, y,"1");
+                rain += PerlinNoise.Generate(20, cSize, x, y,"2");
+                rain += PerlinNoise.Generate(10, cSize/4, x, y,"3");
                 int textureid=-1;
                 if (rain>=0&&rain<25)
                 {
