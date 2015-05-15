@@ -121,18 +121,10 @@ namespace Mentula.SurvivalGameServer
                                     if (map.Generate(chunkPos)) msg.MessageType.WriteLine("Generated for: {0}.", chunkPos);
                                     map.LoadChunks(chunkPos);
 
-                                    for (int i = 0; i < players.Count; i++)
-                                    {
-                                        nom = server.CreateMessage();
-                                        nom.Write((byte)DataType.PlayerUpdate);
-
-                                        Player p = players.ElementAt(i).Value;
-                                        nom.Write(p.Name);
-                                        nom.Write(p.ChunkPos);
-                                        nom.Write(p.GetTilePos());
-
-                                        server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.Unreliable);
-                                    }
+                                    nom = server.CreateMessage();
+                                    nom.Write((byte)DataType.PlayerUpdate);
+                                    nom.Write(players.Values.ToArray());
+                                    server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
                                     break;
                             }
                             break;

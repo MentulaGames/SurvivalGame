@@ -24,7 +24,7 @@ namespace Mentula.SurvivalGame
         {
             CS = int.Parse(Resources.ChunkSize);
             TS = int.Parse(Resources.TileSize);
-            GetTotalPos = (IntVector2 v1, Vector2 v2) => (Vector2)(v1 * CS) * TS + v2 * TS;
+            GetTotalPos = (IntVector2 v1, Vector2 v2) => (v1 * CS).ToVector2() * TS + v2 * TS;
 
             Position = GetTotalPos(startChunk, startPos);
             DesiredPosition = Position;
@@ -77,7 +77,7 @@ namespace Mentula.SurvivalGame
 
         public bool TryGetRelativePosition(IntVector2 chunkPos, Vector2 position, out Vector2 relative)
         {
-            Vector2 pos = (Vector2)(chunkPos * CS) * TS + position * TS;
+            Vector2 pos = (chunkPos * CS).ToVector2() * TS + position * TS;
             relative = pos - CameraOffset;
             return CameraWorld.Contains((int)relative.X, (int)relative.Y);
         }

@@ -77,16 +77,6 @@ namespace Mentula.General
             pZero = new IntVector2(0, 0);
         }
 
-        public static implicit operator IntVector2(Vector2 vec2)
-        {
-            return new IntVector2(vec2);
-        }
-
-        public static implicit operator Vector2(IntVector2 vec2)
-        {
-            return new Vector2(vec2.X, vec2.Y);
-        }
-
         public static IntVector2 operator +(IntVector2 sender, IntVector2 caller) { return new IntVector2(sender.X + caller.X, sender.Y + caller.Y); }
         public static IntVector2 operator -(IntVector2 value) { return new IntVector2(-value.X, -value.Y); }
         public static IntVector2 operator -(IntVector2 sender, IntVector2 caller) { return new IntVector2(sender.X - caller.X, sender.Y - caller.Y); }

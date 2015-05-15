@@ -1,4 +1,4 @@
-//#define LOCAL
+#define LOCAL
 //#define PLAYER
 
 using Lidgren.Network;
@@ -211,9 +211,14 @@ namespace Mentula.SurvivalGame
                                 UnLoadCDest(players[Name].ChunkPos);
                                 break;
                             case (DataType.PlayerUpdate):
-                                string name = msg.ReadString();
-                                if (players.FirstOrDefault(p => p.Key == name).Value != null) players[name].ReSet(msg.ReadVector(), msg.ReadVector2());
-                                else players.Add(name, new Player(name, msg.ReadVector(), msg.ReadVector2()));
+                                players.Clear();
+                                Player[] p_A = msg.ReadPlayers();
+
+                                for (int i = 0; i < p_A.Length; i++)
+                                {
+                                    Player p = p_A[i];
+                                    players.Add(p.Name, p);
+                                }
                                 break;
                         }
                         break;
@@ -236,7 +241,7 @@ namespace Mentula.SurvivalGame
                     C_Tile t = tiles[i];
                     Vector2 relPos;
 
-                    if (cam.TryGetRelativePosition(t.ChunkPos, t.Pos, out relPos)) spriteBatch.Draw(textures[t.TextureId], relPos, Color.White, t.Layer);
+                    if (cam.TryGetRelativePosition(t.ChunkPos, t.Pos.ToVector2(), out relPos)) spriteBatch.Draw(textures[t.TextureId], relPos, Color.White, t.Layer);
                 }
 
                 for (int i = 0; i < dest.Count; i++)
@@ -244,7 +249,7 @@ namespace Mentula.SurvivalGame
                     C_Destrucible d = dest[i];
                     Vector2 relPos;
 
-                    if (cam.TryGetRelativePosition(d.ChunkPos, d.Pos, out relPos)) spriteBatch.Draw(textures[d.TextureId], relPos, Color.White, d.Layer);
+                    if (cam.TryGetRelativePosition(d.ChunkPos, d.Pos.ToVector2(), out relPos)) spriteBatch.Draw(textures[d.TextureId], relPos, Color.White, d.Layer);
                 }
             }
 
@@ -288,7 +293,7 @@ namespace Mentula.SurvivalGame
         {
             for (int i = 0; i < dest.Count; )
             {
-                if(Math.Abs(dest[i].ChunkPos.X - pos.X) > 1 | Math.Abs(dest[i].ChunkPos.Y - pos.Y) > 1)
+                if (Math.Abs(dest[i].ChunkPos.X - pos.X) > 1 | Math.Abs(dest[i].ChunkPos.Y - pos.Y) > 1)
                 {
                     dest.RemoveAt(i);
                 }
