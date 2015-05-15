@@ -83,6 +83,8 @@ namespace Mentula.Network.Xna
         {
             message.Write(value.Length);
 
+            if (value.Length == 0) return;
+
             C_Destrucible baseD = value[0];
             message.Write(baseD.ChunkPos);
             message.Write(baseD.Layer);
@@ -100,7 +102,10 @@ namespace Mentula.Network.Xna
         public static C_Destrucible[] ReadDesArr(this NetBuffer message)
         {
             int length = message.ReadInt32();
+
             C_Destrucible[] result = new C_Destrucible[length];
+
+            if (length == 0) return result;
 
             IntVector2 chunkPos = message.ReadVector();
             byte layer = message.ReadByte();

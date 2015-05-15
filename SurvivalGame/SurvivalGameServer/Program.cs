@@ -20,7 +20,6 @@ namespace Mentula.SurvivalGameServer
         private static NetServer server;
         private static Map map;
         private static Dictionary<long, Player> players;
-        private static string command;
 
         static void Main(string[] args)
         {
@@ -89,7 +88,7 @@ namespace Mentula.SurvivalGameServer
 
                                     for (int i = 0; i < chunks.Length; i++)
                                     {
-                                        if (chunks[i].Destructibles.Count > 0) nom.Write((C_Destrucible[])chunks[i]);
+                                        nom.Write((C_Destrucible[])chunks[i]);
                                     }
 
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
