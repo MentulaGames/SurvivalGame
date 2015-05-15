@@ -1,4 +1,4 @@
-#define LOCAL
+//#define LOCAL
 //#define PLAYER
 
 using Lidgren.Network;

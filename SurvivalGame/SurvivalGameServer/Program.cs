@@ -62,6 +62,7 @@ namespace Mentula.SurvivalGameServer
                                     break;
                                 case (NCS.Disconnected):
                                     msg.MessageType.WriteLine("{0} disconnected!", NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier));
+                                    players.Remove(msg.SenderConnection.RemoteUniqueIdentifier);
                                     break;
                             }
 
