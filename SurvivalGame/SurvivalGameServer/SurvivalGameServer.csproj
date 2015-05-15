@@ -47,6 +47,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chunk.cs" />
+    <Compile Include="CommandHandler.cs" />
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\Exit.cs" />
+    <Compile Include="Commands\Forward.cs" />
+    <Compile Include="Commands\Help.cs" />
+    <Compile Include="Commands\Kick.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapGenerator.cs" />
     <Compile Include="PerlinNoise.cs" />

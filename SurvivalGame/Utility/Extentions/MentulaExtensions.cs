@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
+using NIM = Lidgren.Network.NetIncomingMessage;
 
 namespace Mentula.Network.Xna
 {
@@ -159,6 +160,11 @@ namespace Mentula.Network.Xna
         public static TEnum ReadEnum<TEnum>(this NetBuffer message)
         {
             return (TEnum)Enum.ToObject(typeof(TEnum), message.ReadByte());
+        }
+
+        public static long GetId(this NIM message)
+        {
+            return message.SenderConnection.RemoteUniqueIdentifier;
         }
 
         public static void WriteLine(this NIMT nimt, string format, params object[] arg)
