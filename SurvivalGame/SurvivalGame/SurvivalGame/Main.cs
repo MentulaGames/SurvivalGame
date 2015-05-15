@@ -1,5 +1,5 @@
-//#define LOCAL
-//#define PLAYER
+#define LOCAL
+#define PLAYER
 
 using Lidgren.Network;
 using Mentula.General;
