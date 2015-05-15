@@ -1,7 +1,7 @@
-//#define LOCAL
-//#define PLAYER
+#define LOCAL
 
 using Lidgren.Network;
+using Lidgren.Network.Xna;
 using Mentula.General;
 using Mentula.General.Res;
 using Mentula.Network.Xna;
@@ -9,19 +9,20 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Linq;
-using Lidgren.Network.Xna;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using NIM = Lidgren.Network.NetIncomingMessage;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 using NOM = Lidgren.Network.NetOutgoingMessage;
 using NPConf = Lidgren.Network.NetPeerConfiguration;
-using System.Threading;
 
 namespace Mentula.SurvivalGame
 {
     public class Main : Game
     {
+        private const string Name = "Arzana";
+
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private NetClient client;
@@ -39,13 +40,6 @@ namespace Mentula.SurvivalGame
         private List<C_Tile> tiles;
         private List<C_Destrucible> dest;
         private double nextSend;
-
-#if PLAYER
-        private const string Name = "Naxaras";
-#endif
-#if !PLAYER
-        private const string Name = "Arzana";
-#endif
 
         public Main()
         {

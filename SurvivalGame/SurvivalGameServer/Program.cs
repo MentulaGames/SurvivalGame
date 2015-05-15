@@ -1,17 +1,17 @@
 ﻿using Lidgren.Network;
+using Lidgren.Network.Xna;
 using Mentula.General;
 using Mentula.General.Res;
 using Mentula.Network.Xna;
+using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using NCS = Lidgren.Network.NetConnectionStatus;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
-using NPConf = Lidgren.Network.NetPeerConfiguration;
 using NOM = Lidgren.Network.NetOutgoingMessage;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using Lidgren.Network.Xna;
+using NPConf = Lidgren.Network.NetPeerConfiguration;
 
 namespace Mentula.SurvivalGameServer
 {
@@ -20,6 +20,7 @@ namespace Mentula.SurvivalGameServer
         private static NetServer server;
         private static Map map;
         private static Dictionary<long, Player> players;
+        private static string command;
 
         static void Main(string[] args)
         {
@@ -27,7 +28,8 @@ namespace Mentula.SurvivalGameServer
             InitConsole();
             InitServer();
             server.Start();
-            server.UPnP.ForwardPort(Ips.PORT, Resources.AppName);
+            bool forward = server.UPnP.ForwardPort(Ips.PORT, Resources.AppName);
+            MentulaExtensions.WriteLine(forward ? NIMT.DebugMessage : NIMT.WarningMessage, "{0} to forward port: {1}!", forward ? "Succeted" : "Failed", Ips.PORT);
             InitMap();
 
             while (!Console.KeyAvailable || Console.ReadLine() != "Exit")
@@ -87,7 +89,7 @@ namespace Mentula.SurvivalGameServer
 
                                     for (int i = 0; i < chunks.Length; i++)
                                     {
-                                        nom.Write((C_Destrucible[])chunks[i]);
+                                        if (chunks[i].Destructibles.Count > 0) nom.Write((C_Destrucible[])chunks[i]);
                                     }
 
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
