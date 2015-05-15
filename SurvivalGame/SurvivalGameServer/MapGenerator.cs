@@ -9,6 +9,7 @@ namespace Mentula.SurvivalGameServer
     {
         public static Chunk GenerateTerrain(IntVector2 pos)
         {
+            Random r = new Random((int)(RNG.RFloatFromString(pos.X, pos.Y) * 1000000));
             int cSize = int.Parse(Resources.ChunkSize);
             Tile[] Tiles = new Tile[cSize * cSize];
             List<Destructible> destructibles = new List<Destructible>();
@@ -24,8 +25,8 @@ namespace Mentula.SurvivalGameServer
                 rain += PerlinNoise.Generate(10, cSize / 4, x, y, "3");
 
                 float lakeyness = 0;
-                lakeyness += PerlinNoise.Generate(100, cSize / 4, x, y, "lakey");
-                float chanceToSpawnTree = Math.Max(rain - 15, 0) / 10;
+                lakeyness += PerlinNoise.Generate(100, cSize / 2, x, y, "lakey");
+                float chanceToSpawnTree = (rain - 30) / 5;
 
                 int textureid = -1;
                 if (rain >= 0 & rain < 25)
@@ -45,14 +46,16 @@ namespace Mentula.SurvivalGameServer
                     textureid = 3;
                 }
 
-                if (lakeyness > 80)
+                if (lakeyness > 90)
                 {
                     destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize, i / cSize), 5, 1, false)));
                 }
-                else if (RNG.RFloatFromString(x, y)*100 <= chanceToSpawnTree)
+
+                else if ((float)r.NextDouble() * 100 <= chanceToSpawnTree)
                 {
                     destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize, i / cSize), 4, 1, true)));
                 }
+
                 Tiles[i] = new Tile(new IntVector2(i % cSize, i / cSize), (byte)textureid);
             }
             return new Chunk(pos, Tiles, destructibles);
