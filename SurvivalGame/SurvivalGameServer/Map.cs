@@ -7,10 +7,16 @@ namespace Mentula.SurvivalGameServer
 {
     public class Map
     {
-        public List<Chunk> ChunkList = new List<Chunk>();
-        public List<Chunk> LoadedChunks = new List<Chunk>();
-        public int RTL = 2;
-        public int RTL_C = 1;
+        public List<Chunk> ChunkList;
+        public List<Chunk> LoadedChunks;
+        public const int RTL = 2;
+        public const int RTL_C = 1;
+
+        public Map()
+        {
+            ChunkList = new List<Chunk>();
+            LoadedChunks = new List<Chunk>();
+        }
 
         public bool Generate(IntVector2 pos)
         {
@@ -24,7 +30,7 @@ namespace Mentula.SurvivalGameServer
 
                     for (int i = 0; i < ChunkList.Count; i++)
                     {
-                        if (ChunkList[i].Pos.X == x + pos.X && ChunkList[i].Pos.Y == y + pos.Y)
+                        if (ChunkList[i].Pos.X == x + pos.X & ChunkList[i].Pos.Y == y + pos.Y)
                         {
                             chunkexists = true;
                             break;
@@ -50,23 +56,16 @@ namespace Mentula.SurvivalGameServer
                 {
                     for (int i = 0; i < ChunkList.Count; i++)
                     {
-                        if (ChunkList[i].Pos.X == x + pos.X && ChunkList[i].Pos.Y == y + pos.Y)
+                        if (ChunkList[i].Pos.X == x + pos.X & ChunkList[i].Pos.Y == y + pos.Y)
                         {
                             bool chunkisloaded = false;
 
                             for (int j = 0; j < LoadedChunks.Count; j++)
                             {
-                                if (LoadedChunks[j] == ChunkList[i])
-                                {
-                                    chunkisloaded = true;
-                                }
+                                if (LoadedChunks[j] == ChunkList[i]) chunkisloaded = true;
                             }
 
-                            if (!chunkisloaded)
-                            {
-                                LoadedChunks.Add(ChunkList[i]);
-                            }
-
+                            if (!chunkisloaded) LoadedChunks.Add(ChunkList[i]);
                         }
                     }
                 }
@@ -75,7 +74,6 @@ namespace Mentula.SurvivalGameServer
 
         public Chunk[] GetChunks(IntVector2 pos)
         {
-            int cSize = int.Parse(Resources.ChunkSize);
             int c = 0;
             Chunk[] result = new Chunk[(RTL_C * 2 + 1) * (RTL_C * 2 + 1)];
 
@@ -109,10 +107,7 @@ namespace Mentula.SurvivalGameServer
                         bool isloaded = false;
                         for (int j = 0; j < r.Count; j++)
                         {
-                            if (r[j] == ChunkList[i])
-                            {
-                                isloaded = true;
-                            }
+                            if (r[j] == ChunkList[i]) isloaded = true;
                         }
                         //if its not next to the old pos
                         //and it is next to the new pos
@@ -129,23 +124,12 @@ namespace Mentula.SurvivalGameServer
             return r;
         }
 
-        public void UnloadChunks()
-        {
-            LoadedChunks = new List<Chunk>();
-        }
-
         public void UnloadChunks(IntVector2 pos)
         {
             for (int i = 0; i < LoadedChunks.Count; )
             {
-                if (Math.Abs(LoadedChunks[i].Pos.X - pos.X) > RTL | Math.Abs(LoadedChunks[i].Pos.Y - pos.Y) > RTL)
-                {
-                    LoadedChunks.RemoveAt(i);
-                }
-                else
-                {
-                    i++;
-                }
+                if (Math.Abs(LoadedChunks[i].Pos.X - pos.X) > RTL | Math.Abs(LoadedChunks[i].Pos.Y - pos.Y) > RTL) LoadedChunks.RemoveAt(i);
+                else i++;
             }
         }
 
@@ -156,19 +140,11 @@ namespace Mentula.SurvivalGameServer
                 bool isnearplayer = false;
                 for (int p = 0; p < pos.Length; p++)
                 {
-                    if (Math.Abs(LoadedChunks[i].Pos.X - pos[p].X) <= RTL & Math.Abs(LoadedChunks[i].Pos.Y - pos[p].Y) <= RTL)
-                    {
-                        isnearplayer = true;
-                    }
+                    if (Math.Abs(LoadedChunks[i].Pos.X - pos[p].X) <= RTL & Math.Abs(LoadedChunks[i].Pos.Y - pos[p].Y) <= RTL) isnearplayer = true;
                 }
-                if (!isnearplayer)
-                {
-                    LoadedChunks.RemoveAt(i);
-                }
-                else
-                {
-                    i++;
-                }
+
+                if (!isnearplayer) LoadedChunks.RemoveAt(i);
+                else i++;
             }
         }
     }

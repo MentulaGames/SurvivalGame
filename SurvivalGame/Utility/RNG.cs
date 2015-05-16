@@ -4,25 +4,24 @@ namespace Mentula.General
 {
     public static class RNG
     {
-
         public static float RFloatFromString(string s)
         {
-            float returnVal = 0;
+            float result = 0;
 
             for (int i = 0; i < s.Length; i++)
             {
                 int byteVal = Convert.ToInt16(s[i]);
-                Random r = new Random(byteVal + (int)returnVal * 100);
-                returnVal += (float)r.NextDouble();
+                Random rnd = new Random(byteVal + (int)result * 100);
+                result += (float)rnd.NextDouble();
             }
 
-            return returnVal % 1;
+            return result % 1;
         }
 
         public static float RFloatFromString(params object[] arg)
         {
             string s = string.Empty;
-            float returnVal = 0;
+            float result = 0;
 
             for (int i = 0; i < arg.Length; i++)
             {
@@ -32,11 +31,11 @@ namespace Mentula.General
             for (int i = 0; i < s.Length; i++)
             {
                 int byteVal = Convert.ToInt16(s[i]);
-                Random r = new Random(byteVal + (int)returnVal * 100);
-                returnVal += (float)r.NextDouble();
+                Random rnd = new Random(byteVal + (int)result * 100);
+                result += (float)rnd.NextDouble();
             }
 
-            return returnVal % 1;
+            return result % 1;
         }
     }
 }

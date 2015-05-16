@@ -53,7 +53,7 @@ namespace Mentula.SurvivalGame
         public void Update()
         {
             if (Position == DesiredPosition) return;
-            
+
             Position = Vector2.SmoothStep(Position, DesiredPosition, .5f);
             CameraOffset = Position;
         }

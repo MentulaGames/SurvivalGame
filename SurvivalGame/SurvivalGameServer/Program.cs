@@ -85,14 +85,10 @@ namespace Mentula.SurvivalGameServer
                                     nom.Write((byte)DataType.InitialMap);
                                     Chunk[] chunks = map.GetChunks(chunkPos);
 
-                                    nom.Write(chunks.Length);
+                                    nom.Write((Int16)chunks.Length);
                                     for (int i = 0; i < chunks.Length; i++)
                                     {
                                         nom.Write((C_Tile[])chunks[i]);
-                                    }
-
-                                    for (int i = 0; i < chunks.Length; i++)
-                                    {
                                         nom.Write((C_Destrucible[])chunks[i]);
                                     }
 
@@ -106,15 +102,11 @@ namespace Mentula.SurvivalGameServer
                                     nom.Write((byte)DataType.ChunkRequest);
 
                                     List<Chunk> chunk = map.GetChunks(oldPos, chunkPos);
-                                    nom.Write(chunk.Count);
+                                    nom.Write((Int16)chunk.Count);
 
                                     for (int i = 0; i < chunk.Count; i++)
                                     {
                                         nom.Write((C_Tile[])chunk[i]);
-                                    }
-
-                                    for (int i = 0; i < chunk.Count; i++)
-                                    {
                                         nom.Write((C_Destrucible[])chunk[i]);
                                     }
 
@@ -192,10 +184,28 @@ namespace Mentula.SurvivalGameServer
                             {
                                 server.Connections.Find(c => c.RemoteUniqueIdentifier == k_P.Key).Disconnect("You have been kicked!");
                                 result = true;
+                                break;
                             }
-
-                            MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player: {1}", result ? "Kicked" : "Failed to kick", name);
                         }
+
+                        MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player: {1}", result ? "Kicked" : "Failed to kick", name);
+                    }),
+                new Teleport((name, pos) =>
+                    {
+                        bool result = false;
+                        for (int i = 0; i < players.Count; i++)
+                        {
+                            KeyValuePair<long, Player> k_P = players.ElementAt(i);
+
+                            if (k_P.Value.Name == name)
+                            {
+                                players[k_P.Key].SetTilePos(pos);
+                                result = true;
+                                break;
+                            }
+                        }
+
+                        MentulaExtensions.WriteLine(result ? NIMT.Data : NIMT.ErrorMessage, "{0} player: {1}", result ? "Teleported" : "Failed to teleport player", result ? string.Format("{0} to: {1}", name, pos) : name);
                     }));
         }
     }

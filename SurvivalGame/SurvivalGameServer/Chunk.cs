@@ -7,16 +7,17 @@ namespace Mentula.SurvivalGameServer
 {
     public class Chunk
     {
-        public int ChunkType;
         public IntVector2 Pos;
         public Tile[] Tiles;
         public List<Destructible> Destructibles;
 
+        private readonly int CS;
+
         public Chunk(IntVector2 pos)
         {
             Pos = pos;
-            int size = int.Parse(Resources.ChunkSize);
-            Tiles = new Tile[size * size];
+            CS = int.Parse(Resources.ChunkSize);
+            Tiles = new Tile[CS * CS];
         }
 
         public Chunk(IntVector2 pos, Tile[] Tiles)
@@ -34,13 +35,11 @@ namespace Mentula.SurvivalGameServer
 
         public void Generate(byte id)
         {
-            int size = int.Parse(Resources.ChunkSize);
-
-            for (int y = 0; y < size; y++)
+            for (int y = 0; y < CS; y++)
             {
-                for (int x = 0; x < size; x++)
+                for (int x = 0; x < CS; x++)
                 {
-                    Tiles[x + (y * size)] = new Tile(new IntVector2(x, y), id);
+                    Tiles[x + (y * CS)] = new Tile(new IntVector2(x, y), id);
                 }
             }
         }

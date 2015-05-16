@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mentula.Commands
 {
@@ -11,12 +7,6 @@ namespace Mentula.Commands
         public string m_Command;
 
         private int c_words;
-
-        public Command()
-        {
-            m_Command = "EMPTY";
-            c_words = 1;
-        }
 
         public Command(string command)
         {

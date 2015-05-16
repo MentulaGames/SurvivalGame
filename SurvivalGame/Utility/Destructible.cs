@@ -5,6 +5,7 @@ namespace Mentula.General
     public class Destructible : Tile
     {
         public float Health;
+
         public Destructible()
             : base()
         {

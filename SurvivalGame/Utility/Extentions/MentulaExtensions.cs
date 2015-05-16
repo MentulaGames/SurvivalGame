@@ -5,8 +5,8 @@ using Mentula.General.Res;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using NIMT = Lidgren.Network.NetIncomingMessageType;
 using NIM = Lidgren.Network.NetIncomingMessage;
+using NIMT = Lidgren.Network.NetIncomingMessageType;
 
 namespace Mentula.Network.Xna
 {
@@ -19,12 +19,22 @@ namespace Mentula.Network.Xna
             ChunkSize = int.Parse(Resources.ChunkSize);
         }
 
+        public static void Write(this NetBuffer message, BytePoint value)
+        {
+            message.Write(value.X);
+            message.Write(value.Y);
+        }
+
+        public static BytePoint ReadPoint(this NetBuffer message)
+        {
+            return new BytePoint(message.ReadByte(), message.ReadByte());
+        }
+
         public static void Write(this NetBuffer message, C_Tile value)
         {
-            message.Write(value.Pos.X);
-            message.Write(value.Pos.Y);
             message.Write(value.ChunkPos.X);
             message.Write(value.ChunkPos.Y);
+            message.Write((BytePoint)value.Pos);
             message.Write(value.TextureId);
             message.Write(value.Layer);
             message.Write(value.Walkable);
@@ -32,18 +42,18 @@ namespace Mentula.Network.Xna
 
         public static C_Tile ReadTile(this NetBuffer message)
         {
-            IntVector2 pos = new IntVector2(message.ReadInt32(), message.ReadInt32());
             IntVector2 chunkPos = new IntVector2(message.ReadInt32(), message.ReadInt32());
+            IntVector2 pos = (IntVector2)message.ReadPoint();
             return new C_Tile(chunkPos, pos, message.ReadByte(), message.ReadByte(), message.ReadBoolean());
         }
 
         public static void Write(this NetBuffer message, C_Tile[] value)
         {
-            message.Write(value.Length);
+            message.Write((Int16)value.Length);
 
             C_Tile baseT = value[0];
-            message.Write(baseT.ChunkPos);      // chunk pos.
-            message.Write(baseT.Pos);           // Initial tile pos.
+            message.Write(baseT.ChunkPos);                  // chunk pos.
+            message.Write((BytePoint)baseT.Pos);            // Initial tile pos.
             message.Write(baseT.Layer);
 
             for (int i = 0; i < value.Length; i++)
@@ -56,11 +66,11 @@ namespace Mentula.Network.Xna
 
         public static C_Tile[] ReadTileArr(this NetBuffer message)
         {
-            int length = message.ReadInt32();
+            int length = message.ReadInt16();
             C_Tile[] result = new C_Tile[length];
 
             IntVector2 chunkPos = message.ReadVector();
-            IntVector2 pos = message.ReadVector();
+            IntVector2 pos = (IntVector2)message.ReadPoint();
             byte layer = message.ReadByte();
 
             for (int i = 0; i < length; i++)
@@ -82,7 +92,7 @@ namespace Mentula.Network.Xna
 
         public static void Write(this NetBuffer message, C_Destrucible[] value)
         {
-            message.Write(value.Length);
+            message.Write((Int16)value.Length);
 
             if (value.Length == 0) return;
 
@@ -93,7 +103,7 @@ namespace Mentula.Network.Xna
             for (int i = 0; i < value.Length; i++)
             {
                 C_Destrucible curD = value[i];
-                message.Write(curD.Pos);
+                message.Write((BytePoint)curD.Pos);
                 message.Write(curD.TextureId);
                 message.Write(curD.Walkable);
                 message.Write(curD.Health);
@@ -102,7 +112,7 @@ namespace Mentula.Network.Xna
 
         public static C_Destrucible[] ReadDesArr(this NetBuffer message)
         {
-            int length = message.ReadInt32();
+            int length = message.ReadInt16();
 
             C_Destrucible[] result = new C_Destrucible[length];
 
@@ -113,7 +123,7 @@ namespace Mentula.Network.Xna
 
             for (int i = 0; i < length; i++)
             {
-                result[i] = new C_Destrucible(chunkPos, message.ReadVector(), message.ReadByte(), layer, message.ReadBoolean(), message.ReadFloat());
+                result[i] = new C_Destrucible(chunkPos, (IntVector2)message.ReadPoint(), message.ReadByte(), layer, message.ReadBoolean(), message.ReadFloat());
             }
 
             return result;
@@ -121,7 +131,7 @@ namespace Mentula.Network.Xna
 
         public static void Write(this NetBuffer message, Player[] value)
         {
-            message.Write(value.Length);
+            message.Write((Int16)value.Length);
 
             for (int i = 0; i < value.Length; i++)
             {
@@ -135,7 +145,7 @@ namespace Mentula.Network.Xna
 
         public static Player[] ReadPlayers(this NetBuffer message)
         {
-            int length = message.ReadInt32();
+            int length = message.ReadInt16();
             Player[] result = new Player[length];
 
             for (int i = 0; i < length; i++)

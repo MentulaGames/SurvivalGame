@@ -53,6 +53,7 @@
     <Compile Include="Commands\Forward.cs" />
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\Kick.cs" />
+    <Compile Include="Commands\Teleport.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapGenerator.cs" />
     <Compile Include="PerlinNoise.cs" />

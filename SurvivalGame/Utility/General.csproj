@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actor.cs" />
+    <Compile Include="BytePoint.cs" />
     <Compile Include="C\C_Destrucible.cs" />
     <Compile Include="C\C_Tile.cs" />
     <Compile Include="DataType.cs" />

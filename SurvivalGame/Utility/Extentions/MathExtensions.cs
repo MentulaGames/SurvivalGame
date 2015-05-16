@@ -2,16 +2,14 @@
 {
     public static class Math
     {
-        public static float Lerp(float Min, float Max, float a)
+        public static float Lerp(float Min, float Max, float amount)
         {
-            float v = Min + (Max - Min) * a;
-            return v;
+            return Min + (Max - Min) * amount;
         }
 
-        public static float InvLerp(float Min, float Max, float v)
+        public static float InvLerp(float Min, float Max, float value)
         {
-            float a = (v - Min) / (Max - Min);
-            return a;
+            return (value - Min) / (Max - Min);
         }
     }
 }

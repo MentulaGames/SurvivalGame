@@ -1,15 +1,8 @@
-﻿
-namespace Mentula.General
+﻿namespace Mentula.General
 {
     public class C_Destrucible : Destructible
     {
         public IntVector2 ChunkPos;
-
-        public C_Destrucible(IntVector2 chunkPos, float health, Tile tile)
-            : base(health, tile)
-        {
-            ChunkPos = chunkPos;
-        }
 
         public C_Destrucible(IntVector2 chunkPos, Destructible d)
             : base(d.Health, new Tile(d.Pos, d.TextureId, d.Layer, d.Walkable))

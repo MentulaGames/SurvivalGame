@@ -1,6 +1,4 @@
-﻿using Mentula.General;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace Mentula.General
 {
