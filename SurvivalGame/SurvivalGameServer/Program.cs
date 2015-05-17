@@ -122,8 +122,13 @@ namespace Mentula.SurvivalGameServer
 
                                     nom = server.CreateMessage();
                                     nom.Write((byte)DataType.PlayerUpdate);
-                                    nom.Write(players.Values.ToArray());
+                                    nom.Write(players.Where(p => p.Key != msg.GetId()).Select(p => p.Value).ToArray());
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+
+                                    nom = server.CreateMessage();
+                                    nom.Write((byte)DataType.PlayerRePosition);
+                                    nom.Write(players[msg.GetId()]);
+                                    server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.Unreliable);
                                     break;
                             }
                             break;

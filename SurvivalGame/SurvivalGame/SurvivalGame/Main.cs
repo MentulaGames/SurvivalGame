@@ -32,14 +32,16 @@ namespace Mentula.SurvivalGame
         private FPS counter;
         private GameState state;
 
+        private Player player;
+        private Player n_Player;
         private Dictionary<string, Player> players;
         private Texture2D Playertexture;
         private Texture2D[] textures;
 
         private IntVector2 oldPos;
+        private double nextSend;
         private List<C_Tile> tiles;
         private List<C_Destrucible> dest;
-        private double nextSend;
 
         public Main()
         {
@@ -82,7 +84,6 @@ namespace Mentula.SurvivalGame
             state = GameState.Loading;
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            Playertexture = Content.Load<Texture2D>("Actors/Player_Temp");
             font = Content.Load<SpriteFont>("ConsoleFont");
 
             textures = new Texture2D[6];
@@ -92,18 +93,16 @@ namespace Mentula.SurvivalGame
             textures[3] = Content.Load<Texture2D>("Tiles/Forest_Temp");
             textures[4] = Content.Load<Texture2D>("Tiles/Tree_Temp");
             textures[5] = Content.Load<Texture2D>("Tiles/Water_Temp");
+            Playertexture = Content.Load<Texture2D>("Actors/Player_Temp");
 
-            IntVector2 chunkPos = IntVector2.Zero;
-            Vector2 pos = Vector2.Zero;
-            players.Add(Name, new Player(Name, chunkPos, pos));
-            oldPos = chunkPos;
-            cam.Update(chunkPos, pos);
+            player = new Player(Name, IntVector2.Zero, Vector2.Zero);
+            n_Player = new Player(Name, IntVector2.Zero, Vector2.Zero);
+            oldPos = player.ChunkPos;
+            cam.Update(player.ChunkPos, player.GetTilePos());
         }
 
         protected override void Update(GameTime gameTime)
         {
-            Player p = players[Name];
-
             if (state == GameState.Game & IsActive)
             {
                 float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -117,39 +116,38 @@ namespace Mentula.SurvivalGame
                 if (k_State.IsKeyDown(Keys.A)) inp.X = -1;
                 else if (k_State.IsKeyDown(Keys.D)) inp.X = 1;
 
-                if (inp != Vector2.Zero) p.Move(inp * delta * 5);
-                cam.Update(p.ChunkPos, p.GetTilePos());
+                if (inp != Vector2.Zero) player.Move(inp * delta * 5);
+                cam.Update(player.ChunkPos, player.GetTilePos());
 
-                if (oldPos != p.ChunkPos)
+                if (oldPos != player.ChunkPos)
                 {
                     NOM nom = client.CreateMessage();
                     nom.Write((byte)DataType.ChunkRequest);
 
-                    nom.Write(p.ChunkPos);
+                    nom.Write(player.ChunkPos);
                     nom.Write(oldPos);
-                    client.SendMessage(nom, NetDeliveryMethod.Unreliable);
-                    oldPos = p.ChunkPos;
+                    client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
+                    oldPos = player.ChunkPos;
                 }
 
             }
             else if (client.ConnectionStatus == NetConnectionStatus.Connected & this.state == GameState.Loading)
             {
-                this.state = GameState.MainMenu;
+                state = GameState.MainMenu;
                 nextSend = NetTime.Now;
                 NOM nom = client.CreateMessage();
                 nom.Write((byte)DataType.InitialMap);
-                nom.Write(p.ChunkPos);
-                client.SendMessage(nom, NetDeliveryMethod.Unreliable);
+                nom.Write(player.ChunkPos);
+                client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
             }
 
             double now = NetTime.Now;
-            if (client.ConnectionStatus == NetConnectionStatus.Disconnected & state == GameState.Game) Exit();
-            else if (now > nextSend)
+            if (now > nextSend)
             {
                 NOM nom = client.CreateMessage();
                 nom.Write((byte)DataType.PlayerUpdate);
-                nom.Write(p.ChunkPos);
-                nom.Write(p.GetTilePos());
+                nom.Write(player.ChunkPos);
+                nom.Write(player.GetTilePos());
                 client.SendMessage(nom, NetDeliveryMethod.Unreliable);
                 nextSend += (1f / 30f);
             }
@@ -161,7 +159,7 @@ namespace Mentula.SurvivalGame
                 {
                     case (NIMT.DiscoveryResponse):
                         NOM nom = client.CreateMessage();
-                        nom.Write(p.Name);
+                        nom.Write(player.Name);
                         client.Connect(msg.SenderEndPoint, nom);
                         break;
                     case (NIMT.Data):
@@ -187,8 +185,8 @@ namespace Mentula.SurvivalGame
                                     dest.AddRange(msg.ReadDesArr());
                                 }
 
-                                UnloadCTiles(p.ChunkPos);
-                                UnLoadCDest(p.ChunkPos);
+                                UnloadCTiles(player.ChunkPos);
+                                UnLoadCDest(player.ChunkPos);
                                 break;
                             case (DataType.PlayerUpdate):
                                 players.Clear();
@@ -199,6 +197,10 @@ namespace Mentula.SurvivalGame
                                     Player p_C = p_A[i];
                                     players.Add(p_C.Name, p_C);
                                 }
+                                break;
+                            case(DataType.PlayerRePosition):
+                                //msg.ReadReSetPlayer(ref player);
+                                msg.ReadReSetPlayer(ref n_Player);
                                 break;
                         }
                         break;
@@ -216,10 +218,11 @@ namespace Mentula.SurvivalGame
 
             if (state == GameState.Game)
             {
+                Vector2 relPos;
+
                 for (int i = 0; i < tiles.Count; i++)
                 {
                     C_Tile t = tiles[i];
-                    Vector2 relPos;
 
                     if (cam.TryGetRelativePosition(t.ChunkPos, t.Pos.ToVector2(), out relPos)) spriteBatch.Draw(textures[t.TextureId], relPos, Color.White, t.Layer);
                 }
@@ -227,17 +230,20 @@ namespace Mentula.SurvivalGame
                 for (int i = 0; i < dest.Count; i++)
                 {
                     C_Destrucible d = dest[i];
-                    Vector2 relPos;
 
                     if (cam.TryGetRelativePosition(d.ChunkPos, d.Pos.ToVector2(), out relPos)) spriteBatch.Draw(textures[d.TextureId], relPos, Color.White, d.Layer);
                 }
-            }
 
-            for (int i = 0; i < players.Count; i++)
-            {
-                Player p = players.ElementAt(i).Value;
-                spriteBatch.Draw(Playertexture, cam.GetRelativePosition(p.ChunkPos, p.GetTilePos()), Color.White);
-                spriteBatch.DrawString(font, string.Format("Pos({0}): {1}", p.Name, p.GetTotalPos()), new Vector2(0, 48 + (i * 16)), Color.Red);
+                for (int i = 0; i < players.Count; i++)
+                {
+                    Player p = players.ElementAt(i).Value;
+
+                    if (cam.TryGetRelativePosition(p.ChunkPos, p.GetTilePos(), out relPos)) spriteBatch.Draw(Playertexture, relPos, Color.White);
+                }
+
+                spriteBatch.Draw(Playertexture, cam.GetRelativePosition(player.ChunkPos, player.GetTilePos()), Color.White);
+                spriteBatch.DrawString(font, string.Format("Client Player Pos: {0}", player.GetTotalPos()), new Vector2(0, 48), Color.Red);
+                spriteBatch.DrawString(font, string.Format("Server Player Pos: {0}", n_Player.GetTotalPos()), new Vector2(0, 64), Color.Red);
             }
 
             spriteBatch.DrawString(font, string.Format("State: {0}", state), Vector2.Zero, Color.Red);

@@ -1,5 +1,5 @@
 ﻿using Mentula.Commands;
-using Mentula.Network.Xna;
+using Mentula.SurvivalGameServer;
 using System;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 
@@ -14,7 +14,7 @@ namespace Mentula
         public CommandHandler(params Command[] commands)
         {
             Commands = commands;
-            Add(new Help(this));
+            AddRange(new Help(this), new Cls());
             raw = "";
         }
 
@@ -23,6 +23,17 @@ namespace Mentula
             int old = Commands.Length;
             Array.Resize(ref Commands, old + 1);
             Commands[old] = command;
+        }
+
+        public void AddRange(params Command[] commands)
+        {
+            int old = Commands.Length;
+            Array.Resize(ref Commands, old + commands.Length);
+
+            for (int i = 0; i < commands.Length; i++)
+            {
+                Commands[old + i] = commands[i];
+            }
         }
 
         public void Update()

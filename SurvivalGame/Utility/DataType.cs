@@ -5,6 +5,7 @@
         InitialMap,
         TileChange,
         ChunkRequest,
-        PlayerUpdate
+        PlayerUpdate,
+        PlayerRePosition
     }
 }

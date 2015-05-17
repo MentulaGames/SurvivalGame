@@ -71,7 +71,7 @@ namespace Mentula.SurvivalGame
 
         public Vector2 GetRelativePosition(IntVector2 chunkPos, Vector2 position)
         {
-            Vector2 pos = GetTotalPos(chunkPos, position);
+            Vector2 pos = (chunkPos * CS).ToVector2() * TS + position * TS;
             return pos - CameraOffset;
         }
 

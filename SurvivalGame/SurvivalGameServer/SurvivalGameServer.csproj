@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Chunk.cs" />
     <Compile Include="CommandHandler.cs" />
+    <Compile Include="Commands\Cls.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\Exit.cs" />
     <Compile Include="Commands\Forward.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Commands\Teleport.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapGenerator.cs" />
+    <Compile Include="MentulaExtensions.cs" />
     <Compile Include="PerlinNoise.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

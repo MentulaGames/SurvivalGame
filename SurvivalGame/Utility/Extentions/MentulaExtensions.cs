@@ -2,11 +2,7 @@
 using Lidgren.Network.Xna;
 using Mentula.General;
 using Mentula.General.Res;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
-using NIM = Lidgren.Network.NetIncomingMessage;
-using NIMT = Lidgren.Network.NetIncomingMessageType;
 
 namespace Mentula.Network.Xna
 {
@@ -19,63 +15,109 @@ namespace Mentula.Network.Xna
             ChunkSize = int.Parse(Resources.ChunkSize);
         }
 
-        public static void Write(this NetBuffer message, BytePoint value)
+        public static void Write(this NetBuffer msg, BytePoint value)
         {
-            message.Write(value.X);
-            message.Write(value.Y);
+            msg.Write(value.X);
+            msg.Write(value.Y);
         }
 
-        public static BytePoint ReadPoint(this NetBuffer message)
+        public static void Write(this NetBuffer msg, C_Tile value)
         {
-            return new BytePoint(message.ReadByte(), message.ReadByte());
+            msg.Write(value.ChunkPos.X);
+            msg.Write(value.ChunkPos.Y);
+            msg.Write((BytePoint)value.Pos);
+            msg.Write(value.TextureId);
+            msg.Write(value.Layer);
+            msg.Write(value.Walkable);
         }
 
-        public static void Write(this NetBuffer message, C_Tile value)
+        public static void Write(this NetBuffer msg, C_Tile[] value)
         {
-            message.Write(value.ChunkPos.X);
-            message.Write(value.ChunkPos.Y);
-            message.Write((BytePoint)value.Pos);
-            message.Write(value.TextureId);
-            message.Write(value.Layer);
-            message.Write(value.Walkable);
-        }
-
-        public static C_Tile ReadTile(this NetBuffer message)
-        {
-            IntVector2 chunkPos = new IntVector2(message.ReadInt32(), message.ReadInt32());
-            IntVector2 pos = (IntVector2)message.ReadPoint();
-            return new C_Tile(chunkPos, pos, message.ReadByte(), message.ReadByte(), message.ReadBoolean());
-        }
-
-        public static void Write(this NetBuffer message, C_Tile[] value)
-        {
-            message.Write((Int16)value.Length);
+            msg.Write((Int16)value.Length);
 
             C_Tile baseT = value[0];
-            message.Write(baseT.ChunkPos);                  // chunk pos.
-            message.Write((BytePoint)baseT.Pos);            // Initial tile pos.
-            message.Write(baseT.Layer);
+            msg.Write(baseT.ChunkPos);                  // chunk pos.
+            msg.Write((BytePoint)baseT.Pos);            // Initial tile pos.
+            msg.Write(baseT.Layer);
 
             for (int i = 0; i < value.Length; i++)
             {
                 C_Tile curT = value[i];
-                message.Write(curT.TextureId);
-                message.Write(curT.Walkable);
+                msg.Write(curT.TextureId);
+                msg.Write(curT.Walkable);
             }
         }
 
-        public static C_Tile[] ReadTileArr(this NetBuffer message)
+        public static void Write(this NetBuffer msg, C_Destrucible[] value)
         {
-            int length = message.ReadInt16();
+            msg.Write((Int16)value.Length);
+
+            if (value.Length == 0) return;
+
+            C_Destrucible baseD = value[0];
+            msg.Write(baseD.ChunkPos);
+            msg.Write(baseD.Layer);
+
+            for (int i = 0; i < value.Length; i++)
+            {
+                C_Destrucible curD = value[i];
+                msg.Write((BytePoint)curD.Pos);
+                msg.Write(curD.TextureId);
+                msg.Write(curD.Walkable);
+                msg.Write(curD.Health);
+            }
+        }
+
+        public static void Write(this NetBuffer msg, Player value)
+        {
+            msg.Write(value.ChunkPos);
+            msg.Write(value.GetTilePos());
+        }
+
+        public static void Write(this NetBuffer msg, Player[] value)
+        {
+            msg.Write((Int16)value.Length);
+
+            for (int i = 0; i < value.Length; i++)
+            {
+                Player p = value[i];
+
+                msg.Write(p.Name);
+                msg.Write(p.ChunkPos);
+                msg.Write(p.GetTilePos());
+            }
+        }
+
+        public static void Write(this NetBuffer msg, IntVector2 value)
+        {
+            msg.Write(value.X);
+            msg.Write(value.Y);
+        }
+
+        public static BytePoint ReadPoint(this NetBuffer msg)
+        {
+            return new BytePoint(msg.ReadByte(), msg.ReadByte());
+        }
+
+        public static C_Tile ReadTile(this NetBuffer msg)
+        {
+            IntVector2 chunkPos = new IntVector2(msg.ReadInt32(), msg.ReadInt32());
+            IntVector2 pos = (IntVector2)msg.ReadPoint();
+            return new C_Tile(chunkPos, pos, msg.ReadByte(), msg.ReadByte(), msg.ReadBoolean());
+        }
+
+        public static C_Tile[] ReadTileArr(this NetBuffer msg)
+        {
+            int length = msg.ReadInt16();
             C_Tile[] result = new C_Tile[length];
 
-            IntVector2 chunkPos = message.ReadVector();
-            IntVector2 pos = (IntVector2)message.ReadPoint();
-            byte layer = message.ReadByte();
+            IntVector2 chunkPos = msg.ReadVector();
+            IntVector2 pos = (IntVector2)msg.ReadPoint();
+            byte layer = msg.ReadByte();
 
             for (int i = 0; i < length; i++)
             {
-                C_Tile newTile = new C_Tile(chunkPos, pos, message.ReadByte(), layer, message.ReadBoolean());
+                C_Tile newTile = new C_Tile(chunkPos, pos, msg.ReadByte(), layer, msg.ReadBoolean());
                 result[i] = newTile;
 
                 pos.X++;
@@ -90,146 +132,51 @@ namespace Mentula.Network.Xna
             return result;
         }
 
-        public static void Write(this NetBuffer message, C_Destrucible[] value)
+        public static C_Destrucible[] ReadDesArr(this NetBuffer msg)
         {
-            message.Write((Int16)value.Length);
-
-            if (value.Length == 0) return;
-
-            C_Destrucible baseD = value[0];
-            message.Write(baseD.ChunkPos);
-            message.Write(baseD.Layer);
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                C_Destrucible curD = value[i];
-                message.Write((BytePoint)curD.Pos);
-                message.Write(curD.TextureId);
-                message.Write(curD.Walkable);
-                message.Write(curD.Health);
-            }
-        }
-
-        public static C_Destrucible[] ReadDesArr(this NetBuffer message)
-        {
-            int length = message.ReadInt16();
+            int length = msg.ReadInt16();
 
             C_Destrucible[] result = new C_Destrucible[length];
 
             if (length == 0) return result;
 
-            IntVector2 chunkPos = message.ReadVector();
-            byte layer = message.ReadByte();
+            IntVector2 chunkPos = msg.ReadVector();
+            byte layer = msg.ReadByte();
 
             for (int i = 0; i < length; i++)
             {
-                result[i] = new C_Destrucible(chunkPos, (IntVector2)message.ReadPoint(), message.ReadByte(), layer, message.ReadBoolean(), message.ReadFloat());
+                result[i] = new C_Destrucible(chunkPos, (IntVector2)msg.ReadPoint(), msg.ReadByte(), layer, msg.ReadBoolean(), msg.ReadFloat());
             }
 
             return result;
         }
 
-        public static void Write(this NetBuffer message, Player[] value)
+        public static void ReadReSetPlayer(this NetBuffer msg, ref Player player)
         {
-            message.Write((Int16)value.Length);
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                Player p = value[i];
-
-                message.Write(p.Name);
-                message.Write(p.ChunkPos);
-                message.Write(p.GetTilePos());
-            }
+            player.ReSet(msg.ReadVector(), msg.ReadVector2());
         }
 
-        public static Player[] ReadPlayers(this NetBuffer message)
+        public static Player[] ReadPlayers(this NetBuffer msg)
         {
-            int length = message.ReadInt16();
+            int length = msg.ReadInt16();
             Player[] result = new Player[length];
 
             for (int i = 0; i < length; i++)
             {
-                result[i] = new Player(message.ReadString(), message.ReadVector(), message.ReadVector2());
+                result[i] = new Player(msg.ReadString(), msg.ReadVector(), msg.ReadVector2());
             }
 
             return result;
         }
 
-        public static void Write(this NetBuffer message, IntVector2 value)
+        public static IntVector2 ReadVector(this NetBuffer msg)
         {
-            message.Write(value.X);
-            message.Write(value.Y);
+            return new IntVector2(msg.ReadInt32(), msg.ReadInt32());
         }
 
-        public static IntVector2 ReadVector(this NetBuffer message)
+        public static TEnum ReadEnum<TEnum>(this NetBuffer msg)
         {
-            return new IntVector2(message.ReadInt32(), message.ReadInt32());
-        }
-
-        public static TEnum ReadEnum<TEnum>(this NetBuffer message)
-        {
-            return (TEnum)Enum.ToObject(typeof(TEnum), message.ReadByte());
-        }
-
-        public static long GetId(this NIM message)
-        {
-            return message.SenderConnection.RemoteUniqueIdentifier;
-        }
-
-        public static void WriteLine(this NIMT nimt, string format, params object[] arg)
-        {
-            string mode = "";
-
-            switch (nimt)
-            {
-                case (NIMT.ConnectionApproval):
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    mode = "Approval";
-                    break;
-                case (NIMT.ConnectionLatencyUpdated):
-                    mode = "LatencyUpdate";
-                    break;
-                case (NIMT.Data):
-                case (NIMT.UnconnectedData):
-                    mode = "Data";
-                    break;
-                case (NIMT.DebugMessage):
-                case (NIMT.VerboseDebugMessage):
-                    mode = "Debug";
-                    break;
-                case (NIMT.DiscoveryRequest):
-                case (NIMT.DiscoveryResponse):
-                    mode = "Discovery";
-                    break;
-                case (NIMT.Error):
-                case (NIMT.ErrorMessage):
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    mode = "Error";
-                    break;
-                case (NIMT.NatIntroductionSuccess):
-                    mode = "NAT";
-                    break;
-                case (NIMT.Receipt):
-                    mode = "Receipt";
-                    break;
-                case (NIMT.StatusChanged):
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    mode = "Status";
-                    break;
-                case (NIMT.WarningMessage):
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    mode = "Warning";
-                    break;
-            }
-
-            Console.WriteLine(string.Format("[{0}][{1}] {2}", string.Format("{0:H:mm:ss}", DateTime.Now), mode, format), arg);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-
-        public static void Draw(this SpriteBatch batch, Texture2D texture, Vector2 position, Color color, byte layer)
-        {
-            batch.Draw(texture, position, null, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f / (layer + 1));
+            return (TEnum)Enum.ToObject(typeof(TEnum), msg.ReadByte());
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Mentula.SurvivalGameServer;
+using Microsoft.Xna.Framework;
 using System;
-using Mentula.Network.Xna;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 
 namespace Mentula.Commands
