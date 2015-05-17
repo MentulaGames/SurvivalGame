@@ -37,6 +37,7 @@ namespace Mentula.SurvivalGame
         private Texture2D[] textures;
 
         private IntVector2 oldPos;
+        private Player n_P;
         private List<C_Tile> tiles;
         private List<C_Destrucible> dest;
         private double nextSend;
@@ -106,6 +107,7 @@ namespace Mentula.SurvivalGame
             IntVector2 chunkPos = IntVector2.Zero;
             Vector2 pos = Vector2.Zero;
             players.Add(Name, new Player(Name, chunkPos, pos));
+            n_P = new Player(Name, chunkPos, pos);
             oldPos = chunkPos;
             cam.Update(chunkPos, pos);
         }
@@ -127,7 +129,7 @@ namespace Mentula.SurvivalGame
                 if (k_State.IsKeyDown(Keys.A)) inp.X = -1;
                 else if (k_State.IsKeyDown(Keys.D)) inp.X = 1;
 
-                if (inp != Vector2.Zero) p.Move(inp * delta * 5);
+                if (inp != Vector2.Zero) n_P.Move(inp * delta * 5);
                 cam.Update(p.ChunkPos, p.GetTilePos());
 
                 if (oldPos != p.ChunkPos)
@@ -158,8 +160,8 @@ namespace Mentula.SurvivalGame
             {
                 NOM nom = client.CreateMessage();
                 nom.Write((byte)DataType.PlayerUpdate);
-                nom.Write(p.ChunkPos);
-                nom.Write(p.GetTilePos());
+                nom.Write(n_P.ChunkPos);
+                nom.Write(n_P.GetTilePos());
                 client.SendMessage(nom, NetDeliveryMethod.Unreliable);
                 nextSend += (1f / 30f);
             }
@@ -207,6 +209,7 @@ namespace Mentula.SurvivalGame
                                 for (int i = 0; i < p_A.Length; i++)
                                 {
                                     Player p_C = p_A[i];
+                                    if (p_C.Name == n_P.Name) n_P = p_C;
                                     players.Add(p_C.Name, p_C);
                                 }
                                 break;
