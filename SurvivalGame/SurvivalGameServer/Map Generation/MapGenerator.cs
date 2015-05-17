@@ -9,13 +9,16 @@ namespace Mentula.SurvivalGameServer
     {
         public static Chunk GenerateTerrain(IntVector2 pos)
         {
-            Random r = new Random((int)(RNG.RFloatFromString(pos.X, pos.Y) * 1000000));
-            Random r2 = new Random((int)(RNG.RFloatFromString(pos.X, pos.Y) * 1000000) + 1);
+            int rnum = (int)(RNG.RFloatFromString(pos.X, pos.Y) * 1000000);
+            Random r = new Random(rnum);
+            Random r2 = new Random(rnum + 1);
             int cSize = int.Parse(Resources.ChunkSize);
             Tile[] Tiles = new Tile[cSize * cSize];
             List<Destructible> destructibles = new List<Destructible>();
+            List<Creature> creatures = new List<Creature>();
             int x;
             int y;
+
             for (int i = 0; i < cSize * cSize; i++)
             {
                 x = i % cSize + pos.X * cSize;
@@ -28,7 +31,7 @@ namespace Mentula.SurvivalGameServer
                 float lakeyness = 0;
                 lakeyness += PerlinNoise.Generate(100, cSize / 2, x, y, "lakey");
                 float chanceToSpawnTree = (rain - 30) / 5;
-
+                float chanceToSpawnForestCreature = (rain - 50) / 5;
                 int textureid = -1;
                 if (rain >= 0 & rain < 25)
                 {
@@ -56,10 +59,19 @@ namespace Mentula.SurvivalGameServer
                 {
                     destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize, i / cSize), 4, 1, true)));
                 }
+                else if ((float)r2.NextDouble()*100<= chanceToSpawnTree)
+                {
+                    creatures.Add(ForestWildLife.CreatureList[0]);
+                }
+                else if ((float)r2.NextDouble()*100<=chanceToSpawnForestCreature)
+                {
+                    int a = (int)Math.Min(1+r2.NextDouble()*2,2);
+                    creatures.Add(ForestWildLife.CreatureList[a]);
+                }
 
                 Tiles[i] = new Tile(new IntVector2(i % cSize, i / cSize), (byte)textureid);
             }
-            return new Chunk(pos, Tiles, destructibles);
+            return new Chunk(pos, Tiles, destructibles,creatures);
         }
     }
 }
