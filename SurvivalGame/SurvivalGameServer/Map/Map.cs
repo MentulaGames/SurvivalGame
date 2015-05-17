@@ -109,8 +109,8 @@ namespace Mentula.SurvivalGameServer
                         {
                             if (r[j] == ChunkList[i]) isloaded = true;
                         }
-                        //if its not next to the old pos
-                        //and it is next to the new pos
+                        //if its not next to the old tilePos
+                        //and it is next to the new tilePos
                         //and it is not already loaded
                         if ((Math.Abs(ChunkList[i].Pos.X - oldPos.X) > RTL_C | Math.Abs(ChunkList[i].Pos.Y - oldPos.Y) > RTL_C) &
                             (Math.Abs(ChunkList[i].Pos.X - newPos.X) <= RTL_C & Math.Abs(ChunkList[i].Pos.Y - newPos.Y) <= RTL_C) &
