@@ -46,7 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Chunk.cs" />
+    <Compile Include="Creatures\Creature.cs" />
+    <Compile Include="Map\Chunk.cs" />
     <Compile Include="CommandHandler.cs" />
     <Compile Include="Commands\Cls.cs" />
     <Compile Include="Commands\Command.cs" />
@@ -55,12 +56,12 @@
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\Kick.cs" />
     <Compile Include="Commands\Teleport.cs" />
-    <Compile Include="Map.cs" />
-    <Compile Include="MapGenerator.cs" />
-    <Compile Include="MentulaExtensions.cs" />
-    <Compile Include="PerlinNoise.cs" />
+    <Compile Include="Map\Map.cs" />
+    <Compile Include="Map Generation\MapGenerator.cs" />
+    <Compile Include="Map Generation\PerlinNoise.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stats.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
