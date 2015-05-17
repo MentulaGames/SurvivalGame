@@ -17,7 +17,7 @@ namespace Mentula.SurvivalGameServer
         public int Texture;
 
         public Creature()
-            :base()
+            : base()
         {
             Name = "The nameless";
             Stats = new Stats();
@@ -26,7 +26,7 @@ namespace Mentula.SurvivalGameServer
             Texture = 0;
         }
 
-        public Creature(string name,Stats stats,float health,Color skinColor, int texture)
+        public Creature(string name, Stats stats, float health, Color skinColor, int texture)
             : base()
         {
             Name = name;
@@ -38,7 +38,7 @@ namespace Mentula.SurvivalGameServer
         }
 
         public Creature(Creature c, IntVector2 chunkPos, Vector2 tilePos)
-            :base(chunkPos,tilePos)
+            : base(chunkPos, tilePos)
         {
             Name = c.Name;
             Stats = c.Stats;
@@ -46,6 +46,5 @@ namespace Mentula.SurvivalGameServer
             SkinColor = c.SkinColor;
             Texture = c.Texture;
         }
-
     }
 }

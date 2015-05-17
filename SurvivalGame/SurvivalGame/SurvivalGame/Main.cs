@@ -41,6 +41,7 @@ namespace Mentula.SurvivalGame
         private double nextSend;
         private List<C_Tile> tiles;
         private List<C_Destrucible> dest;
+        private List<C_Creature> creatures;
 
         public Main()
         {
@@ -66,6 +67,7 @@ namespace Mentula.SurvivalGame
             cam = new Camera(GraphicsDevice, IntVector2.Zero, Vector2.Zero);
             tiles = new List<C_Tile>();
             dest = new List<C_Destrucible>();
+            creatures = new List<C_Creature>();
             players = new Dictionary<string, Player>();
 
 #if LOCAL
@@ -85,13 +87,16 @@ namespace Mentula.SurvivalGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("ConsoleFont");
 
-            textures = new TextureCollection(Content, 6);
+            textures = new TextureCollection(Content, 8);
             textures[0] = Content.Load<Texture2D>("Tiles/Desert_Temp");
             textures[1] = Content.Load<Texture2D>("Tiles/Savana_Temp");
             textures[2] = Content.Load<Texture2D>("Tiles/Grassland_Temp");
             textures[3] = Content.Load<Texture2D>("Tiles/Forest_Temp");
             textures[4] = Content.Load<Texture2D>("Tiles/Tree_Temp");
             textures[5] = Content.Load<Texture2D>("Tiles/Water_Temp");
+            textures[6] = Content.Load<Texture2D>("Actors/Rabbit_Temp");
+            textures[7] = Content.Load<Texture2D>("Actors/Deer_Temp");
+            textures[8] = Content.Load<Texture2D>("Actors/Wolf_Temp");
             Playertexture = Content.Load<Texture2D>("Actors/Player_Temp");
 
             player = new Player(Name, IntVector2.Zero, Vector2.Zero);
@@ -170,6 +175,7 @@ namespace Mentula.SurvivalGame
                                 {
                                     tiles.AddRange(msg.ReadTileArr());
                                     dest.AddRange(msg.ReadDesArr());
+                                    creatures.AddRange(msg.ReadCreatureArr());
                                 }
 
                                 state = GameState.Game;
@@ -181,10 +187,12 @@ namespace Mentula.SurvivalGame
                                 {
                                     tiles.AddRange(msg.ReadTileArr());
                                     dest.AddRange(msg.ReadDesArr());
+                                    creatures.AddRange(msg.ReadCreatureArr());
                                 }
 
                                 UnloadCTiles(player.ChunkPos);
                                 UnLoadCDest(player.ChunkPos);
+                                UnLoadCCr(player.ChunkPos);
                                 break;
                             case (DataType.PlayerUpdate):
                                 players.Clear();
@@ -196,7 +204,7 @@ namespace Mentula.SurvivalGame
                                     players.Add(p_C.Name, p_C);
                                 }
                                 break;
-                            case(DataType.PlayerRePosition):
+                            case (DataType.PlayerRePosition):
                                 msg.ReadReSetPlayer(ref player);
                                 break;
                         }
@@ -229,6 +237,13 @@ namespace Mentula.SurvivalGame
                     C_Destrucible d = dest[i];
 
                     if (cam.TryGetRelativePosition(d.ChunkPos, d.Pos.ToVector2(), out relPos)) spriteBatch.Draw(textures[d.TextureId], relPos, Color.White, d.Layer);
+                }
+
+                for (int i = 0; i < creatures.Count; i++)
+                {
+                    C_Creature c = creatures[i];
+
+                    if (cam.TryGetRelativePosition(c.ChunkPos, c.Pos, out relPos)) spriteBatch.Draw(textures[c.TextureId], relPos, Color.White, 2);
                 }
 
                 for (int i = 0; i < players.Count; i++)
@@ -270,6 +285,15 @@ namespace Mentula.SurvivalGame
             for (int i = 0; i < dest.Count; )
             {
                 if (Math.Abs(dest[i].ChunkPos.X - pos.X) > 1 | Math.Abs(dest[i].ChunkPos.Y - pos.Y) > 1) dest.RemoveAt(i);
+                else i++;
+            }
+        }
+
+        private void UnLoadCCr(IntVector2 pos)
+        {
+            for (int i = 0; i < creatures.Count; )
+            {
+                if (Math.Abs(creatures[i].ChunkPos.X - pos.X) > 1 | Math.Abs(creatures[i].ChunkPos.Y - pos.Y) > 1) creatures.RemoveAt(i);
                 else i++;
             }
         }

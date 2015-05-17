@@ -103,6 +103,7 @@ namespace Mentula.SurvivalGameServer
                                     {
                                         nom.Write((C_Tile[])chunks[i]);
                                         nom.Write((C_Destrucible[])chunks[i]);
+                                        nom.Write((C_Creature[])chunks[i]);
                                     }
 
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
@@ -121,6 +122,7 @@ namespace Mentula.SurvivalGameServer
                                     {
                                         nom.Write((C_Tile[])chunk[i]);
                                         nom.Write((C_Destrucible[])chunk[i]);
+                                        nom.Write((C_Creature[])chunk[i]);
                                     }
 
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);

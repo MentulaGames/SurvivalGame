@@ -2,6 +2,7 @@
 using Lidgren.Network.Xna;
 using Mentula.General;
 using Mentula.General.Res;
+using Microsoft.Xna.Framework;
 using System;
 
 namespace Mentula.Network.Xna
@@ -16,6 +17,12 @@ namespace Mentula.Network.Xna
         }
 
         public static void Write(this NetBuffer msg, BytePoint value)
+        {
+            msg.Write(value.X);
+            msg.Write(value.Y);
+        }
+
+        public static void Write(this NetBuffer msg, IntVector2 value)
         {
             msg.Write(value.X);
             msg.Write(value.Y);
@@ -68,6 +75,31 @@ namespace Mentula.Network.Xna
             }
         }
 
+        public static void Write(this NetBuffer msg, C_Creature value)
+        {
+            msg.Write(value.ChunkPos);
+            msg.Write(value.Pos);
+            msg.Write(value.Color.PackedValue);
+            msg.Write(value.TextureId);
+        }
+
+        public static void Write(this NetBuffer msg, C_Creature[] value)
+        {
+            msg.Write((Int16)value.Length);
+
+            if (value.Length == 0) return;
+
+            msg.Write(value[0].ChunkPos);
+
+            for (int i = 0; i < value.Length; i++)
+            {
+                C_Creature curC = value[i];
+                msg.Write(curC.Pos);
+                msg.Write(curC.Color.PackedValue);
+                msg.Write(curC.TextureId);
+            }
+        }
+
         public static void Write(this NetBuffer msg, Player value)
         {
             msg.Write(value.ChunkPos);
@@ -88,15 +120,14 @@ namespace Mentula.Network.Xna
             }
         }
 
-        public static void Write(this NetBuffer msg, IntVector2 value)
-        {
-            msg.Write(value.X);
-            msg.Write(value.Y);
-        }
-
         public static BytePoint ReadPoint(this NetBuffer msg)
         {
             return new BytePoint(msg.ReadByte(), msg.ReadByte());
+        }
+
+        public static IntVector2 ReadVector(this NetBuffer msg)
+        {
+            return new IntVector2(msg.ReadInt32(), msg.ReadInt32());
         }
 
         public static C_Tile ReadTile(this NetBuffer msg)
@@ -151,6 +182,29 @@ namespace Mentula.Network.Xna
             return result;
         }
 
+        public static C_Creature ReadCreature(this NetBuffer msg)
+        {
+            return new C_Creature(msg.ReadVector(), msg.ReadVector2(), new Color() { PackedValue = msg.ReadUInt32() }, msg.PeekInt32());
+        }
+
+        public static C_Creature[] ReadCreatureArr(this NetBuffer msg)
+        {
+            int length = msg.ReadUInt16();
+
+            C_Creature[] result = new C_Creature[length];
+
+            if (length == 0) return result;
+
+            IntVector2 chunkPos = msg.ReadVector();
+
+            for (int i = 0; i < length; i++)
+            {
+                result[i] = new C_Creature(chunkPos, msg.ReadVector2(), new Color() { PackedValue = msg.ReadUInt32() }, msg.ReadInt32());
+            }
+
+            return result;
+        }
+
         public static void ReadReSetPlayer(this NetBuffer msg, ref Player player)
         {
             player.ReSet(msg.ReadVector(), msg.ReadVector2());
@@ -167,11 +221,6 @@ namespace Mentula.Network.Xna
             }
 
             return result;
-        }
-
-        public static IntVector2 ReadVector(this NetBuffer msg)
-        {
-            return new IntVector2(msg.ReadInt32(), msg.ReadInt32());
         }
 
         public static TEnum ReadEnum<TEnum>(this NetBuffer msg)

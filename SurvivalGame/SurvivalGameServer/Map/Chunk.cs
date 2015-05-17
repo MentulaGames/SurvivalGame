@@ -19,12 +19,16 @@ namespace Mentula.SurvivalGameServer
             Pos = pos;
             CS = int.Parse(Resources.ChunkSize);
             Tiles = new Tile[CS * CS];
+            Destructibles = new List<Destructible>();
+            Creatures = new List<Creature>();
         }
 
         public Chunk(IntVector2 pos, Tile[] tiles)
         {
             Pos = pos;
             Tiles = tiles;
+            Destructibles = new List<Destructible>();
+            Creatures = new List<Creature>();
         }
 
         public Chunk(IntVector2 pos, Tile[] tiles, List<Destructible> destructibles)
@@ -32,6 +36,7 @@ namespace Mentula.SurvivalGameServer
             Pos = pos;
             Tiles = tiles;
             Destructibles = destructibles;
+            Creatures = new List<Creature>();
         }
 
         public Chunk(IntVector2 pos, Tile[] tiles, List<Destructible> destructibles, List<Creature> creatures)
@@ -61,6 +66,11 @@ namespace Mentula.SurvivalGameServer
         public static explicit operator C_Destrucible[](Chunk chunk)
         {
             return chunk.Destructibles.Select(d => new C_Destrucible(chunk.Pos, d)).ToArray();
+        }
+
+        public static explicit operator C_Creature[](Chunk chunk)
+        {
+            return chunk.Creatures.Select(c => new C_Creature(chunk.Pos, c.GetTilePos(), c.SkinColor, c.Texture)).ToArray();
         }
     }
 }
