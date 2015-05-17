@@ -82,7 +82,7 @@ namespace Mentula.SurvivalGame
             state = GameState.Loading;
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            Playertexture = new Texture2D(GraphicsDevice, 32, 32);
+            Playertexture = Content.Load<Texture2D>("Actors/Player_Temp");
             font = Content.Load<SpriteFont>("ConsoleFont");
 
             textures = new Texture2D[6];
@@ -92,16 +92,6 @@ namespace Mentula.SurvivalGame
             textures[3] = Content.Load<Texture2D>("Tiles/Forest_Temp");
             textures[4] = Content.Load<Texture2D>("Tiles/Tree_Temp");
             textures[5] = Content.Load<Texture2D>("Tiles/Water_Temp");
-
-            Color[] data = new Color[Playertexture.Height * Playertexture.Width];
-            for (int y = 0; y < Playertexture.Height; y++)
-            {
-                for (int x = 0; x < Playertexture.Width; x++)
-                {
-                    data[x + (y * Playertexture.Height)] = Color.Red;
-                }
-            }
-            Playertexture.SetData<Color>(data);
 
             IntVector2 chunkPos = IntVector2.Zero;
             Vector2 pos = Vector2.Zero;
