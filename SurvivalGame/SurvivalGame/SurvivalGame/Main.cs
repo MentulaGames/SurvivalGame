@@ -35,7 +35,7 @@ namespace Mentula.SurvivalGame
         private Player player;
         private Dictionary<string, Player> players;
         private Texture2D Playertexture;
-        private Texture2D[] textures;
+        private TextureCollection textures;
 
         private IntVector2 oldPos;
         private double nextSend;
@@ -85,7 +85,7 @@ namespace Mentula.SurvivalGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("ConsoleFont");
 
-            textures = new Texture2D[6];
+            textures = new TextureCollection(Content, 6);
             textures[0] = Content.Load<Texture2D>("Tiles/Desert_Temp");
             textures[1] = Content.Load<Texture2D>("Tiles/Savana_Temp");
             textures[2] = Content.Load<Texture2D>("Tiles/Grassland_Temp");
