@@ -29,7 +29,9 @@ namespace Mentula.SurvivalGameServer
                 rain += PerlinNoise.Generate(10, cSize / 4, x, y, "3");
 
                 float lakeyness = 0;
-                lakeyness += PerlinNoise.Generate(100, cSize / 2, x, y, "lakey");
+                lakeyness += PerlinNoise.Generate(50, cSize / 2, x, y, "lakey");
+                lakeyness += PerlinNoise.Generate(50, cSize / 4, x, y, "lakey2");
+                
                 float chanceToSpawnTree = (rain - 30) / 5;
                 float chanceToSpawnForestCreature = (rain - 50) / 5;
                 int textureid = -1;
@@ -50,7 +52,7 @@ namespace Mentula.SurvivalGameServer
                     textureid = 3;
                 }
 
-                if (lakeyness > 90)
+                if (lakeyness > 80)
                 {
                     destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize, i / cSize), 5, 1, false)));
                 }
