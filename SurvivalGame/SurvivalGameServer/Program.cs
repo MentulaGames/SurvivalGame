@@ -48,7 +48,20 @@ namespace Mentula.SurvivalGameServer
                             msg.MessageType.WriteLine("{0} discovered the service.", msg.SenderEndPoint);
                             break;
                         case (NIMT.ConnectionApproval):
-                            players.Add(msg.GetId(), new Player(msg.ReadString(), IntVector2.Zero, Vector2.Zero));
+                            string name = msg.ReadString();
+
+                            if (players.ContainsKey(msg.GetId()))
+                            {
+                                msg.SenderConnection.Deny("You are still connected to the service!\nPlease wait some time before trying again.");
+                                break;
+                            }
+                            else if(players.FirstOrDefault(p => p.Value.Name == name).Value != null)
+                            {
+                                msg.SenderConnection.Deny(string.Format("The name: {0} is already in use!", name));
+                                break;
+                            }
+
+                            players.Add(msg.GetId(), new Player(name, IntVector2.Zero, Vector2.Zero));
                             msg.SenderConnection.Approve();
                             break;
                         case (NIMT.VerboseDebugMessage):
@@ -124,11 +137,6 @@ namespace Mentula.SurvivalGameServer
                                     nom.Write((byte)DataType.PlayerUpdate);
                                     nom.Write(players.Where(p => p.Key != msg.GetId()).Select(p => p.Value).ToArray());
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
-
-                                    nom = server.CreateMessage();
-                                    nom.Write((byte)DataType.PlayerRePosition);
-                                    nom.Write(players[msg.GetId()]);
-                                    server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.Unreliable);
                                     break;
                             }
                             break;

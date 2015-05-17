@@ -33,7 +33,6 @@ namespace Mentula.SurvivalGame
         private GameState state;
 
         private Player player;
-        private Player n_Player;
         private Dictionary<string, Player> players;
         private Texture2D Playertexture;
         private Texture2D[] textures;
@@ -96,7 +95,6 @@ namespace Mentula.SurvivalGame
             Playertexture = Content.Load<Texture2D>("Actors/Player_Temp");
 
             player = new Player(Name, IntVector2.Zero, Vector2.Zero);
-            n_Player = new Player(Name, IntVector2.Zero, Vector2.Zero);
             oldPos = player.ChunkPos;
             cam.Update(player.ChunkPos, player.GetTilePos());
         }
@@ -199,8 +197,7 @@ namespace Mentula.SurvivalGame
                                 }
                                 break;
                             case(DataType.PlayerRePosition):
-                                //msg.ReadReSetPlayer(ref player);
-                                msg.ReadReSetPlayer(ref n_Player);
+                                msg.ReadReSetPlayer(ref player);
                                 break;
                         }
                         break;
@@ -242,8 +239,7 @@ namespace Mentula.SurvivalGame
                 }
 
                 spriteBatch.Draw(Playertexture, cam.GetRelativePosition(player.ChunkPos, player.GetTilePos()), Color.White);
-                spriteBatch.DrawString(font, string.Format("Client Player Pos: {0}", player.GetTotalPos()), new Vector2(0, 48), Color.Red);
-                spriteBatch.DrawString(font, string.Format("Server Player Pos: {0}", n_Player.GetTotalPos()), new Vector2(0, 64), Color.Red);
+                spriteBatch.DrawString(font, string.Format("Player Pos: {0}", player.GetTotalPos()), new Vector2(0, 48), Color.Red);
             }
 
             spriteBatch.DrawString(font, string.Format("State: {0}", state), Vector2.Zero, Color.Red);
