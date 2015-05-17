@@ -243,7 +243,7 @@ namespace Mentula.SurvivalGame
                 {
                     C_Creature c = creatures[i];
 
-                    if (cam.TryGetRelativePosition(c.ChunkPos, c.Pos, out relPos)) spriteBatch.Draw(textures[c.TextureId], relPos, Color.White, 2);
+                    if (cam.TryGetRelativePosition(c.ChunkPos, c.Pos, out relPos)) spriteBatch.Draw(textures[c.TextureId], relPos, c.Color, 2);
                 }
 
                 for (int i = 0; i < players.Count; i++)
@@ -257,9 +257,9 @@ namespace Mentula.SurvivalGame
                 spriteBatch.DrawString(font, string.Format("Player Pos: {0}", player.GetTotalPos()), new Vector2(0, 48), Color.Red);
             }
 
-            spriteBatch.DrawString(font, string.Format("State: {0}", state), Vector2.Zero, Color.Red);
-            spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.ToString()), new Vector2(0, 16), Color.Red);
-            spriteBatch.DrawString(font, string.Format("Dest: {0}", dest.Count), new Vector2(0, 32), Color.Red);
+            spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.ToString()), Vector2.Zero, Color.Red);
+            spriteBatch.DrawString(font, string.Format("Dest: {0}", dest.Count), new Vector2(0, 16), Color.Red);
+            spriteBatch.DrawString(font, string.Format("Creatures: {0}", creatures.Count), new Vector2(0, 32), Color.Red);
 
             spriteBatch.End();
             base.Draw(gameTime);
