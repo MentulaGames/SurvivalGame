@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Creatures\Creature.cs" />
+    <Compile Include="Creatures\ForestWildLife.cs" />
     <Compile Include="Map\Chunk.cs" />
     <Compile Include="CommandHandler.cs" />
     <Compile Include="Commands\Cls.cs" />

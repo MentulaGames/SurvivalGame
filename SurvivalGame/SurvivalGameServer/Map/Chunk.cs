@@ -10,6 +10,7 @@ namespace Mentula.SurvivalGameServer
         public IntVector2 Pos;
         public Tile[] Tiles;
         public List<Destructible> Destructibles;
+        public List<Creature> Creatures;
 
         private readonly int CS;
 
@@ -20,17 +21,25 @@ namespace Mentula.SurvivalGameServer
             Tiles = new Tile[CS * CS];
         }
 
-        public Chunk(IntVector2 pos, Tile[] Tiles)
+        public Chunk(IntVector2 pos, Tile[] tiles)
         {
             Pos = pos;
-            this.Tiles = Tiles;
+            Tiles = tiles;
         }
 
-        public Chunk(IntVector2 pos, Tile[] Tiles, List<Destructible> Destructibles)
+        public Chunk(IntVector2 pos, Tile[] tiles, List<Destructible> destructibles)
         {
             Pos = pos;
-            this.Tiles = Tiles;
-            this.Destructibles = Destructibles;
+            Tiles = tiles;
+            Destructibles = destructibles;
+        }
+
+        public Chunk(IntVector2 pos, Tile[] tiles, List<Destructible> destructibles, List<Creature> creatures)
+        {
+            Pos = pos;
+            Tiles = tiles;
+            Destructibles = destructibles;
+            Creatures = creatures;
         }
 
         public void Generate(byte id)

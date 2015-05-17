@@ -10,43 +10,40 @@ namespace Mentula.SurvivalGameServer
 {
     public class Creature : Actor
     {
+        public string Name;
         public Stats Stats;
         public float Health;
         public Color SkinColor;
-        public float Height;
-        public float Weight;
         public int Texture;
 
         public Creature()
             :base()
         {
+            Name = "The nameless";
             Stats = new Stats();
             Health = 0;
             SkinColor = Color.White;
-            Height = 0;
-            Weight = 0;
             Texture = 0;
         }
 
-        public Creature(Stats stats,float health,Color skinColor,float height, float weight, int texture)
+        public Creature(string name,Stats stats,float health,Color skinColor, int texture)
             : base()
         {
+            Name = name;
             Stats = stats;
             Health = health;
             SkinColor = skinColor;
-            Height = height;
-            Weight = weight;
+
             Texture = texture;
         }
 
         public Creature(Creature c, IntVector2 chunkPos, Vector2 tilePos)
             :base(chunkPos,tilePos)
         {
+            Name = c.Name;
             Stats = c.Stats;
             Health = c.Health;
             SkinColor = c.SkinColor;
-            Height = c.Height;
-            Weight = c.Weight;
             Texture = c.Texture;
         }
 
