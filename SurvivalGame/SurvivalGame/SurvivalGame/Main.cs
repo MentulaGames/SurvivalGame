@@ -285,6 +285,10 @@ namespace Mentula.SurvivalGame
             spriteBatch.DrawString(font, string.Format("Dest: {0}", dest.Count), new Vector2(0, 16), Color.Red);
             spriteBatch.DrawString(font, string.Format("Creatures: {0}", creatures.Count), new Vector2(0, 32), Color.Red);
             spriteBatch.Draw(textures[9], MentulaExtensions.GetMousePos() - new Vector2(8, 8), Color.Red);
+            Vector2 camb = new Vector2(1280 / 2+32, 720 / 2+32);
+            Vector2 dir = (MentulaExtensions.GetMousePos() - camb); dir.Normalize();
+            float rot=(float)Math.Atan2(dir.X, dir.Y);
+            spriteBatch.Draw(textures[10], camb + dir * 24+new Vector2(-dir.Y*8,dir.X*8), Color.Red,-rot);
             spriteBatch.End();
             base.Draw(gameTime);
         }
