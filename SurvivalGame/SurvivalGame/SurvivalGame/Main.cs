@@ -24,7 +24,7 @@ namespace Mentula.SurvivalGame
 {
     public class Main : Game
     {
-        private const string Name = "Arzana";
+        private const string Name = "Naxaras";
 
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
@@ -90,7 +90,7 @@ namespace Mentula.SurvivalGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("ConsoleFont");
 
-            textures = new TextureCollection(Content, 8);
+            textures = new TextureCollection(Content, 11);
             textures[0] = Content.Load<Texture2D>("Tiles/Desert_Temp");
             textures[1] = Content.Load<Texture2D>("Tiles/Savana_Temp");
             textures[2] = Content.Load<Texture2D>("Tiles/Grassland_Temp");
@@ -100,6 +100,8 @@ namespace Mentula.SurvivalGame
             textures[6] = Content.Load<Texture2D>("Actors/Rabbit_Temp");
             textures[7] = Content.Load<Texture2D>("Actors/Deer_Temp");
             textures[8] = Content.Load<Texture2D>("Actors/Wolf_Temp");
+            textures[9] = Content.Load<Texture2D>("Utillities/Crosshair");
+            textures[10] = Content.Load<Texture2D>("Utillities/DirectionArrow");
             Playertexture = Content.Load<Texture2D>("Actors/Player_Temp");
 
             player = new Player(Name, IntVector2.Zero, Vector2.Zero);
@@ -283,7 +285,7 @@ namespace Mentula.SurvivalGame
             spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.ToString()), Vector2.Zero, Color.Red);
             spriteBatch.DrawString(font, string.Format("Dest: {0}", dest.Count), new Vector2(0, 16), Color.Red);
             spriteBatch.DrawString(font, string.Format("Creatures: {0}", creatures.Count), new Vector2(0, 32), Color.Red);
-
+            spriteBatch.Draw(textures[9], new Vector2(Mouse.GetState().X - 16, Mouse.GetState().Y - 16), Color.Red);
             spriteBatch.End();
             base.Draw(gameTime);
         }

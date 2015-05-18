@@ -13,6 +13,7 @@ namespace Mentula.SurvivalGameServer
         public string Name;
         public Stats Stats;
         public float Health;
+        public float MaxHealth;
         public Color SkinColor;
         public int Texture;
 
@@ -32,8 +33,8 @@ namespace Mentula.SurvivalGameServer
             Name = name;
             Stats = stats;
             Health = health;
+            MaxHealth = health;
             SkinColor = skinColor;
-
             Texture = texture;
         }
 
@@ -43,6 +44,7 @@ namespace Mentula.SurvivalGameServer
             Name = c.Name;
             Stats = c.Stats;
             Health = c.Health;
+            MaxHealth = c.MaxHealth;
             SkinColor = c.SkinColor;
             Texture = c.Texture;
         }

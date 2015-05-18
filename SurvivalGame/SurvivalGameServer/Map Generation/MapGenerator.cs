@@ -32,7 +32,7 @@ namespace Mentula.SurvivalGameServer
                 float lakeyness = 0;
                 lakeyness += PerlinNoise.Generate(50, cSize / 2, x, y, "lakey");
                 lakeyness += PerlinNoise.Generate(50, cSize / 4, x, y, "lakey2");
-                
+
                 float chanceToSpawnTree = (rain - 30) / 5;
                 float chanceToSpawnForestCreature = (rain - 50) / 5;
                 int textureid = -1;
@@ -62,19 +62,19 @@ namespace Mentula.SurvivalGameServer
                 {
                     destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize, i / cSize), 4, 1, true)));
                 }
-                else if ((float)r2.NextDouble()*100<= chanceToSpawnTree/10)
+                else if ((float)r2.NextDouble() * 100 <= chanceToSpawnTree / 10)
                 {
-                    creatures.Add(new Creature(ForestWildLife.CreatureList[0],pos,new Vector2(i%cSize,i/cSize)));
+                    creatures.Add(new Creature(ForestWildLife.CreatureList[0], pos, new Vector2(i % cSize, i / cSize)));
                 }
-                else if ((float)r2.NextDouble()*100<=chanceToSpawnForestCreature/10)
+                else if ((float)r2.NextDouble() * 100 <= chanceToSpawnForestCreature / 10)
                 {
-                    int a = (int)Math.Min(1+r2.NextDouble()*2,2);
+                    int a = (int)Math.Min(1 + r2.NextDouble() * 2, 2);
                     creatures.Add(new Creature(ForestWildLife.CreatureList[a], pos, new Vector2(i % cSize, i / cSize)));
                 }
 
                 Tiles[i] = new Tile(new IntVector2(i % cSize, i / cSize), (byte)textureid);
             }
-            return new Chunk(pos, Tiles, destructibles,creatures);
+            return new Chunk(pos, Tiles, destructibles, creatures);
         }
     }
 }
