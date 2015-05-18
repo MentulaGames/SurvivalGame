@@ -12,6 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
+using NCS = Lidgren.Network.NetConnectionStatus;
 using NIM = Lidgren.Network.NetIncomingMessage;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 using NOM = Lidgren.Network.NetOutgoingMessage;
@@ -165,6 +168,28 @@ namespace Mentula.SurvivalGame
                         nom.Write(player.Name);
                         client.Connect(msg.SenderEndPoint, nom);
                         break;
+                    case (NIMT.StatusChanged):
+                        NCS status = msg.ReadEnum<NCS>();
+                        if (status == NCS.Disconnected)
+                        {
+                            string message = msg.ReadString();
+                            DialogResult r = MessageBox.Show(message,
+                                "The server closed the connection.",
+                                MessageBoxButtons.AbortRetryIgnore);
+
+                            switch (r)
+                            {
+                                case (DialogResult.Abort):
+                                    this.Exit();
+                                    break;
+                                case (DialogResult.Retry):
+                                    nom = client.CreateMessage();
+                                    nom.Write(player.Name);
+                                    client.Connect(msg.SenderEndPoint, nom);
+                                    break;
+                            }
+                        }
+                        break;
                     case (NIMT.Data):
                         switch (msg.ReadEnum<DataType>())
                         {
@@ -190,9 +215,7 @@ namespace Mentula.SurvivalGame
                                     creatures.AddRange(msg.ReadCreatureArr());
                                 }
 
-                                UnloadCTiles(player.ChunkPos);
-                                UnLoadCDest(player.ChunkPos);
-                                UnLoadCCr(player.ChunkPos);
+                                Unload(player.ChunkPos);
                                 break;
                             case (DataType.PlayerUpdate):
                                 players.Clear();
@@ -271,26 +294,20 @@ namespace Mentula.SurvivalGame
             base.OnExiting(sender, args);
         }
 
-        private void UnloadCTiles(IntVector2 pos)
+        private void Unload(IntVector2 pos)
         {
             for (int i = 0; i < tiles.Count; )
             {
                 if (Math.Abs(tiles[i].ChunkPos.X - pos.X) > 1 | Math.Abs(tiles[i].ChunkPos.Y - pos.Y) > 1) tiles.RemoveAt(i);
                 else i++;
             }
-        }
 
-        private void UnLoadCDest(IntVector2 pos)
-        {
             for (int i = 0; i < dest.Count; )
             {
                 if (Math.Abs(dest[i].ChunkPos.X - pos.X) > 1 | Math.Abs(dest[i].ChunkPos.Y - pos.Y) > 1) dest.RemoveAt(i);
                 else i++;
             }
-        }
 
-        private void UnLoadCCr(IntVector2 pos)
-        {
             for (int i = 0; i < creatures.Count; )
             {
                 if (Math.Abs(creatures[i].ChunkPos.X - pos.X) > 1 | Math.Abs(creatures[i].ChunkPos.Y - pos.Y) > 1) creatures.RemoveAt(i);
