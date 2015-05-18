@@ -2,6 +2,7 @@
 using Mentula.General.Res;
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace Mentula.SurvivalGameServer
 {
@@ -61,14 +62,14 @@ namespace Mentula.SurvivalGameServer
                 {
                     destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize, i / cSize), 4, 1, true)));
                 }
-                else if ((float)r2.NextDouble()*100<= chanceToSpawnTree)
+                else if ((float)r2.NextDouble()*100<= chanceToSpawnTree/10)
                 {
-                    creatures.Add(ForestWildLife.CreatureList[0]);
+                    creatures.Add(new Creature(ForestWildLife.CreatureList[0],pos,new Vector2(i%cSize,i/cSize)));
                 }
-                else if ((float)r2.NextDouble()*100<=chanceToSpawnForestCreature)
+                else if ((float)r2.NextDouble()*100<=chanceToSpawnForestCreature/10)
                 {
                     int a = (int)Math.Min(1+r2.NextDouble()*2,2);
-                    creatures.Add(ForestWildLife.CreatureList[a]);
+                    creatures.Add(new Creature(ForestWildLife.CreatureList[a], pos, new Vector2(i % cSize, i / cSize)));
                 }
 
                 Tiles[i] = new Tile(new IntVector2(i % cSize, i / cSize), (byte)textureid);
