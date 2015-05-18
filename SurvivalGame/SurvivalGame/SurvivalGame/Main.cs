@@ -284,7 +284,7 @@ namespace Mentula.SurvivalGame
             spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.ToString()), Vector2.Zero, Color.Red);
             spriteBatch.DrawString(font, string.Format("Dest: {0}", dest.Count), new Vector2(0, 16), Color.Red);
             spriteBatch.DrawString(font, string.Format("Creatures: {0}", creatures.Count), new Vector2(0, 32), Color.Red);
-            spriteBatch.Draw(textures[9], MentulaExtensions.GetMousePos(), Color.Red);
+            spriteBatch.Draw(textures[9], MentulaExtensions.GetMousePos() - new Vector2(8, 8), Color.Red);
             spriteBatch.End();
             base.Draw(gameTime);
         }
