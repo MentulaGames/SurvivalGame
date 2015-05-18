@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using NCS = Lidgren.Network.NetConnectionStatus;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
@@ -23,10 +24,12 @@ namespace Mentula.SurvivalGameServer
         private static bool Exit;
         private static Map map;
         private static Dictionary<long, Player> players;
+        private static Dictionary<string, IPAddress> banned;
 
         static void Main(string[] args)
         {
             players = new Dictionary<long, Player>();
+            banned = new Dictionary<string, IPAddress>();
             InitConsole();
             InitCommands();
             InitServer();
@@ -50,12 +53,17 @@ namespace Mentula.SurvivalGameServer
                         case (NIMT.ConnectionApproval):
                             string name = msg.ReadString();
 
-                            if (players.ContainsKey(msg.GetId()))
+                            if (banned.Values.Contains(msg.SenderConnection.RemoteEndPoint.Address))
+                            {
+                                msg.SenderConnection.Deny("You have been banned from this server!");
+                                break;
+                            }
+                            else if (players.ContainsKey(msg.GetId()))
                             {
                                 msg.SenderConnection.Deny("You are still connected to the service!\nPlease wait some time before trying again.");
                                 break;
                             }
-                            else if(players.FirstOrDefault(p => p.Value.Name == name).Value != null)
+                            else if (players.FirstOrDefault(p => p.Value.Name == name).Value != null)
                             {
                                 msg.SenderConnection.Deny(string.Format("The name: {0} is already in use!", name));
                                 break;
@@ -204,6 +212,42 @@ namespace Mentula.SurvivalGameServer
                         }
 
                         MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player: {1}", result ? "Kicked" : "Failed to kick", name);
+                    }),
+                new Ban(name =>
+                    {
+                        bool result = false;
+                        for (int i = 0; i < players.Count; i++)
+                        {
+                            KeyValuePair<long, Player> k_P = players.ElementAt(i);
+
+                            if (k_P.Value.Name == name)
+                            {
+                                NetConnection end = server.Connections.Find(c => c.RemoteUniqueIdentifier == k_P.Key);
+                                banned.Add(name, end.RemoteEndPoint.Address);
+                                end.Disconnect("You have been banned!");
+                                result = true;
+                                break;
+                            }
+                        }
+
+                        MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player: {1}", result ? "Banned" : "Failed to ban", name);
+                    }),
+                new UnBan(name =>
+                    {
+                        bool result = false;
+                        for (int i = 0; i < banned.Count; i++)
+                        {
+                            KeyValuePair<string, IPAddress> k_P = banned.ElementAt(i);
+
+                            if (k_P.Key == name)
+                            {
+                                banned.Remove(name);
+                                result = true;
+                                break;
+                            }
+                        }
+
+                        MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player: {1}", result ? "UnBanned" : "Failed to unBan", name);
                     }),
                 new Teleport((name, pos) =>
                     {

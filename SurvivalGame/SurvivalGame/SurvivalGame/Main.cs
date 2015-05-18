@@ -24,7 +24,7 @@ namespace Mentula.SurvivalGame
 {
     public class Main : Game
     {
-        private const string Name = "Naxaras";
+        private const string Name = "Arzana";
 
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;

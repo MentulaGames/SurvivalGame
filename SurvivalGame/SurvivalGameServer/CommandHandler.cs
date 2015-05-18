@@ -46,7 +46,7 @@ namespace Mentula
                 {
                     ClearCurrentLine();
 
-                    if (info.Key == ConsoleKey.Backspace) raw = raw.Remove(raw.Length - 1, 1);
+                    if (info.Key == ConsoleKey.Backspace & raw.Length > 0) raw = raw.Remove(raw.Length - 1, 1);
                     else if (info.KeyChar.GetHashCode() != 0) raw += info.KeyChar;
 
                     Console.Write(raw);
@@ -66,6 +66,7 @@ namespace Mentula
                         {
                             called = true;
                             c.Call(args);
+                            break;
                         }
                     }
 
