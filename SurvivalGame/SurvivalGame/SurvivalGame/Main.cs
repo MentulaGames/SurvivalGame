@@ -135,13 +135,17 @@ namespace Mentula.SurvivalGame
                     Vector2 posF = new Vector2(scrW >> 1, scrH >> 1);
                     Vector2 dir = (mPos - posF); dir.Normalize();
                     float rot = (float)Math.Atan2(dir.X, dir.Y);
-                    //send rot to server
+
+                    NOM nom = client.CreateMessage();
+                    nom.Write((byte)DataType.Attack_CSend);
+                    nom.Write(rot);
+                    client.SendMessage(nom, NetDeliveryMethod.Unreliable);
                 }
 
                 if (oldPos != player.ChunkPos)
                 {
                     NOM nom = client.CreateMessage();
-                    nom.Write((byte)DataType.ChunkRequest);
+                    nom.Write((byte)DataType.ChunkRequest_Both);
 
                     nom.Write(player.ChunkPos);
                     nom.Write(oldPos);
@@ -155,7 +159,7 @@ namespace Mentula.SurvivalGame
                 state = GameState.MainMenu;
                 nextSend = NetTime.Now;
                 NOM nom = client.CreateMessage();
-                nom.Write((byte)DataType.InitialMap);
+                nom.Write((byte)DataType.InitialMap_Both);
                 nom.Write(player.ChunkPos);
                 client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
             }
@@ -164,7 +168,7 @@ namespace Mentula.SurvivalGame
             if (now > nextSend)
             {
                 NOM nom = client.CreateMessage();
-                nom.Write((byte)DataType.PlayerUpdate);
+                nom.Write((byte)DataType.PlayerUpdate_Both);
                 nom.Write(player.ChunkPos);
                 nom.Write(player.GetTilePos());
                 client.SendMessage(nom, NetDeliveryMethod.Unreliable);
@@ -206,7 +210,7 @@ namespace Mentula.SurvivalGame
                     case (NIMT.Data):
                         switch (msg.ReadEnum<DataType>())
                         {
-                            case (DataType.InitialMap):
+                            case (DataType.InitialMap_Both):
                                 int length = msg.ReadInt16();
 
                                 for (int i = 0; i < length; i++)
@@ -218,7 +222,7 @@ namespace Mentula.SurvivalGame
 
                                 state = GameState.Game;
                                 break;
-                            case (DataType.ChunkRequest):
+                            case (DataType.ChunkRequest_Both):
                                 length = msg.ReadInt16();
 
                                 for (int i = 0; i < length; i++)
@@ -230,7 +234,7 @@ namespace Mentula.SurvivalGame
 
                                 Unload(player.ChunkPos);
                                 break;
-                            case (DataType.PlayerUpdate):
+                            case (DataType.PlayerUpdate_Both):
                                 players.Clear();
                                 Player[] p_A = msg.ReadPlayers();
 
@@ -240,8 +244,16 @@ namespace Mentula.SurvivalGame
                                     players.Add(p_C.Name, p_C);
                                 }
                                 break;
-                            case (DataType.PlayerRePosition):
+                            case (DataType.PlayerRePosition_SSend):
                                 msg.ReadReSetPlayer(ref player);
+                                break;
+                            case(DataType.CreatureChange_SSend):
+                                IntVector2 cPos = msg.ReadVector();
+                                Vector2 pos = msg.ReadVector2();
+                                float health = msg.ReadFloat();
+
+                                if (health <= 0) creatures.RemoveAll(c => c.ChunkPos == cPos & c.Pos == pos);
+                                else creatures.Find(c => c.ChunkPos == cPos & c.Pos == pos).Health = health;
                                 break;
                         }
                         break;

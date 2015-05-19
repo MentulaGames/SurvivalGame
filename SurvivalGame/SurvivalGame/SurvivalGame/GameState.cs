@@ -6,6 +6,6 @@
         Initializing,
         Loading,
         MainMenu,
-        Game
+        Game,
     }
 }

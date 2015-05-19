@@ -97,13 +97,13 @@ namespace Mentula.SurvivalGameServer
                         case (NIMT.Data):
                             switch (msg.ReadEnum<DataType>())
                             {
-                                case (DataType.InitialMap):
+                                case (DataType.InitialMap_Both):
                                     IntVector2 chunkPos = msg.ReadVector();
                                     map.Generate(chunkPos);
                                     map.LoadChunks(chunkPos);
 
                                     NOM nom = server.CreateMessage();
-                                    nom.Write((byte)DataType.InitialMap);
+                                    nom.Write((byte)DataType.InitialMap_Both);
                                     Chunk[] chunks = map.GetChunks(chunkPos);
 
                                     nom.Write((Int16)chunks.Length);
@@ -116,12 +116,12 @@ namespace Mentula.SurvivalGameServer
 
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
                                     break;
-                                case (DataType.ChunkRequest):
+                                case (DataType.ChunkRequest_Both):
                                     chunkPos = msg.ReadVector();
                                     IntVector2 oldPos = msg.ReadVector();
 
                                     nom = server.CreateMessage();
-                                    nom.Write((byte)DataType.ChunkRequest);
+                                    nom.Write((byte)DataType.ChunkRequest_Both);
 
                                     List<Chunk> chunk = map.GetChunks(oldPos, chunkPos);
                                     nom.Write((Int16)chunk.Count);
@@ -135,7 +135,7 @@ namespace Mentula.SurvivalGameServer
 
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
                                     break;
-                                case (DataType.PlayerUpdate):
+                                case (DataType.PlayerUpdate_Both):
                                     chunkPos = msg.ReadVector();
                                     Vector2 pos = msg.ReadVector2();
                                     players[msg.GetId()].ReSet(chunkPos, pos);
@@ -144,9 +144,26 @@ namespace Mentula.SurvivalGameServer
                                     map.LoadChunks(chunkPos);
 
                                     nom = server.CreateMessage();
-                                    nom.Write((byte)DataType.PlayerUpdate);
+                                    nom.Write((byte)DataType.PlayerUpdate_Both);
                                     nom.Write(players.Where(p => p.Key != msg.GetId()).Select(p => p.Value).ToArray());
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+                                    break;
+                                case(DataType.Attack_CSend):
+                                    float rot = msg.ReadFloat();
+                                    Vector2 dir = new Vector2((float)Math.Cos(rot), (float)Math.Sin(rot));
+                                    Chunk c = map.LoadedChunks.Find(ch => ch.Pos == players[msg.GetId()].ChunkPos);
+                                    List<Creature> t = Combat.AttackCreatures(new Creature("Player", new Stats(10, 10, 10, 10, 10), 100, Color.White, -1), c.Creatures, dir, 100);
+                                    if (t.Count != c.Creatures.Count)
+                                    {
+                                        Creature cr = c.Creatures.Find(ch => !t.Contains(ch));
+
+                                        nom = server.CreateMessage();
+                                        nom.Write((byte)DataType.CreatureChange_SSend);
+                                        nom.Write(cr.ChunkPos);
+                                        nom.Write(cr.GetTilePos());
+                                        nom.Write(cr.Health);
+                                    }
+                                    c.Creatures = t;
                                     break;
                             }
                             break;
