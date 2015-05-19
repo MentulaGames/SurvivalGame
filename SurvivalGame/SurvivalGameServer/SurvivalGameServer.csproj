@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Combat.cs" />
     <Compile Include="Commands\Ban.cs" />
     <Compile Include="Commands\UnBan.cs" />
     <Compile Include="Creatures\Creature.cs" />

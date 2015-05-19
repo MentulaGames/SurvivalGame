@@ -19,6 +19,7 @@ using NIM = Lidgren.Network.NetIncomingMessage;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 using NOM = Lidgren.Network.NetOutgoingMessage;
 using NPConf = Lidgren.Network.NetPeerConfiguration;
+using BtnSt = Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace Mentula.SurvivalGame
 {
@@ -45,12 +46,14 @@ namespace Mentula.SurvivalGame
         private List<C_Tile> tiles;
         private List<C_Destrucible> dest;
         private List<C_Creature> creatures;
+        private const int scrW = 1280;
+        private const int scrH = 720;
 
         public Main()
         {
             state = GameState.Constructing;
 
-            graphics = new GraphicsDeviceManager(this) { PreferredBackBufferWidth = 1280, PreferredBackBufferHeight = 720, SynchronizeWithVerticalRetrace = false };
+            graphics = new GraphicsDeviceManager(this) { PreferredBackBufferWidth = scrW, PreferredBackBufferHeight = scrH, SynchronizeWithVerticalRetrace = false };
             IsFixedTimeStep = false;
 
             Content.RootDirectory = "Content";
@@ -125,6 +128,15 @@ namespace Mentula.SurvivalGame
 
                 if (inp != Vector2.Zero) player.Move(inp * delta * 5);
                 cam.Update(player.ChunkPos, player.GetTilePos());
+
+                if (Mouse.GetState().LeftButton == BtnSt.Pressed)
+                {
+                    Vector2 mPos = MentulaExtensions.GetMousePos();
+                    Vector2 posF = new Vector2(scrW >> 1, scrH >> 1);
+                    Vector2 dir = (mPos - posF); dir.Normalize();
+                    float rot = (float)Math.Atan2(dir.X, dir.Y);
+                    //send rot to server
+                }
 
                 if (oldPos != player.ChunkPos)
                 {
@@ -285,10 +297,10 @@ namespace Mentula.SurvivalGame
             spriteBatch.DrawString(font, string.Format("Dest: {0}", dest.Count), new Vector2(0, 16), Color.Red);
             spriteBatch.DrawString(font, string.Format("Creatures: {0}", creatures.Count), new Vector2(0, 32), Color.Red);
             spriteBatch.Draw(textures[9], MentulaExtensions.GetMousePos() - new Vector2(8, 8), Color.Red);
-            Vector2 camb = new Vector2(1280 / 2+32, 720 / 2+32);
+            Vector2 camb = new Vector2(scrW / 2 + 32, scrH / 2 + 32);
             Vector2 dir = (MentulaExtensions.GetMousePos() - camb); dir.Normalize();
-            float rot=(float)Math.Atan2(dir.X, dir.Y);
-            spriteBatch.Draw(textures[10], camb + dir * 24+new Vector2(-dir.Y*8,dir.X*8), Color.Red,-rot);
+            float rot = (float)Math.Atan2(dir.X, dir.Y);
+            spriteBatch.Draw(textures[10], camb + dir * 24 + new Vector2(-dir.Y * 8, dir.X * 8), Color.Red, -rot);
             spriteBatch.End();
             base.Draw(gameTime);
         }
