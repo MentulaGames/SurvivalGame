@@ -156,7 +156,7 @@ namespace Mentula.SurvivalGameServer
                                 case(DataType.Attack_CSend):
                                     float rot = msg.ReadFloat();
                                     int j = map.LoadedChunks.FindIndex(ch => ch.Pos == players[msg.GetId()].ChunkPos);
-                                    List<Creature> crs = (List<Creature>)map.LoadedChunks[j].Creatures.ToArray().Clone();
+                                    List<Creature> crs = ((Creature[])map.LoadedChunks[j].Creatures.ToArray().Clone()).ToList();
                                     crs.AddRange(players.Values);
                                     List<Creature> t = Combat.AttackCreatures(players[msg.GetId()], crs.ToArray(), rot, 180, 3);
                                     if (t.Count != crs.Count)
