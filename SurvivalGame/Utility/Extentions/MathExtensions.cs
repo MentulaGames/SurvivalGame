@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using math = System.Math;
 
-namespace Mentula.MathExtensions
+namespace Mentula.General.MathExtensions
 {
     public static class Math
     {

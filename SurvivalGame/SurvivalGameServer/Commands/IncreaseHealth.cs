@@ -1,17 +1,16 @@
-﻿using Mentula.SurvivalGameServer;
-using System;
+﻿using System;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 
 namespace Mentula.SurvivalGameServer.Commands
 {
-    public class UnBan : Command
+    public class IncreaseHealth : Command
     {
         private Action<string> callback;
 
-        public UnBan(Action<string> onUnBan)
-            : base("UnBan")
+        public IncreaseHealth(Action<string> onIncrease)
+            : base("Increase Health")
         {
-            callback = onUnBan;
+            callback = onIncrease;
         }
 
         public override void Call(string[] args)
@@ -19,7 +18,7 @@ namespace Mentula.SurvivalGameServer.Commands
             if (callback != null)
             {
                 if (args.Length > 0) callback(args[0]);
-                else NIMT.ErrorMessage.WriteLine("The UnBan command requires a player name!", null);
+                else NIMT.ErrorMessage.WriteLine("The Increase health command requires a player name!", null);
             }
         }
     }

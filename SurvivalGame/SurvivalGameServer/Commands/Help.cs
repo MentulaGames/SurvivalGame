@@ -1,7 +1,7 @@
 ﻿using Mentula.SurvivalGameServer;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 
-namespace Mentula.Commands
+namespace Mentula.SurvivalGameServer.Commands
 {
     public class Help : Command
     {

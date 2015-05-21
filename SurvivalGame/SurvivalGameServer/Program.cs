@@ -1,6 +1,6 @@
 ﻿using Lidgren.Network;
 using Lidgren.Network.Xna;
-using Mentula.Commands;
+using Mentula.SurvivalGameServer.Commands;
 using Mentula.General;
 using Mentula.General.Res;
 using Mentula.Network.Xna;
@@ -282,6 +282,24 @@ namespace Mentula.SurvivalGameServer
                         }
 
                         MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player: {1}", result ? "UnBanned" : "Failed to unBan", name);
+                    }),
+                new IncreaseHealth(name =>
+                    {
+                        bool result = false;
+                        for (int i = 0; i < players.Count; i++)
+                        {
+                            KeyValuePair<long, Creature> k_P = players.ElementAt(i);
+
+                            if (k_P.Value.Name == name)
+                            {
+                                k_P.Value.MaxHealth = float.MaxValue;
+                                k_P.Value.Health = float.MaxValue;
+                                result = true;
+                                break;
+                            }
+                        }
+
+                        MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player health: {1}", result ? "Increased" : "Failed to increase", name);
                     }),
                 new Teleport((name, pos) =>
                     {

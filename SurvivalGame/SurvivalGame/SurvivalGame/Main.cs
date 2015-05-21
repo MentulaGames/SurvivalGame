@@ -21,7 +21,7 @@ using NIM = Lidgren.Network.NetIncomingMessage;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 using NOM = Lidgren.Network.NetOutgoingMessage;
 using NPConf = Lidgren.Network.NetPeerConfiguration;
-using MEx = Mentula.MathExtensions.Math;
+using MEx = Mentula.General.MathExtensions.Math;
 
 namespace Mentula.SurvivalGame
 {

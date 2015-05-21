@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using System;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 
-namespace Mentula.Commands
+namespace Mentula.SurvivalGameServer.Commands
 {
     public class Teleport : Command
     {

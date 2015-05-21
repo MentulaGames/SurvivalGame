@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using MEx = Mentula.MathExtensions.Math;
+using MEx = Mentula.General.MathExtensions.Math;
 
 namespace Mentula.SurvivalGameServer
 {

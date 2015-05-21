@@ -1,7 +1,7 @@
 ﻿using Mentula.General;
 using System;
 using System.Collections.Generic;
-using MEx = Mentula.MathExtensions.Math;
+using MEx = Mentula.General.MathExtensions.Math;
 
 namespace Mentula.SurvivalGameServer
 {

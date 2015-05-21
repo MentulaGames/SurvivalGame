@@ -1,4 +1,4 @@
-﻿using Mentula.Commands;
+﻿using Mentula.SurvivalGameServer.Commands;
 using Mentula.SurvivalGameServer;
 using System;
 using NIMT = Lidgren.Network.NetIncomingMessageType;

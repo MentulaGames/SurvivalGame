@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Mentula.Commands
+namespace Mentula.SurvivalGameServer.Commands
 {
     public class Cls : Command
     {
