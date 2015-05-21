@@ -14,10 +14,10 @@ namespace Mentula.SurvivalGameServer
     public static class Combat
     {
         private static int cSize = int.Parse(Resources.ChunkSize);
-        public static List<Creature> AttackCreatures(Creature attacker, List<Creature> creatures, Vector2 dir, float range)
+        public static List<Creature> AttackCreatures(Creature attacker, Creature[] creatures, Vector2 dir, float range)
         {
             Vector2 posToAttack = attacker.GetTilePos() + attacker.ChunkPos.ToVector2() * cSize + dir;
-            List<Creature> creatureList = creatures;
+            List<Creature> creatureList = creatures.ToList();
             for (int i = 0; i < creatureList.Count; i++)
             {
                 if (creatureList[i] != attacker)

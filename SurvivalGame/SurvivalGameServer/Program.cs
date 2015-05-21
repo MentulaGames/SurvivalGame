@@ -151,19 +151,21 @@ namespace Mentula.SurvivalGameServer
                                 case(DataType.Attack_CSend):
                                     float rot = msg.ReadFloat();
                                     Vector2 dir = new Vector2((float)Math.Cos(rot), (float)Math.Sin(rot));
-                                    Chunk c = map.LoadedChunks.Find(ch => ch.Pos == players[msg.GetId()].ChunkPos);
-                                    List<Creature> t = Combat.AttackCreatures(new Creature("Player", new Stats(10, 10, 10, 10, 10), 100, Color.White, -1), c.Creatures, dir, 100);
-                                    if (t.Count != c.Creatures.Count)
+                                    int j = map.LoadedChunks.FindIndex(ch => ch.Pos == players[msg.GetId()].ChunkPos);
+                                    Creature[] cr = (Creature[])map.LoadedChunks[j].Creatures.ToArray().Clone();
+                                    List<Creature> t = Combat.AttackCreatures(new Creature("Player", new Stats(10, 10, 10, 10, 10), 100, Color.White, -1), cr, dir, 100);
+                                    if (t.Count != cr.Length)
                                     {
-                                        Creature cr = c.Creatures.Find(ch => !t.Contains(ch));
+                                        Creature c = cr.First(ch => !t.Contains(ch));
 
                                         nom = server.CreateMessage();
                                         nom.Write((byte)DataType.CreatureChange_SSend);
-                                        nom.Write(cr.ChunkPos);
-                                        nom.Write(cr.GetTilePos());
-                                        nom.Write(cr.Health);
+                                        nom.Write(c.ChunkPos);
+                                        nom.Write(c.GetTilePos());
+                                        nom.Write(c.Health);
+                                        server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableUnordered);
                                     }
-                                    c.Creatures = t;
+                                    map.LoadedChunks[j].Creatures = t;
                                     break;
                             }
                             break;

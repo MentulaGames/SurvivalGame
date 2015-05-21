@@ -154,7 +154,7 @@ namespace Mentula.SurvivalGame
                 }
 
             }
-            else if (client.ConnectionStatus == NetConnectionStatus.Connected & this.state == GameState.Loading)
+            else if (client.ConnectionStatus == NCS.Connected & this.state == GameState.Loading)
             {
                 state = GameState.MainMenu;
                 nextSend = NetTime.Now;
