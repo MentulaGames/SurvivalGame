@@ -14,22 +14,28 @@ namespace Mentula.SurvivalGameServer
     public static class Combat
     {
         private static int cSize = int.Parse(Resources.ChunkSize);
-        public static List<Creature> AttackCreatures(Creature attacker, Creature[] creatures, Vector2 dir, float range)
+        public static Creature[] AttackCreatures(Creature attacker, Creature[] creatures, float degrees,float arc,float range)
         {
-            Vector2 posToAttack = attacker.GetTilePos() + attacker.ChunkPos.ToVector2() * cSize + dir;
-            List<Creature> creatureList = creatures.ToList();
-            for (int i = 0; i < creatureList.Count; i++)
+            Vector2 apos= attacker.GetTotalPos();
+            Creature[] creatureArray = creatures;
+            for (int i = 0; i < creatures.Length; i++)
             {
-                if (creatureList[i] != attacker)
+                if (creatureArray[i]!=attacker)
                 {
-                    if (MEx.GetMaxDiff(posToAttack, creatureList[i].GetTotalPos()) <= range & MEx.GetMaxDiff(attacker.GetTotalPos(), creatureList[i].GetTotalPos()) < range)
+                    Vector2 bpos=creatureArray[i].GetTotalPos();
+                    float dist = Vector2.Distance(apos, bpos);
+                    
+                    if (dist<range)
                     {
-                        creatureList[i].Health -= attacker.Stats.Str;
-                        if (creatureList[i].Health <= 0) creatureList.RemoveAt(i);
+                        float bdeg=MEx.VectorToDegrees(bpos-apos);
+                        if (MEx.DifferenceBetweenDegrees(degrees,bdeg)<arc/2)
+                        {
+                            creatureArray[i].Health -= attacker.Stats.Str;
+                        }
                     }
                 }
             }
-            return creatureList;
+            return creatureArray;
         }
     }
 }
