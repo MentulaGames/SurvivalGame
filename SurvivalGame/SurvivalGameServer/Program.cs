@@ -175,7 +175,7 @@ namespace Mentula.SurvivalGameServer
                                         nom.Write(c.Health);
                                         server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableUnordered);
                                     }
-                                    map.LoadedChunks[j].Creatures = t;
+                                    map.LoadedChunks[j].Creatures = t.Where(c => !players.Values.Contains(c)).ToList();
                                     break;
                             }
                             break;
