@@ -158,7 +158,7 @@ namespace Mentula.SurvivalGameServer
                                     int j = map.LoadedChunks.FindIndex(ch => ch.Pos == players[msg.GetId()].ChunkPos);
                                     List<Creature> crs = ((Creature[])map.LoadedChunks[j].Creatures.ToArray().Clone()).ToList();
                                     crs.AddRange(players.Values);
-                                    List<Creature> t = Combat.AttackCreatures(players[msg.GetId()], crs.ToArray(), rot, 180, 3);
+                                    List<Creature> t = Combat.AttackCreatures(players[msg.GetId()], crs.ToArray(), rot, 120, 2);
                                     if (t.Count != crs.Count)
                                     {
                                         Creature c = crs.FirstOrDefault(ch => !t.Contains(ch));
