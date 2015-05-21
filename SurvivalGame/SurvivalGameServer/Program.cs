@@ -153,7 +153,7 @@ namespace Mentula.SurvivalGameServer
                                     nom.Write(players.Where(p => p.Key != msg.GetId()).Select(p => p.Value.ToPlayer()).ToArray());
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
                                     break;
-                                case(DataType.Attack_CSend):
+                                case (DataType.Attack_CSend):
                                     float rot = msg.ReadFloat();
                                     int j = map.LoadedChunks.FindIndex(ch => ch.Pos == players[msg.GetId()].ChunkPos);
                                     List<Creature> crs = ((Creature[])map.LoadedChunks[j].Creatures.ToArray().Clone()).ToList();
@@ -168,12 +168,17 @@ namespace Mentula.SurvivalGameServer
                                             break;
                                         }
 
-                                        nom = server.CreateMessage();
-                                        nom.Write((byte)DataType.CreatureChange_SSend);
-                                        nom.Write(c.ChunkPos);
-                                        nom.Write(c.GetTilePos());
-                                        nom.Write(c.Health);
-                                        server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableUnordered);
+                                        for (int i = 0; i < server.Connections.Count; i++)
+                                        {
+                                            NetConnection conn = server.Connections[i];
+
+                                            nom = server.CreateMessage();
+                                            nom.Write((byte)DataType.CreatureChange_SSend);
+                                            nom.Write(c.ChunkPos);
+                                            nom.Write(c.GetTilePos());
+                                            nom.Write(c.Health);
+                                            server.SendMessage(nom, conn, NetDeliveryMethod.ReliableUnordered);
+                                        }
                                     }
                                     map.LoadedChunks[j].Creatures = t.Where(c => !players.Values.Contains(c)).ToList();
                                     break;
