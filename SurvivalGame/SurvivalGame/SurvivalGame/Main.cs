@@ -12,25 +12,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
+using XnaGuiItems.Core;
+using XnaGuiItems.Items;
+using BtnSt = Microsoft.Xna.Framework.Input.ButtonState;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using NCS = Lidgren.Network.NetConnectionStatus;
 using NIM = Lidgren.Network.NetIncomingMessage;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 using NOM = Lidgren.Network.NetOutgoingMessage;
 using NPConf = Lidgren.Network.NetPeerConfiguration;
-using BtnSt = Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace Mentula.SurvivalGame
 {
     public class Main : Game
     {
-        private const string Name = "Arzana";
+        private int scrW = 1280;
+        private int scrH = 720;
 
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private NetClient client;
         private SpriteFont font;
+
+        private Label lblName;
+        private Label lblScrH;
+        private Label lblScrW;
+        private TextBox txtName;
+        private TextBox txtScrH;
+        private TextBox txtScrW;
+        private Button btnDisc;
+        private Button btnScrA;
 
         private Camera cam;
         private FPS counter;
@@ -46,8 +57,6 @@ namespace Mentula.SurvivalGame
         private List<C_Tile> tiles;
         private List<C_Destrucible> dest;
         private List<C_Creature> creatures;
-        private const int scrW = 1280;
-        private const int scrH = 720;
 
         public Main()
         {
@@ -75,13 +84,6 @@ namespace Mentula.SurvivalGame
             creatures = new List<C_Creature>();
             players = new Dictionary<string, Player>();
 
-#if LOCAL
-            client.DiscoverLocalPeers(Ips.PORT);
-#endif
-#if !LOCAL
-            client.DiscoverKnownPeer(Ips.EndJoëll);
-#endif
-
             base.Initialize();
         }
 
@@ -106,16 +108,81 @@ namespace Mentula.SurvivalGame
             textures[10] = Content.Load<Texture2D>("Utillities/DirectionArrow");
             Playertexture = Content.Load<Texture2D>("Actors/Player_Temp");
 
-            player = new Player(Name, IntVector2.Zero, Vector2.Zero);
+            player = new Player("Arzana", IntVector2.Zero, Vector2.Zero);
             oldPos = player.ChunkPos;
             cam.Update(player.ChunkPos, player.GetTilePos());
+
+            lblName = new Label(GraphicsDevice, new Rectangle(scrW >> 1, scrH / 3, 150, 21), font) { AutoSize = true, BackColor = Color.MediumPurple, Text = "UserName:" };
+            lblScrH = new Label(GraphicsDevice, new Rectangle(scrW >> 2, scrH / 3, 150, 21), font) { AutoSize = true, BackColor = Color.MediumPurple, Text = "Screen height :" };
+            lblScrW = new Label(GraphicsDevice, new Rectangle(scrW >> 2, scrH / 3 + 25, 150, 21), font) { AutoSize = true, BackColor = Color.MediumPurple, Text = "Screen width  :" };
+
+            txtName = new TextBox(GraphicsDevice, new Rectangle((scrW >> 1) + 100, scrH / 3, 150, 21), font) { AllowDrop = true, FlickerStyle = FlickerStyle.Fast };
+            txtName.Click += (sender, e) =>
+                {
+                    sender.AllowDrop = true;
+                    txtScrH.AllowDrop = false;
+                    txtScrW.AllowDrop = false;
+                };
+
+            txtScrH = new TextBox(GraphicsDevice, new Rectangle((scrW >> 2) + 140, scrH / 3, 50, 21), font) { FlickerStyle = FlickerStyle.Fast, Text = scrH.ToString() };
+            txtScrH.Click += (sender, e) =>
+                {
+                    sender.AllowDrop = true;
+                    txtScrW.AllowDrop = false;
+                    txtName.AllowDrop = false;
+                };
+
+            txtScrW = new TextBox(GraphicsDevice, new Rectangle((scrW >> 2) + 140, scrH / 3 + 25, 50, 21), font) { FlickerStyle = FlickerStyle.Fast, Text = scrW.ToString() };
+            txtScrW.Click += (sender, e) =>
+                {
+                    sender.AllowDrop = true;
+                    txtScrH.AllowDrop = false;
+                    txtName.AllowDrop = false;
+                };
+
+            btnDisc = new Button(GraphicsDevice, new Rectangle(scrW >> 1, scrH / 3 + 50, 250, 21), font) { Text = "Discover server" };
+            btnDisc.LeftClick += (sender, e) =>
+                {
+                    player.Name = txtName.Text;
+#if LOCAL
+                    client.DiscoverLocalPeers(Ips.PORT);
+#endif
+#if !LOCAL
+                    client.DiscoverKnownPeer(Ips.EndJoëll);
+#endif
+                };
+
+            btnScrA = new Button(GraphicsDevice, new Rectangle(scrW >> 2, scrH / 3 + 50, 200, 21), font) { Text = "Resize window" };
+            btnScrA.LeftClick += (sender, e) =>
+                {
+                    int oldH = scrH;
+                    int oldW = scrW;
+
+                    if (int.TryParse(txtScrH.Text, out scrH) & int.TryParse(txtScrW.Text, out scrW) & scrH > 0 & scrW > 0)
+                    {
+                        graphics.PreferredBackBufferHeight = scrH;
+                        graphics.PreferredBackBufferWidth = scrW;
+                        graphics.ApplyChanges();
+                        cam = new Camera(GraphicsDevice, player.ChunkPos, player.GetTilePos());
+                    }
+                    else
+                    {
+                        System.Windows.Forms.MessageBox.Show(string.Format("The screen {0}({1}) is an invalid value!", scrH < 1 ? "height" : "width", scrH < 1 ? scrH : scrW), "Invalid dimentions!");
+
+                        scrH = oldH;
+                        scrW = oldW;
+                    }
+                };
+
+            state = GameState.MainMenu;
         }
 
         protected override void Update(GameTime gameTime)
         {
+            float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             if (state == GameState.Game & IsActive)
             {
-                float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
                 Vector2 inp = Vector2.Zero;
                 KeyboardState k_State = Keyboard.GetState();
 
@@ -154,14 +221,36 @@ namespace Mentula.SurvivalGame
                 }
 
             }
-            else if (client.ConnectionStatus == NCS.Connected & this.state == GameState.Loading)
+            else if (state == GameState.MainMenu & IsActive)
             {
-                state = GameState.MainMenu;
-                nextSend = NetTime.Now;
-                NOM nom = client.CreateMessage();
-                nom.Write((byte)DataType.InitialMap_Both);
-                nom.Write(player.ChunkPos);
-                client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
+                MouseState m_State = Mouse.GetState();
+                KeyboardState k_State = Keyboard.GetState();
+
+                lblName.Update(m_State);
+                lblScrH.Update(m_State);
+                lblScrW.Update(m_State);
+
+                btnDisc.Update(m_State, delta);
+                btnScrA.Update(m_State, delta);
+
+                if (txtName.AllowDrop) txtName.Update(m_State, k_State, delta);
+                else ((GuiItem)txtName).Update(m_State);
+
+                if (txtScrH.AllowDrop) txtScrH.Update(m_State, k_State, delta);
+                else ((GuiItem)txtScrH).Update(m_State);
+
+                if (txtScrW.AllowDrop) txtScrW.Update(m_State, k_State, delta);
+                else ((GuiItem)txtScrW).Update(m_State);
+
+                if (client.ConnectionStatus == NCS.Connected)
+                {
+                    state = GameState.Loading;
+                    nextSend = NetTime.Now;
+                    NOM nom = client.CreateMessage();
+                    nom.Write((byte)DataType.InitialMap_Both);
+                    nom.Write(player.ChunkPos);
+                    client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
+                }
             }
 
             double now = NetTime.Now;
@@ -190,16 +279,16 @@ namespace Mentula.SurvivalGame
                         if (status == NCS.Disconnected)
                         {
                             string message = msg.ReadString();
-                            DialogResult r = MessageBox.Show(message,
+                            System.Windows.Forms.DialogResult r = System.Windows.Forms.MessageBox.Show(message,
                                 "The server closed the connection.",
-                                MessageBoxButtons.AbortRetryIgnore);
+                                System.Windows.Forms.MessageBoxButtons.AbortRetryIgnore);
 
                             switch (r)
                             {
-                                case (DialogResult.Abort):
+                                case (System.Windows.Forms.DialogResult.Abort):
                                     this.Exit();
                                     break;
-                                case (DialogResult.Retry):
+                                case (System.Windows.Forms.DialogResult.Retry):
                                     nom = client.CreateMessage();
                                     nom.Write(player.Name);
                                     client.Connect(msg.SenderEndPoint, nom);
@@ -247,7 +336,7 @@ namespace Mentula.SurvivalGame
                             case (DataType.PlayerRePosition_SSend):
                                 msg.ReadReSetPlayer(ref player);
                                 break;
-                            case(DataType.CreatureChange_SSend):
+                            case (DataType.CreatureChange_SSend):
                                 IntVector2 cPos = msg.ReadVector();
                                 Vector2 pos = msg.ReadVector2();
                                 float health = msg.ReadFloat();
@@ -303,16 +392,29 @@ namespace Mentula.SurvivalGame
 
                 spriteBatch.Draw(Playertexture, cam.GetRelativePosition(player.ChunkPos, player.GetTilePos()), Color.White);
                 spriteBatch.DrawString(font, string.Format("Player Pos: {0}", player.GetTotalPos()), new Vector2(0, 48), Color.Red);
+                Vector2 camb = new Vector2(scrW / 2 + 32, scrH / 2 + 32);
+                Vector2 dir = (MentulaExtensions.GetMousePos() - camb); dir.Normalize();
+                float rot = (float)Math.Atan2(dir.X, dir.Y);
+                spriteBatch.Draw(textures[10], camb + dir * 24 + new Vector2(-dir.Y * 8, dir.X * 8), Color.Red, -rot);
+
+                spriteBatch.DrawString(font, string.Format("Dest: {0}", dest.Count), new Vector2(0, 16), Color.Red);
+                spriteBatch.DrawString(font, string.Format("Creatures: {0}", creatures.Count), new Vector2(0, 32), Color.Red);
+            }
+            else if (state == GameState.MainMenu)
+            {
+                GraphicsDevice.Clear(Color.MediumPurple);
+                lblName.Draw(spriteBatch);
+                lblScrH.Draw(spriteBatch);
+                lblScrW.Draw(spriteBatch);
+                txtName.Draw(spriteBatch);
+                txtScrH.Draw(spriteBatch);
+                txtScrW.Draw(spriteBatch);
+                btnDisc.Draw(spriteBatch);
+                btnScrA.Draw(spriteBatch);
             }
 
-            spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.ToString()), Vector2.Zero, Color.Red);
-            spriteBatch.DrawString(font, string.Format("Dest: {0}", dest.Count), new Vector2(0, 16), Color.Red);
-            spriteBatch.DrawString(font, string.Format("Creatures: {0}", creatures.Count), new Vector2(0, 32), Color.Red);
             spriteBatch.Draw(textures[9], MentulaExtensions.GetMousePos() - new Vector2(8, 8), Color.Red);
-            Vector2 camb = new Vector2(scrW / 2 + 32, scrH / 2 + 32);
-            Vector2 dir = (MentulaExtensions.GetMousePos() - camb); dir.Normalize();
-            float rot = (float)Math.Atan2(dir.X, dir.Y);
-            spriteBatch.Draw(textures[10], camb + dir * 24 + new Vector2(-dir.Y * 8, dir.X * 8), Color.Red, -rot);
+            spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.ToString()), Vector2.Zero, Color.Red);
             spriteBatch.End();
             base.Draw(gameTime);
         }
