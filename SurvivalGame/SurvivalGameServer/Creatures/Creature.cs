@@ -48,5 +48,10 @@ namespace Mentula.SurvivalGameServer
             SkinColor = c.SkinColor;
             Texture = c.Texture;
         }
+
+        public C_Player ToPlayer()
+        {
+            return new C_Player(Name, ChunkPos, tilePos);
+        }
     }
 }

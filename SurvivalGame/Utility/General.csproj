@@ -55,7 +55,7 @@
     <Compile Include="Extentions\MathExtensions.cs" />
     <Compile Include="Extentions\MentulaExtensions.cs" />
     <Compile Include="IntVector2.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="C\C_Player.cs" />
     <Compile Include="RNG.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

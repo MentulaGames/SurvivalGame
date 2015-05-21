@@ -21,6 +21,7 @@ using NIM = Lidgren.Network.NetIncomingMessage;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 using NOM = Lidgren.Network.NetOutgoingMessage;
 using NPConf = Lidgren.Network.NetPeerConfiguration;
+using MEx = Mentula.MathExtensions.Math;
 
 namespace Mentula.SurvivalGame
 {
@@ -47,8 +48,8 @@ namespace Mentula.SurvivalGame
         private FPS counter;
         private GameState state;
 
-        private Player player;
-        private Dictionary<string, Player> players;
+        private C_Player player;
+        private Dictionary<string, C_Player> players;
         private Texture2D Playertexture;
         private TextureCollection textures;
 
@@ -82,7 +83,7 @@ namespace Mentula.SurvivalGame
             tiles = new List<C_Tile>();
             dest = new List<C_Destrucible>();
             creatures = new List<C_Creature>();
-            players = new Dictionary<string, Player>();
+            players = new Dictionary<string, C_Player>();
 
             base.Initialize();
         }
@@ -108,7 +109,7 @@ namespace Mentula.SurvivalGame
             textures[10] = Content.Load<Texture2D>("Utillities/DirectionArrow");
             Playertexture = Content.Load<Texture2D>("Actors/Player_Temp");
 
-            player = new Player("Arzana", IntVector2.Zero, Vector2.Zero);
+            player = new C_Player("Arzana", IntVector2.Zero, Vector2.Zero);
             oldPos = player.ChunkPos;
             cam.Update(player.ChunkPos, player.GetTilePos());
 
@@ -201,7 +202,7 @@ namespace Mentula.SurvivalGame
                     Vector2 mPos = MentulaExtensions.GetMousePos();
                     Vector2 posF = new Vector2(scrW >> 1, scrH >> 1);
                     Vector2 dir = (mPos - posF); dir.Normalize();
-                    float rot = (float)Math.Atan2(dir.X, dir.Y);
+                    float rot = MEx.VectorToDegrees(dir);
 
                     NOM nom = client.CreateMessage();
                     nom.Write((byte)DataType.Attack_CSend);
@@ -325,11 +326,11 @@ namespace Mentula.SurvivalGame
                                 break;
                             case (DataType.PlayerUpdate_Both):
                                 players.Clear();
-                                Player[] p_A = msg.ReadPlayers();
+                                C_Player[] p_A = msg.ReadPlayers();
 
                                 for (int i = 0; i < p_A.Length; i++)
                                 {
-                                    Player p_C = p_A[i];
+                                    C_Player p_C = p_A[i];
                                     players.Add(p_C.Name, p_C);
                                 }
                                 break;
@@ -385,7 +386,7 @@ namespace Mentula.SurvivalGame
 
                 for (int i = 0; i < players.Count; i++)
                 {
-                    Player p = players.ElementAt(i).Value;
+                    C_Player p = players.ElementAt(i).Value;
 
                     if (cam.TryGetRelativePosition(p.ChunkPos, p.GetTilePos(), out relPos)) spriteBatch.Draw(Playertexture, relPos, Color.White);
                 }

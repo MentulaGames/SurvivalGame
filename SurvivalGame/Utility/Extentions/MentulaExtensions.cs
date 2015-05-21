@@ -102,19 +102,19 @@ namespace Mentula.Network.Xna
             }
         }
 
-        public static void Write(this NetBuffer msg, Player value)
+        public static void Write(this NetBuffer msg, C_Player value)
         {
             msg.Write(value.ChunkPos);
             msg.Write(value.GetTilePos());
         }
 
-        public static void Write(this NetBuffer msg, Player[] value)
+        public static void Write(this NetBuffer msg, C_Player[] value)
         {
             msg.Write((Int16)value.Length);
 
             for (int i = 0; i < value.Length; i++)
             {
-                Player p = value[i];
+                C_Player p = value[i];
 
                 msg.Write(p.Name);
                 msg.Write(p.ChunkPos);
@@ -207,19 +207,19 @@ namespace Mentula.Network.Xna
             return result;
         }
 
-        public static void ReadReSetPlayer(this NetBuffer msg, ref Player player)
+        public static void ReadReSetPlayer(this NetBuffer msg, ref C_Player player)
         {
             player.ReSet(msg.ReadVector(), msg.ReadVector2());
         }
 
-        public static Player[] ReadPlayers(this NetBuffer msg)
+        public static C_Player[] ReadPlayers(this NetBuffer msg)
         {
             int length = msg.ReadInt16();
-            Player[] result = new Player[length];
+            C_Player[] result = new C_Player[length];
 
             for (int i = 0; i < length; i++)
             {
-                result[i] = new Player(msg.ReadString(), msg.ReadVector(), msg.ReadVector2());
+                result[i] = new C_Player(msg.ReadString(), msg.ReadVector(), msg.ReadVector2());
             }
 
             return result;

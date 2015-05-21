@@ -31,7 +31,7 @@ namespace Mentula.MathExtensions
 
         public static float VectorToDegrees(Vector2 v)
         {
-            v.Normalize(); return (float)math.Atan2(v.X, v.Y) * 180 / (float)math.PI;
+            v.Normalize(); return (float)math.Atan2(v.Y, v.X) * (float)(180f / math.PI);
         }
     }
 }

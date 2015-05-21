@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Mentula.SurvivalGameServer
+﻿namespace Mentula.SurvivalGameServer
 {
     public class Stats
     {
@@ -21,6 +15,15 @@ namespace Mentula.SurvivalGameServer
             Int = 0;
             Per = 0;
             End = 0;
+        }
+
+        public Stats(float value)
+        {
+            Str = value;
+            Dex = value;
+            Int = value;
+            Per = value;
+            End = value;
         }
 
         public Stats(float strength, float dexterity, float inteligence, float perception, float endurance)

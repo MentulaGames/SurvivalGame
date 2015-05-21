@@ -7,7 +7,7 @@ namespace Mentula.General
     {
         public IntVector2 ChunkPos;
 
-        private Vector2 tilePos;
+        protected Vector2 tilePos;
 
         public Actor()
         {

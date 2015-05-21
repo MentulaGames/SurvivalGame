@@ -2,17 +2,17 @@
 
 namespace Mentula.General
 {
-    public class Player : Actor
+    public class C_Player : Actor
     {
         public string Name;
 
-        public Player()
+        public C_Player()
             : base()
         {
             Name = "NameLess";
         }
 
-        public Player(string name, IntVector2 chunkPos, Vector2 tilePos)
+        public C_Player(string name, IntVector2 chunkPos, Vector2 tilePos)
             : base(chunkPos, tilePos)
         {
             Name = name;

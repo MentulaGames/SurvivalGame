@@ -23,12 +23,12 @@ namespace Mentula.SurvivalGameServer
         private static CommandHandler commHand;
         private static bool Exit;
         private static Map map;
-        private static Dictionary<long, Player> players;
+        private static Dictionary<long, Creature> players;
         private static Dictionary<string, IPAddress> banned;
 
         static void Main(string[] args)
         {
-            players = new Dictionary<long, Player>();
+            players = new Dictionary<long, Creature>();
             banned = new Dictionary<string, IPAddress>();
             InitConsole();
             InitCommands();
@@ -74,7 +74,7 @@ namespace Mentula.SurvivalGameServer
                                 break;
                             }
 
-                            players.Add(msg.GetId(), new Player(name, IntVector2.Zero, Vector2.Zero));
+                            players.Add(msg.GetId(), new Creature(new Creature(name, new Stats(10), 100, Color.Purple, -1), IntVector2.Zero, Vector2.Zero));
                             msg.SenderConnection.Approve();
                             break;
                         case (NIMT.VerboseDebugMessage):
@@ -150,7 +150,7 @@ namespace Mentula.SurvivalGameServer
 
                                     nom = server.CreateMessage();
                                     nom.Write((byte)DataType.PlayerUpdate_Both);
-                                    nom.Write(players.Where(p => p.Key != msg.GetId()).Select(p => p.Value).ToArray());
+                                    nom.Write(players.Where(p => p.Key != msg.GetId()).Select(p => p.Value.ToPlayer()).ToArray());
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
                                     break;
                                 case(DataType.Attack_CSend):
@@ -158,7 +158,7 @@ namespace Mentula.SurvivalGameServer
                                     Vector2 dir = new Vector2((float)Math.Cos(rot), (float)Math.Sin(rot));
                                     int j = map.LoadedChunks.FindIndex(ch => ch.Pos == players[msg.GetId()].ChunkPos);
                                     Creature[] cr = (Creature[])map.LoadedChunks[j].Creatures.ToArray().Clone();
-                                    List<Creature> t = Combat.AttackCreatures(new Creature("Player", new Stats(10, 10, 10, 10, 10), 100, Color.White, -1), cr,rot,90,2).ToList();
+                                    List<Creature> t = Combat.AttackCreatures(players[msg.GetId()], cr, rot, 180, 3);
                                     if (t.Count != cr.Length)
                                     {
                                         Creature c = cr.First(ch => !t.Contains(ch));
@@ -225,7 +225,7 @@ namespace Mentula.SurvivalGameServer
                         bool result = false;
                         for (int i = 0; i < players.Count; i++)
                         {
-                            KeyValuePair<long, Player> k_P = players.ElementAt(i);
+                            KeyValuePair<long, Creature> k_P = players.ElementAt(i);
 
                             if (k_P.Value.Name == name)
                             {
@@ -242,7 +242,7 @@ namespace Mentula.SurvivalGameServer
                         bool result = false;
                         for (int i = 0; i < players.Count; i++)
                         {
-                            KeyValuePair<long, Player> k_P = players.ElementAt(i);
+                            KeyValuePair<long, Creature> k_P = players.ElementAt(i);
 
                             if (k_P.Value.Name == name)
                             {
@@ -278,7 +278,7 @@ namespace Mentula.SurvivalGameServer
                         bool result = false;
                         for (int i = 0; i < players.Count; i++)
                         {
-                            KeyValuePair<long, Player> k_P = players.ElementAt(i);
+                            KeyValuePair<long, Creature> k_P = players.ElementAt(i);
 
                             if (k_P.Value.Name == name)
                             {
