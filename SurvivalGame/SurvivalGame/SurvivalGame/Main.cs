@@ -279,24 +279,30 @@ namespace Mentula.SurvivalGame
                         break;
                     case (NIMT.StatusChanged):
                         NCS status = msg.ReadEnum<NCS>();
-                        if (status == NCS.Disconnected)
+                        switch (status)
                         {
-                            string message = msg.ReadString();
-                            System.Windows.Forms.DialogResult r = System.Windows.Forms.MessageBox.Show(message,
-                                "The server closed the connection.",
-                                System.Windows.Forms.MessageBoxButtons.AbortRetryIgnore);
+                            case(NCS.Connected):
+                                player.ChunkPos = IntVector2.Zero;
+                                player.SetTilePos(Vector2.Zero);
+                                break;
+                            case (NCS.Disconnected):
+                                string message = msg.ReadString();
+                                System.Windows.Forms.DialogResult r = System.Windows.Forms.MessageBox.Show(message,
+                                    "The server closed the connection.",
+                                    System.Windows.Forms.MessageBoxButtons.AbortRetryIgnore);
 
-                            switch (r)
-                            {
-                                case (System.Windows.Forms.DialogResult.Abort):
-                                    this.Exit();
-                                    break;
-                                case (System.Windows.Forms.DialogResult.Retry):
-                                    nom = client.CreateMessage();
-                                    nom.Write(player.Name);
-                                    client.Connect(msg.SenderEndPoint, nom);
-                                    break;
-                            }
+                                switch (r)
+                                {
+                                    case (System.Windows.Forms.DialogResult.Abort):
+                                        this.Exit();
+                                        break;
+                                    case (System.Windows.Forms.DialogResult.Retry):
+                                        nom = client.CreateMessage();
+                                        nom.Write(player.Name);
+                                        client.Connect(msg.SenderEndPoint, nom);
+                                        break;
+                                }
+                                break;
                         }
                         break;
                     case (NIMT.Data):
@@ -390,10 +396,16 @@ namespace Mentula.SurvivalGame
                 {
                     C_Player p = players.ElementAt(i).Value;
 
-                    if (cam.TryGetRelativePosition(p.ChunkPos, p.GetTilePos(), out relPos)) spriteBatch.Draw(Playertexture, relPos, Color.White);
+                    if (cam.TryGetRelativePosition(p.ChunkPos, p.GetTilePos(), out relPos))
+                    {
+                        spriteBatch.Draw(Playertexture, relPos, Color.White);
+                        spriteBatch.DrawString(font, p.Name, relPos - new Vector2(0, 25), Color.Black);
+                    }
                 }
 
-                spriteBatch.Draw(Playertexture, cam.GetRelativePosition(player.ChunkPos, player.GetTilePos()), Color.White);
+                Vector2 playerPos = cam.GetRelativePosition(player.ChunkPos, player.GetTilePos());
+                spriteBatch.Draw(Playertexture, playerPos, Color.White);
+                spriteBatch.DrawString(font, player.Name, playerPos - new Vector2(0, 25), Color.Black);
                 spriteBatch.DrawString(font, string.Format("Player Pos: {0}", player.GetTotalPos()), new Vector2(0, 48), Color.Red);
                 Vector2 camb = new Vector2(scrW / 2 + 32, scrH / 2 + 32);
                 Vector2 dir = (MentulaExtensions.GetMousePos() - camb); dir.Normalize();
