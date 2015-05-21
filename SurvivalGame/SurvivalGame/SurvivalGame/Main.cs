@@ -55,6 +55,7 @@ namespace Mentula.SurvivalGame
 
         private IntVector2 oldPos;
         private double nextSend;
+        private double attackTime;
         private List<C_Tile> tiles;
         private List<C_Destrucible> dest;
         private List<C_Creature> creatures;
@@ -149,7 +150,7 @@ namespace Mentula.SurvivalGame
                     client.DiscoverLocalPeers(Ips.PORT);
 #endif
 #if !LOCAL
-                    client.DiscoverKnownPeer(Ips.EndJoëll);
+                    client.DiscoverKnownPeer(Ips.EndShitPc);
 #endif
                 };
 
@@ -180,6 +181,7 @@ namespace Mentula.SurvivalGame
 
         protected override void Update(GameTime gameTime)
         {
+            double now = NetTime.Now;
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (state == GameState.Game & IsActive)
@@ -197,7 +199,7 @@ namespace Mentula.SurvivalGame
                 if (inp != Vector2.Zero) player.Move(inp * delta * 5);
                 cam.Update(player.ChunkPos, player.GetTilePos());
 
-                if (Mouse.GetState().LeftButton == BtnSt.Pressed)
+                if (Mouse.GetState().LeftButton == BtnSt.Pressed & now > attackTime)
                 {
                     Vector2 mPos = MentulaExtensions.GetMousePos();
                     Vector2 posF = new Vector2(scrW >> 1, scrH >> 1);
@@ -208,6 +210,7 @@ namespace Mentula.SurvivalGame
                     nom.Write((byte)DataType.Attack_CSend);
                     nom.Write(rot);
                     client.SendMessage(nom, NetDeliveryMethod.Unreliable);
+                    attackTime = NetTime.Now + 500;
                 }
 
                 if (oldPos != player.ChunkPos)
@@ -254,7 +257,6 @@ namespace Mentula.SurvivalGame
                 }
             }
 
-            double now = NetTime.Now;
             if (now > nextSend)
             {
                 NOM nom = client.CreateMessage();
