@@ -162,7 +162,11 @@ namespace Mentula.SurvivalGameServer
                                     if (t.Count != crs.Count)
                                     {
                                         Creature c = crs.FirstOrDefault(ch => !t.Contains(ch));
-                                        if (players.ContainsValue(c)) commHand.Commands.First(cr => cr.m_Command == "KICK").Call(new string[1] { c.Name });
+                                        if (players.ContainsValue(c))
+                                        {
+                                            commHand.Commands.First(cr => cr.m_Command == "KICK").Call(new string[1] { c.Name });
+                                            break;
+                                        }
 
                                         nom = server.CreateMessage();
                                         nom.Write((byte)DataType.CreatureChange_SSend);

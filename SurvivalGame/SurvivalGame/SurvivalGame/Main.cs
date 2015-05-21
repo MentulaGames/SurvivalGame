@@ -210,7 +210,7 @@ namespace Mentula.SurvivalGame
                     nom.Write((byte)DataType.Attack_CSend);
                     nom.Write(rot);
                     client.SendMessage(nom, NetDeliveryMethod.Unreliable);
-                    attackTime = NetTime.Now + 500;
+                    attackTime = NetTime.Now + .5f;
                 }
 
                 if (oldPos != player.ChunkPos)
