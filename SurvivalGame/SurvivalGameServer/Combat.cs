@@ -28,6 +28,7 @@ namespace Mentula.SurvivalGameServer
                         if (MEx.DifferenceBetweenDegrees(degrees, bdeg) < arc / 2)
                         {
                             creatureArray[i].Health -= attacker.Stats.Str;
+                            Lidgren.Network.NetIncomingMessageType.Data.WriteLine("{0} has taken {1} damage and now has {2} hp", creatureArray[i].Name, attacker.Stats.Str, creatureArray[i].Health);
                             if (creatureArray[i].Health <= 0)
                             {
                                 creatureArray.RemoveAt(i);
