@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MEx = Mentula.General.MathExtensions.Math;
 
+
 namespace Mentula.SurvivalGameServer
 {
     public static class Combat
@@ -20,8 +21,7 @@ namespace Mentula.SurvivalGameServer
                 if (creatureArray[i] != attacker)
                 {
                     Vector2 bpos = creatureArray[i].GetTotalPos();
-                    float dist = Vector2.Distance(apos, bpos);
-
+                    float dist = (apos - bpos).Length();
                     if (dist < range)
                     {
                         float bdeg = MEx.VectorToDegrees(bpos - apos);
