@@ -155,13 +155,14 @@ namespace Mentula.SurvivalGameServer
                                     break;
                                 case(DataType.Attack_CSend):
                                     float rot = msg.ReadFloat();
-                                    Vector2 dir = new Vector2((float)Math.Cos(rot), (float)Math.Sin(rot));
                                     int j = map.LoadedChunks.FindIndex(ch => ch.Pos == players[msg.GetId()].ChunkPos);
-                                    Creature[] cr = (Creature[])map.LoadedChunks[j].Creatures.ToArray().Clone();
-                                    List<Creature> t = Combat.AttackCreatures(players[msg.GetId()], cr, rot, 180, 3);
-                                    if (t.Count != cr.Length)
+                                    List<Creature> crs = (List<Creature>)map.LoadedChunks[j].Creatures.ToArray().Clone();
+                                    crs.AddRange(players.Values);
+                                    List<Creature> t = Combat.AttackCreatures(players[msg.GetId()], crs.ToArray(), rot, 180, 3);
+                                    if (t.Count != crs.Count)
                                     {
-                                        Creature c = cr.First(ch => !t.Contains(ch));
+                                        Creature c = crs.FirstOrDefault(ch => !t.Contains(ch));
+                                        if (players.ContainsValue(c)) commHand.Commands.First(cr => cr.m_Command == "KICK").Call(new string[1] { c.Name });
 
                                         nom = server.CreateMessage();
                                         nom.Write((byte)DataType.CreatureChange_SSend);
