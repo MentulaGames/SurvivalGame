@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 
 namespace Mentula.SurvivalGameServer
