@@ -7,15 +7,20 @@ namespace Mentula.SurvivalGameServer
 {
     public class Map
     {
+        public List<MegaChunk> MegaChunkList;
         public List<Chunk> ChunkList;
         public List<Chunk> LoadedChunks;
         public const int RTL = 2;
         public const int RTL_C = 1;
+        public const int MCS = MegaChunk.MEGACHUNKSIZE;
 
         public Map()
         {
+            MegaChunkList = new List<MegaChunk>();
+            MegaChunkList.Add(new MegaChunk(IntVector2.Zero));
             ChunkList = new List<Chunk>();
             LoadedChunks = new List<Chunk>();
+
         }
 
         public bool Generate(IntVector2 pos)
@@ -38,9 +43,60 @@ namespace Mentula.SurvivalGameServer
                     }
                     if (!chunkexists)
                     {
-                        gen = true;
-                        Chunk generatedChunk = MapGenerator.GenerateTerrain(new IntVector2(x + pos.X, y + pos.Y));
-                        ChunkList.Add(generatedChunk);
+                        int mchunkx = 0;
+                        int mchunky = 0;
+                        int xinmchunk = x + pos.X;
+                        int yinmchunk = y + pos.Y;
+                        while (xinmchunk < 0 | xinmchunk > MCS | yinmchunk < 0 | yinmchunk > MCS)
+                        {
+                            if (xinmchunk < 0)
+                            {
+                                mchunkx--;
+                                xinmchunk += MCS;
+                            }
+                            if (xinmchunk > MCS)
+                            {
+                                mchunkx++;
+                                xinmchunk -= MCS;
+                            }
+                            if (yinmchunk < 0)
+                            {
+                                mchunky--;
+                                yinmchunk += MCS;
+                            }
+                            if (yinmchunk > MCS)
+                            {
+                                mchunky++;
+                                yinmchunk -= MCS;
+                            }
+                        }
+                        int mchunknum = 0;
+                        bool mchunkexists = false;
+                        for (int i = 0; i < MegaChunkList.Count; i++)
+                        {
+                            if (MegaChunkList[i].Pos.X == mchunkx & MegaChunkList[i].Pos.Y == mchunky)
+                            {
+                                mchunknum = i;
+                                mchunkexists = true;
+                            }
+                        }
+                        if (!mchunkexists)
+                        {
+                            MegaChunkList.Add(new MegaChunk(new IntVector2(mchunkx, mchunky)));
+
+                        }
+                        if (MegaChunkList[mchunknum].ChunkData[xinmchunk % 128 + (yinmchunk * MCS)].ChunkType == 1)
+                        {
+                            gen = true;
+                            Chunk generatedChunk = HouseGenerator.GenerateHouse(new IntVector2(pos.X + x, pos.Y + y));
+                            ChunkList.Add(generatedChunk);
+                        }
+                        else
+                        {
+                            gen = true;
+                            Chunk generatedChunk = MapGenerator.GenerateTerrain(new IntVector2(x + pos.X, y + pos.Y));
+                            ChunkList.Add(generatedChunk);
+                        }
                     }
                 }
             }

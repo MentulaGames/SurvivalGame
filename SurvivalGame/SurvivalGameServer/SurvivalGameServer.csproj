@@ -52,6 +52,11 @@
     <Compile Include="Commands\UnBan.cs" />
     <Compile Include="Creatures\Creature.cs" />
     <Compile Include="Creatures\ForestWildLife.cs" />
+    <Compile Include="Map Generation\BinarySplitGenerator.cs" />
+    <Compile Include="Map Generation\BuildingGenerator.cs" />
+    <Compile Include="Map Generation\City.cs" />
+    <Compile Include="Map Generation\HouseGenerator.cs" />
+    <Compile Include="Map Generation\MegaChunkGenerator.cs" />
     <Compile Include="Map\Chunk.cs" />
     <Compile Include="CommandHandler.cs" />
     <Compile Include="Commands\Cls.cs" />
@@ -61,9 +66,11 @@
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\Kick.cs" />
     <Compile Include="Commands\Teleport.cs" />
+    <Compile Include="Map\ChunkData.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="Map Generation\MapGenerator.cs" />
     <Compile Include="Map Generation\PerlinNoise.cs" />
+    <Compile Include="Map\MegaChunk.cs" />
     <Compile Include="MentulaExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

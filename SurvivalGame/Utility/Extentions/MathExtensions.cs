@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using math = System.Math;
+using Mentula.General;
 
 namespace Mentula.General.MathExtensions
 {
@@ -18,6 +19,18 @@ namespace Mentula.General.MathExtensions
         public static float GetMaxDiff(Vector2 a, Vector2 b)
         {
             return math.Max(math.Abs(a.X - b.X), math.Abs(a.Y - b.Y));
+        }
+        public static float GetMaxDiff(IntVector2 a, IntVector2 b)
+        {
+            return math.Max(math.Abs(a.X - b.X), math.Abs(a.Y - b.Y));
+        }
+        public static float GetMinDiff(Vector2 a, Vector2 b)
+        {
+            return math.Min(math.Abs(a.X - b.X), math.Abs(a.Y - b.Y));
+        }
+        public static float GetMinDiff(IntVector2 a, IntVector2 b)
+        {
+            return math.Min(math.Abs(a.X - b.X), math.Abs(a.Y - b.Y));
         }
 
         public static float DifferenceBetweenDegrees(float a, float b)
