@@ -1,4 +1,4 @@
-[Container: size=6, dir="Tiles"]
+[Container: size=8, dir="Tiles"]
 {
 	[Item: id=0, name="Desert_temp"]
 	[Item: id=1, name="Savana_temp"]
