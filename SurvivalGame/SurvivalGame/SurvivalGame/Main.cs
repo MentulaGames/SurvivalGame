@@ -29,26 +29,23 @@ namespace Mentula.SurvivalGame
     {
         private SpriteDrawer drawer;
         private NetClient client;
-
         private GameState state;
 
         private C_Player player;
-        private Dictionary<string, C_Player> players;
-        private Texture2D Playertexture;
-        private TextureCollection textures;
-
         private IntVector2 oldPos;
         private double nextSend;
         private double attackTime;
+
         private List<C_Tile> tiles;
         private List<C_Destrucible> dest;
         private List<C_Creature> creatures;
+        private Dictionary<string, C_Player> players;
 
         public Main()
         {
             state = GameState.Constructing;
 
-            drawer = new SpriteDrawer(this, false) { SynchronizeWithVerticalRetrace = false };
+            drawer = new SpriteDrawer(this, true) { SynchronizeWithVerticalRetrace = false };
             IsFixedTimeStep = false;
 
             Content.RootDirectory = "Content";
@@ -74,21 +71,10 @@ namespace Mentula.SurvivalGame
         protected override void LoadContent()
         {
             state = GameState.Loading;
+            player = new C_Player("NameLess", IntVector2.Zero, Vector2.Zero);
+            oldPos = player.ChunkPos;
 
-            textures = new TextureCollection(Content, 11);
-            textures[0] = Content.Load<Texture2D>("Tiles/Desert_Temp");
-            textures[1] = Content.Load<Texture2D>("Tiles/Savana_Temp");
-            textures[2] = Content.Load<Texture2D>("Tiles/Grassland_Temp");
-            textures[3] = Content.Load<Texture2D>("Tiles/Forest_Temp");
-            textures[4] = Content.Load<Texture2D>("Tiles/Tree_Temp");
-            textures[5] = Content.Load<Texture2D>("Tiles/Water_Temp");
-            textures[6] = Content.Load<Texture2D>("Actors/Rabbit_Temp");
-            textures[7] = Content.Load<Texture2D>("Actors/Deer_Temp");
-            textures[8] = Content.Load<Texture2D>("Actors/Wolf_Temp");
-            textures[9] = Content.Load<Texture2D>("Utillities/Crosshair");
-            textures[10] = Content.Load<Texture2D>("Utillities/DirectionArrow");
-            Playertexture = Content.Load<Texture2D>("Actors/Player_Temp");
-            drawer.Load(Content, textures, "ConsoleFont", "Actors/Player_Temp", name =>
+            drawer.Load(Content, ref player, "R/Textures", "Fonts/ConsoleFont", "Fonts/MenuFont", "Fonts/NameFont", "Actors/Player_Temp", name =>
             {
                 player.Name = name;
 #if LOCAL
@@ -97,10 +83,11 @@ namespace Mentula.SurvivalGame
 #if !LOCAL
                 client.DiscoverKnownPeer(Ips.EndJoëll);
 #endif
+            }, () =>
+            {
+                drawer.SynchronizeWithVerticalRetrace = !drawer.SynchronizeWithVerticalRetrace;
+                IsFixedTimeStep = !IsFixedTimeStep;
             });
-
-            player = new C_Player("NameLess", IntVector2.Zero, Vector2.Zero);
-            oldPos = player.ChunkPos;
 
             state = GameState.MainMenu;
         }
@@ -255,7 +242,6 @@ namespace Mentula.SurvivalGame
                                     C_Player p_C = p_A[i];
                                     players.Add(p_C.Name, p_C);
                                 }
-
                                 drawer.Players = players;
                                 break;
                             case (DataType.PlayerRePosition_SSend):
@@ -276,7 +262,15 @@ namespace Mentula.SurvivalGame
                 }
             }
 
-            drawer.Update(delta, Mouse.GetState(), k_State, player, state);
+            switch (state)
+            {
+                case (GameState.MainMenu):
+                    drawer.UpdateMain(delta, Mouse.GetState(), ref k_State);
+                    break;
+                case (GameState.Game):
+                    drawer.UpdateGame(delta, ref player);
+                    break;
+            }
             Thread.Sleep(1);
             base.Update(gameTime);
         }

@@ -1,0 +1,20 @@
+[Container: size=6, dir="Tiles"]
+{
+	[Item: id=0, name="Desert_temp"]
+	[Item: id=1, name="Savana_temp"]
+	[Item: id=2, name="Grassland_temp"]
+	[Item: id=3, name="Forest_temp"]
+	[Item: id=4, name="Tree_temp"]
+	[Item: id=5, name="Water_temp"]
+}
+[Container: size=3, dir="Actors"]
+{
+	[Item: id=6, name="Rabbit_Temp"]
+	[Item: id=7, name="Deer_Temp"]
+	[Item: id=8, name="Wolf_Temp"]
+}
+[Container: size=2, dir="Utillities"]
+{
+	[Item: id=9, name="Crosshair"]
+	[Item: id=10, name="DirectionArrow"]
+}
