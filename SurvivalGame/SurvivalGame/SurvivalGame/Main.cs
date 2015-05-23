@@ -34,7 +34,6 @@ namespace Mentula.SurvivalGame
 
         private C_Player player;
         private Dictionary<string, C_Player> players;
-        private Texture2D Playertexture;
         private TextureCollection textures;
 
         private IntVector2 oldPos;
@@ -76,18 +75,8 @@ namespace Mentula.SurvivalGame
             state = GameState.Loading;
 
             textures = new TextureCollection(Content, 11);
-            textures[0] = Content.Load<Texture2D>("Tiles/Desert_Temp");
-            textures[1] = Content.Load<Texture2D>("Tiles/Savana_Temp");
-            textures[2] = Content.Load<Texture2D>("Tiles/Grassland_Temp");
-            textures[3] = Content.Load<Texture2D>("Tiles/Forest_Temp");
-            textures[4] = Content.Load<Texture2D>("Tiles/Tree_Temp");
-            textures[5] = Content.Load<Texture2D>("Tiles/Water_Temp");
-            textures[6] = Content.Load<Texture2D>("Actors/Rabbit_Temp");
-            textures[7] = Content.Load<Texture2D>("Actors/Deer_Temp");
-            textures[8] = Content.Load<Texture2D>("Actors/Wolf_Temp");
-            textures[9] = Content.Load<Texture2D>("Utillities/Crosshair");
-            textures[10] = Content.Load<Texture2D>("Utillities/DirectionArrow");
-            Playertexture = Content.Load<Texture2D>("Actors/Player_Temp");
+            textures.LoadFromConfig("R/Textures");
+
             drawer.Load(Content, textures, "ConsoleFont", "Actors/Player_Temp", name =>
             {
                 player.Name = name;
