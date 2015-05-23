@@ -24,7 +24,7 @@ namespace Mentula.SurvivalGameServer
                     float dist = (apos - bpos).Length();
                     if (dist < range)
                     {
-                        float bdeg = MEx.VectorToDegrees(bpos - apos);
+                        float bdeg = MEx.VectorToDegrees(bpos - apos+new Vector2(0.5f,0.5f));
                         if (MEx.DifferenceBetweenDegrees(degrees, bdeg) < arc / 2)
                         {
                             creatureArray[i].Health -= attacker.Stats.Str;
