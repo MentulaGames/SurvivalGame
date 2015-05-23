@@ -116,7 +116,7 @@ namespace Mentula.SurvivalGameServer
             return result.ToArray();
         }
 
-        protected class Node
+        public class Node
         {
             public Vector2 Position { get; private set; }
             public int Heuristic { get; private set; }
