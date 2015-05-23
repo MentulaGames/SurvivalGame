@@ -87,7 +87,7 @@ namespace Mentula.SurvivalGame
             cam.Update(player.ChunkPos, player.GetTilePos());
             relPlayerPos = cam.GetRelativePosition(player.ChunkPos, player.GetTilePos());
 
-            Vector2 camb = new Vector2((GraphicsDevice.Viewport.Width >> 1) + 32, (GraphicsDevice.Viewport.Height >> 1) + 32);
+            Vector2 camb = new Vector2(relPlayerPos.X + 16, relPlayerPos.Y + 16);
             Vector2 dir = Vector2.Normalize(MentulaExtensions.GetMousePos() - camb);
             arrowRot = (float)Math.Atan2(dir.X, dir.Y);
             arrowPos = camb + dir * 24 + new Vector2(-dir.Y * 8, dir.X * 8);

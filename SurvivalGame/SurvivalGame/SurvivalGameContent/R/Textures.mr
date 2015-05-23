@@ -6,8 +6,8 @@
 	[Item: id=3, name="Forest_temp"]
 	[Item: id=4, name="Tree_temp"]
 	[Item: id=5, name="Water_temp"]
-	[Item: id=11 , name="Floor_Temp"]
-	[Item: id=12, name="Wall_Temp"]
+	[Item: id=11, name="Wall_Temp"]
+	[Item: id=12 , name="Floor_Temp"]
 }
 [Container: size=3, dir="Actors"]
 {

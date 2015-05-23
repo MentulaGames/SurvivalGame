@@ -1,4 +1,4 @@
-#define LOCAL
+//#define LOCAL
 
 using Lidgren.Network;
 using Lidgren.Network.Xna;
@@ -110,7 +110,7 @@ namespace Mentula.SurvivalGame
                 if (k_State.IsKeyDown(Keys.A)) inp.X = -1;
                 else if (k_State.IsKeyDown(Keys.D)) inp.X = 1;
 
-                if (inp != Vector2.Zero) player.Move(inp * delta * 5);
+                if (inp != Vector2.Zero) player.Move(inp * delta * 50);
 
                 if (Mouse.GetState().LeftButton == BtnSt.Pressed & now > attackTime)
                 {
