@@ -74,7 +74,7 @@ namespace Mentula.SurvivalGame
             player = new C_Player("NameLess", IntVector2.Zero, Vector2.Zero);
             oldPos = player.ChunkPos;
 
-            drawer.Load(Content, ref player, "R/Textures", "ConsoleFont", "Actors/Player_Temp", name =>
+            drawer.Load(Content, ref player, "R/Textures", "Fonts/ConsoleFont", "Fonts/MenuFont", "Fonts/NameFont", "Actors/Player_Temp", name =>
             {
                 player.Name = name;
 #if LOCAL
@@ -267,7 +267,7 @@ namespace Mentula.SurvivalGame
                 case (GameState.MainMenu):
                     drawer.UpdateMain(delta, Mouse.GetState(), ref k_State);
                     break;
-                case(GameState.Game):
+                case (GameState.Game):
                     drawer.UpdateGame(delta, ref player);
                     break;
             }

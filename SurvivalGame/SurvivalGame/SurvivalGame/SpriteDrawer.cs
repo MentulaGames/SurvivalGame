@@ -34,6 +34,7 @@ namespace Mentula.SurvivalGame
         private float arrowRot;
 
         private SpriteFont nameF;
+        private SpriteFont menuF;
         private SpriteFont debugF;
         private GuiItem main;
 
@@ -49,15 +50,16 @@ namespace Mentula.SurvivalGame
             this.debug = debug;
         }
 
-        public void Load(ContentManager content, ref C_Player player, string textures, string fontName, string pTexture, Action<string> onDiscovery, Action onVSync)
+        public void Load(ContentManager content, ref C_Player player, string textures, string debugFont, string menuFont, string nameFont, string pTexture, Action<string> onDiscovery, Action onVSync)
         {
             batch = new SpriteBatch(GraphicsDevice);
             cam = new Camera(GraphicsDevice, IntVector2.Zero, Vector2.Zero);
 
             texC = new TextureCollection(content, 11);
             texC.LoadFromConfig(textures);
-            nameF = content.Load<SpriteFont>(fontName);
-            debugF = nameF;
+            nameF = content.Load<SpriteFont>(nameFont);
+            menuF = content.Load<SpriteFont>(menuFont);
+            debugF = content.Load<SpriteFont>(debugFont);
 
             this.pTexture = content.Load<Texture2D>(pTexture);
             this.player = player;
@@ -160,9 +162,9 @@ namespace Mentula.SurvivalGame
 
             main = new GuiItem(GraphicsDevice, GraphicsDevice.Viewport.Bounds) { BackColor = Color.LawnGreen };
 
-            Label lblName = new Label(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3, 150, 21), debugF) { AutoSize = true, BackColor = main.BackColor, Text = "UserName:" };
-            Label lblScrH = new Label(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3, 150, 21), debugF) { AutoSize = true, BackColor = main.BackColor, Text = "Screen height :" };
-            Label lblScrW = new Label(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 25, 150, 21), debugF) { AutoSize = true, BackColor = main.BackColor, Text = "Screen width  :" };
+            Label lblName = new Label(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3, 150, 21), menuF) { AutoSize = true, BackColor = main.BackColor, Text = "UserName:" };
+            Label lblScrH = new Label(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3, 150, 21), menuF) { AutoSize = true, BackColor = main.BackColor, Text = "Screen height :" };
+            Label lblScrW = new Label(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 25, 150, 21), menuF) { AutoSize = true, BackColor = main.BackColor, Text = "Screen width  :" };
 
             MouseEventHandler me = (sender, e) =>
             {
@@ -179,16 +181,16 @@ namespace Mentula.SurvivalGame
                 (sender as TextBox).Focused = true;
             };
 
-            TextBox txtName = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 1) + 100, scrH / 3, 150, 21), debugF) { AllowDrop = true, FlickerStyle = FlickerStyle.Fast };
-            TextBox txtScrH = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3, 50, 21), debugF) { FlickerStyle = FlickerStyle.Fast, Text = scrH.ToString() };
-            TextBox txtScrW = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3 + 25, 50, 21), debugF) { FlickerStyle = FlickerStyle.Fast, Text = scrW.ToString() };
+            TextBox txtName = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 1) + 100, scrH / 3, 150, 21), menuF) { AllowDrop = true, FlickerStyle = FlickerStyle.Fast };
+            TextBox txtScrH = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3, 50, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = scrH.ToString() };
+            TextBox txtScrW = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3 + 25, 50, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = scrW.ToString() };
             txtName.Click += me;
             txtScrH.Click += me;
             txtScrW.Click += me;
 
-            Button btnDisc = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 50, 250, 21), debugF) { Text = "Discover server" };
-            Button btnScrA = new Button(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 50, 200, 21), debugF) { Text = "Resize window" };
-            Button btnVSync = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 25, 250, 21), debugF) { Text = "Toggle VSync: off" };
+            Button btnDisc = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 50, 250, 21), menuF) { Text = "Discover server" };
+            Button btnScrA = new Button(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 50, 200, 21), menuF) { Text = "Resize window" };
+            Button btnVSync = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 25, 250, 21), menuF) { Text = "Toggle VSync: off" };
             btnDisc.LeftClick += (sender, e) => onDisc(txtName.Text);
             btnScrA.LeftClick += (sender, e) =>
             {
