@@ -27,25 +27,9 @@ namespace Mentula.SurvivalGame
 {
     public class Main : Game
     {
-        private int scrW = 1280;
-        private int scrH = 720;
-
-        private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
+        private SpriteDrawer drawer;
         private NetClient client;
-        private SpriteFont font;
 
-        private Label lblName;
-        private Label lblScrH;
-        private Label lblScrW;
-        private TextBox txtName;
-        private TextBox txtScrH;
-        private TextBox txtScrW;
-        private Button btnDisc;
-        private Button btnScrA;
-
-        private Camera cam;
-        private FPS counter;
         private GameState state;
 
         private C_Player player;
@@ -64,7 +48,7 @@ namespace Mentula.SurvivalGame
         {
             state = GameState.Constructing;
 
-            graphics = new GraphicsDeviceManager(this) { PreferredBackBufferWidth = scrW, PreferredBackBufferHeight = scrH, SynchronizeWithVerticalRetrace = false };
+            drawer = new SpriteDrawer(this, false) { SynchronizeWithVerticalRetrace = false };
             IsFixedTimeStep = false;
 
             Content.RootDirectory = "Content";
@@ -79,8 +63,6 @@ namespace Mentula.SurvivalGame
         {
             state = GameState.Initializing;
 
-            counter = new FPS();
-            cam = new Camera(GraphicsDevice, IntVector2.Zero, Vector2.Zero);
             tiles = new List<C_Tile>();
             dest = new List<C_Destrucible>();
             creatures = new List<C_Creature>();
@@ -92,9 +74,6 @@ namespace Mentula.SurvivalGame
         protected override void LoadContent()
         {
             state = GameState.Loading;
-
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = Content.Load<SpriteFont>("ConsoleFont");
 
             textures = new TextureCollection(Content, 11);
             textures[0] = Content.Load<Texture2D>("Tiles/Desert_Temp");
@@ -109,72 +88,19 @@ namespace Mentula.SurvivalGame
             textures[9] = Content.Load<Texture2D>("Utillities/Crosshair");
             textures[10] = Content.Load<Texture2D>("Utillities/DirectionArrow");
             Playertexture = Content.Load<Texture2D>("Actors/Player_Temp");
-
-            player = new C_Player("Arzana", IntVector2.Zero, Vector2.Zero);
-            oldPos = player.ChunkPos;
-            cam.Update(player.ChunkPos, player.GetTilePos());
-
-            lblName = new Label(GraphicsDevice, new Rectangle(scrW >> 1, scrH / 3, 150, 21), font) { AutoSize = true, BackColor = Color.MediumPurple, Text = "UserName:" };
-            lblScrH = new Label(GraphicsDevice, new Rectangle(scrW >> 2, scrH / 3, 150, 21), font) { AutoSize = true, BackColor = Color.MediumPurple, Text = "Screen height :" };
-            lblScrW = new Label(GraphicsDevice, new Rectangle(scrW >> 2, scrH / 3 + 25, 150, 21), font) { AutoSize = true, BackColor = Color.MediumPurple, Text = "Screen width  :" };
-
-            txtName = new TextBox(GraphicsDevice, new Rectangle((scrW >> 1) + 100, scrH / 3, 150, 21), font) { AllowDrop = true, FlickerStyle = FlickerStyle.Fast };
-            txtName.Click += (sender, e) =>
-                {
-                    sender.AllowDrop = true;
-                    txtScrH.AllowDrop = false;
-                    txtScrW.AllowDrop = false;
-                };
-
-            txtScrH = new TextBox(GraphicsDevice, new Rectangle((scrW >> 2) + 140, scrH / 3, 50, 21), font) { FlickerStyle = FlickerStyle.Fast, Text = scrH.ToString() };
-            txtScrH.Click += (sender, e) =>
-                {
-                    sender.AllowDrop = true;
-                    txtScrW.AllowDrop = false;
-                    txtName.AllowDrop = false;
-                };
-
-            txtScrW = new TextBox(GraphicsDevice, new Rectangle((scrW >> 2) + 140, scrH / 3 + 25, 50, 21), font) { FlickerStyle = FlickerStyle.Fast, Text = scrW.ToString() };
-            txtScrW.Click += (sender, e) =>
-                {
-                    sender.AllowDrop = true;
-                    txtScrH.AllowDrop = false;
-                    txtName.AllowDrop = false;
-                };
-
-            btnDisc = new Button(GraphicsDevice, new Rectangle(scrW >> 1, scrH / 3 + 50, 250, 21), font) { Text = "Discover server" };
-            btnDisc.LeftClick += (sender, e) =>
-                {
-                    player.Name = txtName.Text;
+            drawer.Load(Content, textures, "ConsoleFont", "Actors/Player_Temp", name =>
+            {
+                player.Name = name;
 #if LOCAL
-                    client.DiscoverLocalPeers(Ips.PORT);
+                client.DiscoverLocalPeers(Ips.PORT);
 #endif
 #if !LOCAL
-                    client.DiscoverKnownPeer(Ips.EndShitPc);
+                client.DiscoverKnownPeer(Ips.EndJoëll);
 #endif
-                };
+            });
 
-            btnScrA = new Button(GraphicsDevice, new Rectangle(scrW >> 2, scrH / 3 + 50, 200, 21), font) { Text = "Resize window" };
-            btnScrA.LeftClick += (sender, e) =>
-                {
-                    int oldH = scrH;
-                    int oldW = scrW;
-
-                    if (int.TryParse(txtScrH.Text, out scrH) & int.TryParse(txtScrW.Text, out scrW) & scrH > 0 & scrW > 0)
-                    {
-                        graphics.PreferredBackBufferHeight = scrH;
-                        graphics.PreferredBackBufferWidth = scrW;
-                        graphics.ApplyChanges();
-                        cam = new Camera(GraphicsDevice, player.ChunkPos, player.GetTilePos());
-                    }
-                    else
-                    {
-                        System.Windows.Forms.MessageBox.Show(string.Format("The screen {0}({1}) is an invalid value!", scrH < 1 ? "height" : "width", scrH < 1 ? scrH : scrW), "Invalid dimentions!");
-
-                        scrH = oldH;
-                        scrW = oldW;
-                    }
-                };
+            player = new C_Player("NameLess", IntVector2.Zero, Vector2.Zero);
+            oldPos = player.ChunkPos;
 
             state = GameState.MainMenu;
         }
@@ -183,11 +109,12 @@ namespace Mentula.SurvivalGame
         {
             double now = NetTime.Now;
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            KeyboardState k_State = Keyboard.GetState();
 
             if (state == GameState.Game & IsActive)
             {
+                IsMouseVisible = false;
                 Vector2 inp = Vector2.Zero;
-                KeyboardState k_State = Keyboard.GetState();
 
                 if (k_State.IsKeyDown(Keys.Escape)) this.Exit();
 
@@ -197,12 +124,11 @@ namespace Mentula.SurvivalGame
                 else if (k_State.IsKeyDown(Keys.D)) inp.X = 1;
 
                 if (inp != Vector2.Zero) player.Move(inp * delta * 5);
-                cam.Update(player.ChunkPos, player.GetTilePos());
 
                 if (Mouse.GetState().LeftButton == BtnSt.Pressed & now > attackTime)
                 {
                     Vector2 mPos = MentulaExtensions.GetMousePos();
-                    Vector2 posF = new Vector2(scrW >> 1, scrH >> 1);
+                    Vector2 posF = new Vector2(drawer.PreferredBackBufferWidth >> 1, drawer.PreferredBackBufferHeight >> 1);
                     Vector2 dir = (mPos - posF); dir.Normalize();
                     float rot = MEx.VectorToDegrees(dir);
 
@@ -227,25 +153,7 @@ namespace Mentula.SurvivalGame
             }
             else if (state == GameState.MainMenu & IsActive)
             {
-                MouseState m_State = Mouse.GetState();
-                KeyboardState k_State = Keyboard.GetState();
-
-                lblName.Update(m_State);
-                lblScrH.Update(m_State);
-                lblScrW.Update(m_State);
-
-                btnDisc.Update(m_State, delta);
-                btnScrA.Update(m_State, delta);
-
-                if (txtName.AllowDrop) txtName.Update(m_State, k_State, delta);
-                else ((GuiItem)txtName).Update(m_State);
-
-                if (txtScrH.AllowDrop) txtScrH.Update(m_State, k_State, delta);
-                else ((GuiItem)txtScrH).Update(m_State);
-
-                if (txtScrW.AllowDrop) txtScrW.Update(m_State, k_State, delta);
-                else ((GuiItem)txtScrW).Update(m_State);
-
+                IsMouseVisible = true;
                 if (client.ConnectionStatus == NCS.Connected)
                 {
                     state = GameState.Loading;
@@ -281,7 +189,7 @@ namespace Mentula.SurvivalGame
                         NCS status = msg.ReadEnum<NCS>();
                         switch (status)
                         {
-                            case(NCS.Connected):
+                            case (NCS.Connected):
                                 player.ChunkPos = IntVector2.Zero;
                                 player.SetTilePos(Vector2.Zero);
                                 break;
@@ -318,6 +226,9 @@ namespace Mentula.SurvivalGame
                                     creatures.AddRange(msg.ReadCreatureArr());
                                 }
 
+                                drawer.Tiles = tiles;
+                                drawer.Dest = dest;
+                                drawer.Creatures = creatures;
                                 state = GameState.Game;
                                 break;
                             case (DataType.ChunkRequest_Both):
@@ -331,6 +242,9 @@ namespace Mentula.SurvivalGame
                                 }
 
                                 Unload(player.ChunkPos);
+                                drawer.Tiles = tiles;
+                                drawer.Dest = dest;
+                                drawer.Creatures = creatures;
                                 break;
                             case (DataType.PlayerUpdate_Both):
                                 players.Clear();
@@ -341,6 +255,8 @@ namespace Mentula.SurvivalGame
                                     C_Player p_C = p_A[i];
                                     players.Add(p_C.Name, p_C);
                                 }
+
+                                drawer.Players = players;
                                 break;
                             case (DataType.PlayerRePosition_SSend):
                                 msg.ReadReSetPlayer(ref player);
@@ -352,85 +268,22 @@ namespace Mentula.SurvivalGame
 
                                 if (health <= 0) creatures.RemoveAll(c => c.ChunkPos == cPos & c.Pos == pos);
                                 else creatures.Find(c => c.ChunkPos == cPos & c.Pos == pos).Health = health;
+
+                                drawer.Creatures = creatures;
                                 break;
                         }
                         break;
                 }
             }
 
+            drawer.Update(delta, Mouse.GetState(), k_State, player, state);
             Thread.Sleep(1);
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            counter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
-
-            if (state == GameState.Game)
-            {
-                Vector2 relPos;
-
-                for (int i = 0; i < tiles.Count; i++)
-                {
-                    C_Tile t = tiles[i];
-
-                    if (cam.TryGetRelativePosition(t.ChunkPos, t.Pos.ToVector2(), out relPos)) spriteBatch.Draw(textures[t.TextureId], relPos, Color.White, t.Layer);
-                }
-
-                for (int i = 0; i < dest.Count; i++)
-                {
-                    C_Destrucible d = dest[i];
-
-                    if (cam.TryGetRelativePosition(d.ChunkPos, d.Pos.ToVector2(), out relPos)) spriteBatch.Draw(textures[d.TextureId], relPos, Color.White, d.Layer);
-                }
-
-                for (int i = 0; i < creatures.Count; i++)
-                {
-                    C_Creature c = creatures[i];
-
-                    if (cam.TryGetRelativePosition(c.ChunkPos, c.Pos, out relPos)) spriteBatch.Draw(textures[c.TextureId], relPos, c.Color, 2);
-                }
-
-                for (int i = 0; i < players.Count; i++)
-                {
-                    C_Player p = players.ElementAt(i).Value;
-
-                    if (cam.TryGetRelativePosition(p.ChunkPos, p.GetTilePos(), out relPos))
-                    {
-                        spriteBatch.Draw(Playertexture, relPos, Color.White);
-                        spriteBatch.DrawString(font, p.Name, relPos - new Vector2(0, 25), Color.Black);
-                    }
-                }
-
-                Vector2 playerPos = cam.GetRelativePosition(player.ChunkPos, player.GetTilePos());
-                spriteBatch.Draw(Playertexture, playerPos, Color.White);
-                spriteBatch.DrawString(font, player.Name, playerPos - new Vector2(0, 25), Color.Black);
-                spriteBatch.DrawString(font, string.Format("Player Pos: {0}", player.GetTotalPos()), new Vector2(0, 48), Color.Red);
-                Vector2 camb = new Vector2(scrW / 2 + 32, scrH / 2 + 32);
-                Vector2 dir = (MentulaExtensions.GetMousePos() - camb); dir.Normalize();
-                float rot = (float)Math.Atan2(dir.X, dir.Y);
-                spriteBatch.Draw(textures[10], camb + dir * 24 + new Vector2(-dir.Y * 8, dir.X * 8), Color.Red, -rot);
-
-                spriteBatch.DrawString(font, string.Format("Dest: {0}", dest.Count), new Vector2(0, 16), Color.Red);
-                spriteBatch.DrawString(font, string.Format("Creatures: {0}", creatures.Count), new Vector2(0, 32), Color.Red);
-            }
-            else if (state == GameState.MainMenu)
-            {
-                GraphicsDevice.Clear(Color.MediumPurple);
-                lblName.Draw(spriteBatch);
-                lblScrH.Draw(spriteBatch);
-                lblScrW.Draw(spriteBatch);
-                txtName.Draw(spriteBatch);
-                txtScrH.Draw(spriteBatch);
-                txtScrW.Draw(spriteBatch);
-                btnDisc.Draw(spriteBatch);
-                btnScrA.Draw(spriteBatch);
-            }
-
-            spriteBatch.Draw(textures[9], MentulaExtensions.GetMousePos() - new Vector2(8, 8), Color.Red);
-            spriteBatch.DrawString(font, string.Format("Fps: {0}", counter.ToString()), Vector2.Zero, Color.Red);
-            spriteBatch.End();
+            drawer.Draw((float)gameTime.ElapsedGameTime.TotalSeconds, state);
             base.Draw(gameTime);
         }
 
