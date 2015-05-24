@@ -50,6 +50,7 @@
     <Compile Include="Combat.cs" />
     <Compile Include="Commands\Ban.cs" />
     <Compile Include="Commands\IncreaseHealth.cs" />
+    <Compile Include="Commands\Status.cs" />
     <Compile Include="Commands\UnBan.cs" />
     <Compile Include="Creatures\Creature.cs" />
     <Compile Include="Creatures\ForestWildLife.cs" />

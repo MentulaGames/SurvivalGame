@@ -41,8 +41,8 @@ namespace Mentula.SurvivalGameServer
         static void Main(string[] args)
         {
             InitConsole();
-            InitCommands();
             InitServer();
+            InitCommands();
             server.Start();
             InitMap();
 
@@ -239,6 +239,7 @@ namespace Mentula.SurvivalGameServer
         {
             commHand = new CommandHandler(
                 new Exit(() => Exit = true),
+                new Status(ref server),
                 new Forward(port =>
                     {
                         bool forward = server.UPnP.ForwardPort(port, Resources.AppName);
