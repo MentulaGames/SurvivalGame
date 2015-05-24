@@ -69,7 +69,7 @@
     <Compile Include="Commands\Teleport.cs" />
     <Compile Include="Map\ChunkData.cs" />
     <Compile Include="Map\Map.cs" />
-    <Compile Include="Map Generation\MapGenerator.cs" />
+    <Compile Include="Map Generation\TerrainGenerator.cs" />
     <Compile Include="Map Generation\PerlinNoise.cs" />
     <Compile Include="Map\MegaChunk.cs" />
     <Compile Include="MentulaExtensions.cs" />
