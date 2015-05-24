@@ -159,19 +159,22 @@ namespace Mentula.SurvivalGameServer
 
                                     double now = NetTime.Now;
                                     double old = lastSend[id];
-                                    lastSend[id] = msg.ReceiveTime - msg.SenderConnection.AverageRoundtripTime;
-                                    
-                                    double delta = now - old;
-                                    double maxMove = MAX_SPEED * delta;
-                                    float length = ((chunkPos.ToVector2() * CS + pos) - players[id].GetTotalPos()).Length();
-
-                                    if (length > maxMove)
+                                    if (old < now)
                                     {
-                                        nom = server.CreateMessage();
-                                        nom.Write((byte)DataType.PlayerRePosition_SSend);
-                                        nom.Write(players[id].ToPlayer());
-                                        server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
-                                        break;
+                                        lastSend[id] = msg.ReceiveTime - msg.SenderConnection.AverageRoundtripTime;
+
+                                        double delta = now - old;
+                                        double maxMove = MAX_SPEED * delta;
+                                        float length = ((chunkPos.ToVector2() * CS + pos) - players[id].GetTotalPos()).Length();
+
+                                        if (length > maxMove)
+                                        {
+                                            nom = server.CreateMessage();
+                                            nom.Write((byte)DataType.PlayerRePosition_SSend);
+                                            nom.Write(players[id].ToPlayer());
+                                            server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+                                            break;
+                                        }
                                     }
 
                                     players[id].ReSet(chunkPos, pos);
