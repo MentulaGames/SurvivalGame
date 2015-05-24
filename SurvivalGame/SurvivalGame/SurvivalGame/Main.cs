@@ -1,4 +1,4 @@
-//#define LOCAL
+#define LOCAL
 
 using Lidgren.Network;
 using Lidgren.Network.Xna;
@@ -71,7 +71,7 @@ namespace Mentula.SurvivalGame
         protected override void LoadContent()
         {
             state = GameState.Loading;
-            player = new C_Player("NameLess", IntVector2.Zero, Vector2.Zero);
+            player = new C_Player();
             oldPos = player.ChunkPos;
 
             drawer.Load(Content, ref player, "R/Textures", "Fonts/ConsoleFont", "Fonts/MenuFont", "Fonts/NameFont", "Actors/Player_Temp", name =>
@@ -83,10 +83,6 @@ namespace Mentula.SurvivalGame
 #if !LOCAL
                 client.DiscoverKnownPeer(Ips.EndJoëll);
 #endif
-            }, () =>
-            {
-                drawer.SynchronizeWithVerticalRetrace = !drawer.SynchronizeWithVerticalRetrace;
-                IsFixedTimeStep = !IsFixedTimeStep;
             });
 
             state = GameState.MainMenu;

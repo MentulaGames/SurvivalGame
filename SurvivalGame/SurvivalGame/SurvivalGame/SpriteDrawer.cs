@@ -1,14 +1,12 @@
-﻿using System;
+﻿using Mentula.General;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using Mentula.General;
-using Microsoft.Xna.Framework.Content;
 using XnaGuiItems.Core;
-using Microsoft.Xna.Framework.Input;
 using XnaGuiItems.Items;
 
 namespace Mentula.SurvivalGame
@@ -37,6 +35,10 @@ namespace Mentula.SurvivalGame
         private SpriteFont menuF;
         private SpriteFont debugF;
         private GuiItem main;
+        private int tabIndex;
+        private bool tabDown;
+
+        private Action onVSync;
 
         public SpriteDrawer(Game game, bool debug)
             : base(game)
@@ -48,14 +50,20 @@ namespace Mentula.SurvivalGame
 
             counter = new FPS();
             this.debug = debug;
+
+            onVSync = () =>
+            {
+                SynchronizeWithVerticalRetrace = !SynchronizeWithVerticalRetrace;
+                game.IsFixedTimeStep = !game.IsFixedTimeStep;
+            };
         }
 
-        public void Load(ContentManager content, ref C_Player player, string textures, string debugFont, string menuFont, string nameFont, string pTexture, Action<string> onDiscovery, Action onVSync)
+        public void Load(ContentManager content, ref C_Player player, string textures, string debugFont, string menuFont, string nameFont, string pTexture, Action<string> onDiscovery)
         {
             batch = new SpriteBatch(GraphicsDevice);
             cam = new Camera(GraphicsDevice, IntVector2.Zero, Vector2.Zero);
 
-            texC = new TextureCollection(content, 11);
+            texC = new TextureCollection(content, 13);
             texC.LoadFromConfig(textures);
             nameF = content.Load<SpriteFont>(nameFont);
             menuF = content.Load<SpriteFont>(menuFont);
@@ -64,7 +72,7 @@ namespace Mentula.SurvivalGame
             this.pTexture = content.Load<Texture2D>(pTexture);
             this.player = player;
 
-            InitMain(onDiscovery, onVSync);
+            InitMain(onDiscovery);
         }
 
         public void UpdateMain(float delta, MouseState m_S, ref KeyboardState k_S)
@@ -77,6 +85,28 @@ namespace Mentula.SurvivalGame
 
                 if (g is TextBox) (g as TextBox).Update(m_S, k_S, delta);
                 else if (g is Button) (g as Button).Update(m_S, delta);
+            }
+
+            if (k_S.IsKeyDown(Keys.Tab) & !tabDown) tabDown = true;
+            else if (k_S.IsKeyUp(Keys.Tab) & tabDown)
+            {
+                tabDown = false;
+                tabIndex = tabIndex >= 2 ? 0 : ++tabIndex;
+
+                string name = "";
+                switch (tabIndex)
+                {
+                    case (0):
+                        name = "txtName";
+                        break;
+                    case(1):
+                        name = "txtScrH";
+                        break;
+                    case(2):
+                        name = "txtScrW";
+                        break;
+                }
+                main.Controls[name].PerformClick();
             }
         }
 
@@ -155,7 +185,7 @@ namespace Mentula.SurvivalGame
             batch.End();
         }
 
-        private void InitMain(Action<string> onDisc, Action onVSync)
+        private void InitMain(Action<string> onDisc)
         {
             int scrW = GraphicsDevice.Viewport.Width;
             int scrH = GraphicsDevice.Viewport.Height;
@@ -166,31 +196,53 @@ namespace Mentula.SurvivalGame
             Label lblScrH = new Label(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3, 150, 21), menuF) { AutoSize = true, BackColor = main.BackColor, Text = "Screen height :" };
             Label lblScrW = new Label(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 25, 150, 21), menuF) { AutoSize = true, BackColor = main.BackColor, Text = "Screen width  :" };
 
-            MouseEventHandler me = (sender, e) =>
-            {
-                for (int i = 0; i < main.Controls.Count; i++)
-                {
-                    GuiItem g = main.Controls[i];
-
-                    if (g is TextBox)
-                    {
-                        (g as TextBox).Focused = false;
-                    }
-                }
-
-                (sender as TextBox).Focused = true;
-            };
-
-            TextBox txtName = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 1) + 100, scrH / 3, 150, 21), menuF) { AllowDrop = true, FlickerStyle = FlickerStyle.Fast };
-            TextBox txtScrH = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3, 50, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = scrH.ToString() };
-            TextBox txtScrW = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3 + 25, 50, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = scrW.ToString() };
-            txtName.Click += me;
-            txtScrH.Click += me;
-            txtScrW.Click += me;
-
             Button btnDisc = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 50, 250, 21), menuF) { Text = "Discover server" };
             Button btnScrA = new Button(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 50, 200, 21), menuF) { Text = "Resize window" };
             Button btnVSync = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 25, 250, 21), menuF) { Text = "Toggle VSync: off" };
+
+            TextBox txtName = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 1) + 100, scrH / 3, 150, 21), menuF) { AllowDrop = true, FlickerStyle = FlickerStyle.Fast, Name = "txtName" };
+            TextBox txtScrH = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3, 50, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = scrH.ToString(), Name = "txtScrH" };
+            TextBox txtScrW = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3 + 25, 50, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = scrW.ToString(), Name = "txtScrW" };
+
+            MouseEventHandler me = (sender, e) =>
+                {
+                    for (int i = 0; i < main.Controls.Count; i++)
+                    {
+                        GuiItem g = main.Controls[i];
+
+                        if (g is TextBox)
+                        {
+                            (g as TextBox).Focused = false;
+                        }
+                    }
+
+                    (sender as TextBox).Focused = true;
+                };
+
+            TextChangedEventHandler tce = (sender, newT) =>
+                {
+                    if (newT.Contains("/n"))
+                    {
+                        (sender as TextBox).Text = newT.Replace("/n", "");
+                        btnScrA.PerformClick(MouseClick.Left);
+                    }
+                };
+
+            txtName.TextChanged += (sender, newT) =>
+                {
+                    if (newT.Contains("/n"))
+                    {
+                        txtName.Text = newT.Replace("/n", "");
+                        btnDisc.PerformClick(MouseClick.Left);
+                    }
+                };
+
+            txtName.Click += me;
+            txtScrH.Click += me;
+            txtScrW.Click += me;
+            txtScrH.TextChanged += tce;
+            txtScrW.TextChanged += tce;
+
             btnDisc.LeftClick += (sender, e) => onDisc(txtName.Text);
             btnScrA.LeftClick += (sender, e) =>
             {
@@ -200,7 +252,7 @@ namespace Mentula.SurvivalGame
                     PreferredBackBufferWidth = scrW;
                     ApplyChanges();
                     cam = new Camera(GraphicsDevice, player.ChunkPos, player.GetTilePos());
-                    InitMain(onDisc, onVSync);
+                    InitMain(onDisc);
                 }
                 else System.Windows.Forms.MessageBox.Show(string.Format("The screen {0}({1}) is an invalid value!", scrH < 1 ? "height" : "width", scrH < 1 ? scrH : scrW), "Invalid dimentions!");
             };
