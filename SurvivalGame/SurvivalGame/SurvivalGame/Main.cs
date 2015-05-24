@@ -153,7 +153,7 @@ namespace Mentula.SurvivalGame
                 nom.Write((byte)DataType.PlayerUpdate_Both);
                 nom.Write(player.ChunkPos);
                 nom.Write(player.GetTilePos());
-                client.SendMessage(nom, NetDeliveryMethod.Unreliable);
+                client.SendMessage(nom, NetDeliveryMethod.UnreliableSequenced);
                 nextSend += (1f / 30f);
             }
 

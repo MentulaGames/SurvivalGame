@@ -1,9 +1,9 @@
 ﻿using Lidgren.Network;
 using Lidgren.Network.Xna;
-using Mentula.SurvivalGameServer.Commands;
 using Mentula.General;
 using Mentula.General.Res;
 using Mentula.Network.Xna;
+using Mentula.SurvivalGameServer.Commands;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace Mentula.SurvivalGameServer
 {
     public class Program
     {
-        private const float MAX_SPEED = 5.1f;
+        private const float MAX_SPEED = 5f;
         private static readonly int CS;
 
         private static NetServer server;
@@ -159,7 +159,7 @@ namespace Mentula.SurvivalGameServer
 
                                     double now = msg.ReceiveTime;
                                     double old = lastSend[id];
-                                    lastSend[id] = now;
+                                    lastSend[id] = now - msg.SenderConnection.AverageRoundtripTime;
 
                                     double delta = now - old;
                                     double maxMove = MAX_SPEED * (delta + msg.SenderConnection.AverageRoundtripTime);
