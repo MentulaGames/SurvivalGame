@@ -133,6 +133,19 @@ namespace Mentula.SurvivalGameServer
                 Position = position;
             }
 
+            public Node(Vector2 position, int g)
+            {
+                Position = position;
+                GValue = g;
+            }
+
+            public Node(Vector2 position, int g, bool pathable)
+            {
+                Position = position;
+                GValue = g;
+                wall = !pathable;
+            }
+
             public void SetHeuristic(Vector2 endPoint)
             {
                 Heuristic = (int)Vector2.Distance(Position, endPoint);
@@ -166,6 +179,25 @@ namespace Mentula.SurvivalGameServer
                 _width = width;
                 _height = height;
                 EmptyMap();
+                startPos = start;
+                endPos = end;
+                SetHeuristic();
+            }
+
+            public Map(int width, Vector2 start, Vector2 end, Node[] map)
+            {
+                _width = width;
+                _height = map.Length / width;
+                EmptyMap();
+
+                for (int y = 0; y < _height; y++)
+                {
+                    for (int x = 0; x < _width; x++)
+                    {
+                        nodes[x, y] = map[(y * _width) + x];
+                    }
+                }
+
                 startPos = start;
                 endPos = end;
                 SetHeuristic();

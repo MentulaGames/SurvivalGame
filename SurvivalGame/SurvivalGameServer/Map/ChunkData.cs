@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Mentula.General;
+﻿using Mentula.General;
 
 namespace Mentula.SurvivalGameServer
 {
@@ -11,6 +6,7 @@ namespace Mentula.SurvivalGameServer
     {
         public IntVector2 ChunkPos;
         public int ChunkType;
+
         public ChunkData(IntVector2 chunkPos)
         {
             ChunkPos = chunkPos;
