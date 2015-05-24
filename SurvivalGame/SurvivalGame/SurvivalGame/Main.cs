@@ -44,7 +44,6 @@ namespace Mentula.SurvivalGame
         public Main()
         {
             state = GameState.Constructing;
-
             drawer = new SpriteDrawer(this, true) { SynchronizeWithVerticalRetrace = false };
             IsFixedTimeStep = false;
 

@@ -46,5 +46,10 @@ namespace Mentula.General.MathExtensions
         {
             v.Normalize(); return (float)math.Atan2(v.Y, v.X) * (float)(180f / math.PI);
         }
+        public static int Round(double d)
+        {
+            int a = (int)d;
+            return a + ((d > 0) & (a < (int)(d + 0.5)) ? 1 : ((d < 0) & a > (int)(d - 0.5) ? -1 : 0));
+        }
     }
 }
