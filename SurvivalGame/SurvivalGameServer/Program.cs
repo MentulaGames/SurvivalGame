@@ -157,26 +157,6 @@ namespace Mentula.SurvivalGameServer
                                     chunkPos = msg.ReadVector();
                                     Vector2 pos = msg.ReadVector2();
 
-                                    double now = NetTime.Now;
-                                    double old = lastSend[id];
-                                    if (old < now)
-                                    {
-                                        lastSend[id] = msg.ReceiveTime - msg.SenderConnection.AverageRoundtripTime;
-
-                                        double delta = now - old;
-                                        double maxMove = MAX_SPEED * delta;
-                                        float length = ((chunkPos.ToVector2() * CS + pos) - players[id].GetTotalPos()).Length();
-
-                                        if (length > maxMove)
-                                        {
-                                            nom = server.CreateMessage();
-                                            nom.Write((byte)DataType.PlayerRePosition_SSend);
-                                            nom.Write(players[id].ToPlayer());
-                                            server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
-                                            break;
-                                        }
-                                    }
-
                                     players[id].ReSet(chunkPos, pos);
 
                                     if (map.Generate(chunkPos)) msg.MessageType.WriteLine("Generated at: {0}.", chunkPos);
