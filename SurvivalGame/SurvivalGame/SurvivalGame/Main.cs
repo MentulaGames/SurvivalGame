@@ -106,7 +106,7 @@ namespace Mentula.SurvivalGame
                 if (k_State.IsKeyDown(Keys.A)) inp.X = -1;
                 else if (k_State.IsKeyDown(Keys.D)) inp.X = 1;
 
-                if (inp != Vector2.Zero) player.Move(inp * delta * 50);
+                if (inp != Vector2.Zero) player.Move(Vector2.Normalize(inp) * delta * 5);
 
                 if (Mouse.GetState().LeftButton == BtnSt.Pressed & now > attackTime)
                 {

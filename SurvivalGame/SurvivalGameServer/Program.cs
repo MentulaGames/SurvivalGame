@@ -19,17 +19,27 @@ namespace Mentula.SurvivalGameServer
 {
     public class Program
     {
+        private const float MAX_SPEED = 5.1f;
+        private static readonly int CS;
+
         private static NetServer server;
         private static CommandHandler commHand;
         private static bool Exit;
         private static Map map;
         private static Dictionary<long, Creature> players;
         private static Dictionary<string, IPAddress> banned;
+        private static Dictionary<long, double> lastSend;
+
+        static Program()
+        {
+            CS = int.Parse(Resources.ChunkSize);
+            players = new Dictionary<long, Creature>();
+            banned = new Dictionary<string, IPAddress>();
+            lastSend = new Dictionary<long, double>();
+        }
 
         static void Main(string[] args)
         {
-            players = new Dictionary<long, Creature>();
-            banned = new Dictionary<string, IPAddress>();
             InitConsole();
             InitCommands();
             InitServer();
@@ -75,6 +85,7 @@ namespace Mentula.SurvivalGameServer
                             }
 
                             players.Add(msg.GetId(), new Creature(new Creature(name, new Stats(10), 100, Color.Purple, -1), IntVector2.Zero, Vector2.Zero));
+                            lastSend.Add(msg.GetId(), NetTime.Now);
                             msg.SenderConnection.Approve();
                             break;
                         case (NIMT.VerboseDebugMessage):
@@ -95,6 +106,7 @@ namespace Mentula.SurvivalGameServer
                                 case (NCS.Disconnected):
                                     msg.MessageType.WriteLine("{0}({1}) disconnected!", NetUtility.ToHexString(id), players[id].Name);
                                     players.Remove(msg.GetId());
+                                    lastSend.Remove(msg.GetId());
                                     break;
                             }
 
@@ -141,16 +153,35 @@ namespace Mentula.SurvivalGameServer
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
                                     break;
                                 case (DataType.PlayerUpdate_Both):
+                                    id = msg.GetId();
                                     chunkPos = msg.ReadVector();
                                     Vector2 pos = msg.ReadVector2();
-                                    players[msg.GetId()].ReSet(chunkPos, pos);
+
+                                    double now = NetTime.Now;
+                                    double old = lastSend[id];
+                                    lastSend[id] = now;
+
+                                    float delta = (float)(now - old);
+                                    float maxMove = MAX_SPEED * (delta + msg.SenderConnection.AverageRoundtripTime);
+                                    float length = ((chunkPos.ToVector2() * CS + pos) - players[id].GetTotalPos()).Length();
+
+                                    if (length > maxMove)
+                                    {
+                                        nom = server.CreateMessage();
+                                        nom.Write((byte)DataType.PlayerRePosition_SSend);
+                                        nom.Write(players[id].ToPlayer());
+                                        server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+                                        break;
+                                    }
+
+                                    players[id].ReSet(chunkPos, pos);
 
                                     if (map.Generate(chunkPos)) msg.MessageType.WriteLine("Generated at: {0}.", chunkPos);
                                     map.LoadChunks(chunkPos);
 
                                     nom = server.CreateMessage();
                                     nom.Write((byte)DataType.PlayerUpdate_Both);
-                                    nom.Write(players.Where(p => p.Key != msg.GetId()).Select(p => p.Value.ToPlayer()).ToArray());
+                                    nom.Write(players.Where(p => p.Key != id).Select(p => p.Value.ToPlayer()).ToArray());
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
                                     break;
                                 case (DataType.Attack_CSend):
