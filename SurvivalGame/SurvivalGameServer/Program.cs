@@ -326,6 +326,11 @@ namespace Mentula.SurvivalGameServer
                             {
                                 players[k_P.Key].SetTilePos(pos);
                                 result = true;
+
+                                NOM nom = server.CreateMessage();
+                                nom.Write((byte)DataType.PlayerRePosition_SSend);
+                                nom.Write(players[k_P.Key].ToPlayer());
+                                server.SendMessage(nom, server.Connections.First(c => c.RemoteUniqueIdentifier == k_P.Key), NetDeliveryMethod.ReliableOrdered);
                                 break;
                             }
                         }
