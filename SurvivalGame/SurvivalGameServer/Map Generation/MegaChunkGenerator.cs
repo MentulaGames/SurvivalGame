@@ -18,7 +18,7 @@ namespace Mentula.SurvivalGameServer
         private const int CITYSIZE = 8;
         public static ChunkData[] GenerateMegaChunk(IntVector2 pos)
         {
-            r = new Random((int)(RNG.RFloatFromString(pos.X, "a", pos.Y) * 1000000));
+            r = new Random(RNG.RIntFromString(pos.X,"a",pos.Y));
             ChunkDataArray = new ChunkData[MCS * MCS];
             for (int i = 0; i < ChunkDataArray.Length; i++)
             {

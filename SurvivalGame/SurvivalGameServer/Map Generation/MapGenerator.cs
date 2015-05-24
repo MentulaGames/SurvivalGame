@@ -10,7 +10,7 @@ namespace Mentula.SurvivalGameServer
     {
         public static Chunk GenerateTerrain(IntVector2 pos)
         {
-            int rnum = (int)(RNG.RFloatFromString(pos.X, pos.Y) * 1000000);
+            int rnum = (RNG.RIntFromString(pos.X,pos.Y));
             Random r = new Random(rnum);
             Random r2 = new Random(rnum + 1);
             int cSize = int.Parse(Resources.ChunkSize);

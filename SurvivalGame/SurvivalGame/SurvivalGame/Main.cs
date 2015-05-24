@@ -44,7 +44,6 @@ namespace Mentula.SurvivalGame
         public Main()
         {
             state = GameState.Constructing;
-
             drawer = new SpriteDrawer(this, true) { SynchronizeWithVerticalRetrace = false };
             IsFixedTimeStep = false;
 
@@ -106,8 +105,11 @@ namespace Mentula.SurvivalGame
                 if (k_State.IsKeyDown(Keys.A)) inp.X = -1;
                 else if (k_State.IsKeyDown(Keys.D)) inp.X = 1;
 
-                if (inp != Vector2.Zero) player.Move(inp * delta * 50);
-
+                if (inp != Vector2.Zero)
+                {
+                    inp.Normalize();
+                    player.Move(inp * delta * 50);
+                }
                 if (Mouse.GetState().LeftButton == BtnSt.Pressed & now > attackTime)
                 {
                     Vector2 mPos = MentulaExtensions.GetMousePos();

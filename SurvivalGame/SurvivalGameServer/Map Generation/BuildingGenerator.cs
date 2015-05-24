@@ -13,7 +13,7 @@ namespace Mentula.SurvivalGameServer
         public static List<Destructible> GenerateBuilding(IntVector2 pos, IntVector2 size, IntVector2 minRoomSize, IntVector2 maxRoomSize,string seed)
         {
             List<Destructible> dList = new List<Destructible>();
-            List<Rectangle> binaryMap = BinarySplitGenerator.GenerateBinarySplitMap(size - new IntVector2(1), minRoomSize, maxRoomSize, seed);
+            List<Rectangle> binaryMap = BinarySplitGenerator.GenerateBinarySplitMap(size - new IntVector2(1), minRoomSize, seed);
             for (int i = 0; i < binaryMap.Count; i++)
             {
                 for (int x = 0; x < binaryMap[i].Width; x++)
