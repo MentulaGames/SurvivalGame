@@ -157,12 +157,12 @@ namespace Mentula.SurvivalGameServer
                                     chunkPos = msg.ReadVector();
                                     Vector2 pos = msg.ReadVector2();
 
-                                    double now = NetTime.Now;
+                                    double now = msg.ReceiveTime;
                                     double old = lastSend[id];
                                     lastSend[id] = now;
 
-                                    float delta = (float)(now - old);
-                                    float maxMove = MAX_SPEED * (delta + msg.SenderConnection.AverageRoundtripTime);
+                                    double delta = now - old;
+                                    double maxMove = MAX_SPEED * (delta + msg.SenderConnection.AverageRoundtripTime);
                                     float length = ((chunkPos.ToVector2() * CS + pos) - players[id].GetTotalPos()).Length();
 
                                     if (length > maxMove)
