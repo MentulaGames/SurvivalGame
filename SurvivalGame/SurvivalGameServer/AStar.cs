@@ -79,7 +79,7 @@ namespace Mentula.SurvivalGameServer
             {
                 Node cur = openList[i];
 
-                if (min != cur & cur.FValue < min.FValue) min = cur;
+                if (min.Position != cur.Position & cur.FValue < min.FValue) min = cur;
             }
 
             return min;
