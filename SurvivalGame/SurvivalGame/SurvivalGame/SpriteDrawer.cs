@@ -75,6 +75,13 @@ namespace Mentula.SurvivalGame
             InitMain(onDiscovery);
         }
 
+        public void SetData(ref List<C_Tile> tiles, ref List<C_Destrucible> dest, ref List<C_Creature> crs)
+        {
+            Tiles = tiles;
+            Dest = dest;
+            Creatures = crs;
+        }
+
         public void UpdateMain(float delta, MouseState m_S, ref KeyboardState k_S)
         {
             main.Update(m_S);
@@ -154,7 +161,11 @@ namespace Mentula.SurvivalGame
                     {
                         C_Creature c = Creatures[i];
 
-                        if (cam.TryGetRelativePosition(c.ChunkPos, c.Pos, out relPos)) batch.Draw(texC[c.TextureId], relPos, c.Color, 2);
+                        if (cam.TryGetRelativePosition(c.ChunkPos, c.Pos, out relPos))
+                        {
+                            batch.Draw(texC[c.TextureId], relPos, c.Color, 2);
+                            batch.DrawString(nameF, c.Health.ToString(), relPos - new Vector2(0, 25), Color.Black);
+                        }
                     }
 
                     for (int i = 0; i < Players.Count; i++)
@@ -198,7 +209,7 @@ namespace Mentula.SurvivalGame
 
             Button btnDisc = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 50, 250, 21), menuF) { Text = "Discover server" };
             Button btnScrA = new Button(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 50, 200, 21), menuF) { Text = "Resize window" };
-            Button btnVSync = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 25, 250, 21), menuF) { Text = "Toggle VSync: off" };
+            Button btnVSync = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 25, 250, 21), menuF) { Text = "Toggle VSync: on" };
 
             TextBox txtName = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 1) + 100, scrH / 3, 150, 21), menuF) { AllowDrop = true, FlickerStyle = FlickerStyle.Fast, Name = "txtName" };
             TextBox txtScrH = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3, 50, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = scrH.ToString(), Name = "txtScrH" };

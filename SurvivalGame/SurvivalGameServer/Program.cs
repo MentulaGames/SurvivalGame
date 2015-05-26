@@ -58,7 +58,7 @@ namespace Mentula.SurvivalGameServer
                         case (NIMT.ConnectionApproval):
                             long id = msg.GetId();
                             string name = msg.ReadString();
-                            
+
                             if (string.IsNullOrEmpty(name) | name.Length > 20)
                             {
                                 msg.SenderConnection.Deny("Your name must between 1 and 20 characters!");
