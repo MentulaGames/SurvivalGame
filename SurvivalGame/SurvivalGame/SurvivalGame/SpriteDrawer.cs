@@ -93,7 +93,7 @@ namespace Mentula.SurvivalGame
             {
                 GuiItem g = main.Controls[i];
 
-                if (g is TextBox) (g as TextBox).Update(m_S, k_S, delta);
+                if (g is TextBox & !((k_S.IsKeyDown(Keys.LeftControl) | k_S.IsKeyDown(Keys.RightControl)) & k_S.IsKeyDown(Keys.V))) (g as TextBox).Update(m_S, k_S, delta);
                 else if (g is Button) (g as Button).Update(m_S, delta);
             }
 
@@ -119,7 +119,7 @@ namespace Mentula.SurvivalGame
                 main.Controls[name].PerformClick();
             }
 
-            if ((k_S.IsKeyDown(Keys.LeftControl) | k_S.IsKeyUp(Keys.RightControl)) & k_S.IsKeyDown(Keys.V) & !vDown)
+            if ((k_S.IsKeyDown(Keys.LeftControl) | k_S.IsKeyDown(Keys.RightControl)) & k_S.IsKeyDown(Keys.V) & !vDown)
             {
                 vDown = true;
                 string text = "";
