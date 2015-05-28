@@ -44,7 +44,6 @@ namespace Mentula.SurvivalGameServer
             chunk = c;
             GenerateRain();
             GenerateTerrain();
-            GenerateTrees();
             return chunk;
         }
         private static void Init(IntVector2 pos)
