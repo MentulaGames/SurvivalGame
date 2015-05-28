@@ -26,7 +26,7 @@ namespace Mentula.SurvivalGameServer.Commands
 
                     if (float.TryParse(args[1], out x) & float.TryParse(args[2], out y)) callback.Invoke(args[0], new Vector2(x, y));
                 }
-                else NIMT.ErrorMessage.WriteLine("The Teleport command requires a player name and a total position (Teleport bob 12 45)", null);
+                else NIMT.ErrorMessage.WriteLine("The Teleport command requires index player name and index total position (Teleport bob 12 45)", null);
             }
         }
     }

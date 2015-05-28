@@ -6,75 +6,160 @@ using Microsoft.Xna.Framework;
 
 namespace Mentula.SurvivalGameServer
 {
-    public static class MapGenerator
+    public static class TerrainGenerator
     {
-        public static Chunk GenerateTerrain(IntVector2 pos)
-        {
-            int rnum = (RNG.RIntFromString(pos.X,pos.Y));
-            Random r = new Random(rnum);
-            Random r2 = new Random(rnum + 1);
-            int cSize = int.Parse(Resources.ChunkSize);
-            Tile[] Tiles = new Tile[cSize * cSize];
-            List<Destructible> destructibles = new List<Destructible>();
-            List<Creature> creatures = new List<Creature>();
-            int x;
-            int y;
+        private static Chunk chunk;
+        private static float[] rainArray;
+        private static int cSize;
+        private static IntVector2 _pos;
+        private static Random r;
 
+        static TerrainGenerator()
+        {
+            cSize = int.Parse(Resources.ChunkSize);
+        }
+
+        public static Chunk GenerateAll(IntVector2 pos)
+        {
+            Init(pos);
+            GenerateRain();
+            GenerateTerrain();
+            GenerateLakes();
+            GenerateTrees();
+            GenerateCreatures();
+            return chunk;
+        }
+        public static Chunk GenerateTer(IntVector2 pos)
+        {
+            Init(pos);
+            GenerateRain();
+            GenerateTerrain();
+            GenerateTrees();
+            return chunk;
+        }
+
+        public static Chunk GenerateTer(Chunk c)
+        {
+            Init(c.Pos);
+            chunk = c;
+            GenerateRain();
+            GenerateTerrain();
+            GenerateTrees();
+            return chunk;
+        }
+        private static void Init(IntVector2 pos)
+        {
+            _pos = pos;
+            chunk = new Chunk(pos);
+            r = new Random(RNG.RIntFromString(_pos.X, "x", _pos.Y));
+        }
+
+        private static void GenerateRain()
+        {
+            rainArray = new float[cSize * cSize];
+            for (int i = 0; i < rainArray.Length; i++)
+            {
+                int x = _pos.X * cSize + i % cSize;
+                int y = _pos.Y * cSize + i / cSize;
+                rainArray[i] += PerlinNoise.Generate(70, cSize * 4, x, y, "1");
+                rainArray[i] += PerlinNoise.Generate(20, cSize, x, y, "2");
+                rainArray[i] += PerlinNoise.Generate(10, cSize / 4, x, y, "3");
+            }
+        }
+
+        private static void GenerateTerrain()
+        {
+            for (int i = 0; i < rainArray.Length; i++)
+            {
+                IntVector2 tPos = new IntVector2(i % cSize, i / cSize);
+                byte t = byte.MaxValue;
+                if (rainArray[i] > 0 & rainArray[i] <= 25)
+                {
+                    t = 0;
+                }
+                else if (rainArray[i] > 25 & rainArray[i] <= 50)
+                {
+                    t = 1;
+                }
+                else if (rainArray[i] > 50 & rainArray[i] <= 75)
+                {
+                    t = 2;
+                }
+                else if (rainArray[i] > 75 & rainArray[i] <= 100)
+                {
+                    t = 3;
+                }
+                chunk.Tiles[i] = new Tile(tPos, t);
+            }
+        }
+
+        private static void GenerateTrees()
+        {
+            int destructibleC = chunk.Destructibles.Count;
             for (int i = 0; i < cSize * cSize; i++)
             {
-                x = i % cSize + pos.X * cSize;
-                y = i / cSize + pos.Y * cSize;
-                float rain = 0;
-                rain += PerlinNoise.Generate(70, cSize * 4, x, y, "1");
-                rain += PerlinNoise.Generate(20, cSize, x, y, "2");
-                rain += PerlinNoise.Generate(10, cSize / 4, x, y, "3");
-
-                float lakeyness = 0;
-                lakeyness += PerlinNoise.Generate(50, cSize / 2, x, y, "lakey");
-                lakeyness += PerlinNoise.Generate(50, cSize / 4, x, y, "lakey2");
-
-                float chanceToSpawnTree = (rain - 30) / 5;
-                float chanceToSpawnForestCreature = (rain - 50) / 5;
-                int textureid = -1;
-                if (rain >= 0 & rain < 25)
+                bool isinuse = false;
+                IntVector2 p = new IntVector2(i % cSize, i / cSize);
+                for (int j = 0; j < destructibleC; j++)
                 {
-                    textureid = 0;
+                    if (chunk.Destructibles[j].Pos == p)
+                    {
+                        isinuse = true;
+                    }
                 }
-                else if (rain >= 25 & rain < 50)
+                if (!isinuse)
                 {
-                    textureid = 1;
+                    float chanceToSpawnTrees = (rainArray[i] - 30) / 5;
+                    if (r.NextDouble() * 100 <= chanceToSpawnTrees)
+                    {
+                        chunk.Destructibles.Add(new Destructible(100, p, 4, 2, false));
+                    }
                 }
-                else if (rain >= 50 & rain < 75)
-                {
-                    textureid = 2;
-                }
-                else if (rain >= 75 & rain <= 100)
-                {
-                    textureid = 3;
-                }
-
-                if (lakeyness > 80)
-                {
-                    destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize, i / cSize), 5, 1, false)));
-                }
-
-                else if ((float)r.NextDouble() * 100 <= chanceToSpawnTree)
-                {
-                    destructibles.Add(new Destructible(100, new Tile(new IntVector2(i % cSize, i / cSize), 4, 1, true)));
-                }
-                else if ((float)r2.NextDouble() * 100 <= chanceToSpawnTree / 10)
-                {
-                    creatures.Add(new Creature(ForestWildLife.CreatureList[0], pos, new Vector2(i % cSize, i / cSize)));
-                }
-                else if ((float)r2.NextDouble() * 100 <= chanceToSpawnForestCreature / 10)
-                {
-                    int a = (int)Math.Min(1 + r2.NextDouble() * 2, 2);
-                    creatures.Add(new Creature(ForestWildLife.CreatureList[a], pos, new Vector2(i % cSize, i / cSize)));
-                }
-
-                Tiles[i] = new Tile(new IntVector2(i % cSize, i / cSize), (byte)textureid);
             }
-            return new Chunk(pos, Tiles, destructibles, creatures);
+
+        }
+        private static void GenerateLakes()
+        {
+            for (int i = 0; i < cSize * cSize; i++)
+            {
+                IntVector2 p = new IntVector2(i % cSize, i / cSize);
+                float lake = PerlinNoise.Generate(50, cSize / 2, p.X + _pos.X * cSize, p.Y + _pos.Y * cSize, "lakey");
+                lake += PerlinNoise.Generate(50, cSize / 4, p.X + _pos.X * cSize, p.Y + _pos.Y * cSize, "lakey2");
+                if (lake > 80)
+                {
+                    chunk.Destructibles.Add(new Destructible(100, p, 5, 2, false));
+                }
+            }
+        }
+
+        private static void GenerateCreatures()
+        {
+            for (int i = 0; i < cSize * cSize; i++)
+            {
+                bool isInUse = false;
+                IntVector2 p = new IntVector2(i % cSize, i / cSize);
+                for (int j = 0; j < chunk.Destructibles.Count; j++)
+                {
+                    if (chunk.Destructibles[j].Pos == p)
+                    {
+                        isInUse = true;
+                    }
+                }
+                if (!isInUse)
+                {
+                    float chanceToSpawnRabbits = (rainArray[i] - 30) / 50;
+                    float chanceToSpawnDif = (rainArray[i] - 50) / 50;
+                    if (r.NextDouble() * 100 <= chanceToSpawnRabbits)
+                    {
+                        chunk.Creatures.Add(new Creature(ForestWildLife.CreatureList[0], _pos, p.ToVector2()));
+                    }
+                    else if (r.NextDouble()*100<=chanceToSpawnDif)
+                    {
+                        int index = (int)Math.Min(1 + r.NextDouble() * 2, 2);
+                        chunk.Creatures.Add(new Creature(ForestWildLife.CreatureList[index], _pos, p.ToVector2()));
+                    }
+                }
+            }
         }
     }
 }

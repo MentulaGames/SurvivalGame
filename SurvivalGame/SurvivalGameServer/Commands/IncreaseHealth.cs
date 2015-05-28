@@ -18,7 +18,7 @@ namespace Mentula.SurvivalGameServer.Commands
             if (callback != null)
             {
                 if (args.Length > 0) callback(args[0]);
-                else NIMT.ErrorMessage.WriteLine("The Increase health command requires a player name!", null);
+                else NIMT.ErrorMessage.WriteLine("The Increase health command requires index player name!", null);
             }
         }
     }

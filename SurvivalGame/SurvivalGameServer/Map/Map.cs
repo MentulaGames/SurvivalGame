@@ -94,7 +94,7 @@ namespace Mentula.SurvivalGameServer
                         else
                         {
                             gen = true;
-                            Chunk generatedChunk = MapGenerator.GenerateTerrain(new IntVector2(x + pos.X, y + pos.Y));
+                            Chunk generatedChunk = TerrainGenerator.GenerateAll(new IntVector2(x + pos.X, y + pos.Y));
                             ChunkList.Add(generatedChunk);
                         }
                     }
