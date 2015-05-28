@@ -1,25 +1,41 @@
-﻿using Mentula.SurvivalGameServer;
-using System;
+﻿using Lidgren.Network;
+using System.Collections.Generic;
+using System.Linq;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 
 namespace Mentula.SurvivalGameServer.Commands
 {
     public class Kick : Command
     {
-        private Action<string> callback;
+        private NetServer server;
+        private Dictionary<long, Creature> players;
 
-        public Kick(Action<string> OnKick)
+        public Kick(ref NetServer server, ref Dictionary<long, Creature> players)
             : base("Kick")
         {
-            callback = OnKick;
+            this.server = server;
+            this.players = players;
         }
 
         public override void Call(string[] args)
         {
-            if (callback != null)
+            if (args.Length <= 0) NIMT.ErrorMessage.WriteLine("The kick command requires a player name!");
+            else
             {
-                if (args.Length > 0) callback(args[0]);
-                else NIMT.ErrorMessage.WriteLine("The kick command requires index player name!", null);
+                bool result = false;
+                for (int i = 0; i < players.Count; i++)
+                {
+                    KeyValuePair<long, Creature> k_P = players.ElementAt(i);
+
+                    if (k_P.Value.Name == args[0])
+                    {
+                        server.Connections.Find(c => c.RemoteUniqueIdentifier == k_P.Key).Disconnect("You have been kicked!");
+                        result = true;
+                        break;
+                    }
+                }
+
+                MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player: {1}", result ? "Kicked" : "Failed to kick", args[0]);
             }
         }
     }
