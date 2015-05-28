@@ -19,32 +19,27 @@ namespace Mentula.SurvivalGameServer
 {
     public class Program
     {
-        private const float MAX_SPEED = 5f;
-        private static readonly int CS;
-
         private static NetServer server;
         private static CommandHandler commHand;
         private static bool Exit;
         private static Map map;
         private static Dictionary<long, Creature> players;
         private static Dictionary<string, IPAddress> banned;
-        private static Dictionary<long, double> lastSend;
 
         static Program()
         {
-            CS = int.Parse(Resources.ChunkSize);
             players = new Dictionary<long, Creature>();
             banned = new Dictionary<string, IPAddress>();
-            lastSend = new Dictionary<long, double>();
+
+            InitConsole();
+            InitServer();
+            InitCommands();
+            InitMap();
         }
 
         static void Main(string[] args)
         {
-            InitConsole();
-            InitServer();
-            InitCommands();
             server.Start();
-            InitMap();
 
             while (!Exit)
             {
@@ -58,9 +53,10 @@ namespace Mentula.SurvivalGameServer
                     {
                         case (NIMT.DiscoveryRequest):
                             server.SendDiscoveryResponse(null, msg.SenderEndPoint);
-                            msg.MessageType.WriteLine("{0} discovered the service.", msg.SenderEndPoint);
+                            msg.MessageType.WriteLine("{0} discovered the service.", msg.SenderEndPoint.Address);
                             break;
                         case (NIMT.ConnectionApproval):
+                            long id = msg.GetId();
                             string name = msg.ReadString();
 
                             if (string.IsNullOrEmpty(name) | name.Length > 20)
@@ -73,7 +69,7 @@ namespace Mentula.SurvivalGameServer
                                 msg.SenderConnection.Deny("You have been banned from this server!");
                                 break;
                             }
-                            else if (players.ContainsKey(msg.GetId()))
+                            else if (players.ContainsKey(id))
                             {
                                 msg.SenderConnection.Deny("You are still connected to the service!\nPlease wait some time before trying again.");
                                 break;
@@ -84,8 +80,7 @@ namespace Mentula.SurvivalGameServer
                                 break;
                             }
 
-                            players.Add(msg.GetId(), new Creature(new Creature(name, new Stats(10), 100, Color.Purple, -1), IntVector2.Zero, Vector2.Zero));
-                            lastSend.Add(msg.GetId(), NetTime.Now);
+                            players.Add(id, new Creature(new Creature(name, new Stats(10), 100, Color.Purple, -1), IntVector2.Zero, Vector2.Zero));
                             msg.SenderConnection.Approve();
                             break;
                         case (NIMT.VerboseDebugMessage):
@@ -95,8 +90,8 @@ namespace Mentula.SurvivalGameServer
                             msg.MessageType.WriteLine("{0}", msg.ReadString());
                             break;
                         case (NIMT.StatusChanged):
+                            id = msg.GetId();
                             NCS status = msg.ReadEnum<NCS>();
-                            long id = msg.GetId();
 
                             switch (status)
                             {
@@ -105,8 +100,7 @@ namespace Mentula.SurvivalGameServer
                                     break;
                                 case (NCS.Disconnected):
                                     msg.MessageType.WriteLine("{0}({1}) disconnected!", NetUtility.ToHexString(id), players[id].Name);
-                                    players.Remove(msg.GetId());
-                                    lastSend.Remove(msg.GetId());
+                                    players.Remove(id);
                                     break;
                             }
 
@@ -115,7 +109,8 @@ namespace Mentula.SurvivalGameServer
                             switch (msg.ReadEnum<DataType>())
                             {
                                 case (DataType.InitialMap_Both):
-                                    IntVector2 chunkPos = msg.ReadVector();
+                                    id = msg.GetId();
+                                    IntVector2 chunkPos = players[id].ChunkPos;
                                     map.Generate(chunkPos);
                                     map.LoadChunks(chunkPos);
 
@@ -134,23 +129,27 @@ namespace Mentula.SurvivalGameServer
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
                                     break;
                                 case (DataType.ChunkRequest_Both):
+                                    id = msg.GetId();
                                     chunkPos = msg.ReadVector();
                                     IntVector2 oldPos = msg.ReadVector();
 
-                                    nom = server.CreateMessage();
-                                    nom.Write((byte)DataType.ChunkRequest_Both);
-
-                                    List<Chunk> chunk = map.GetChunks(oldPos, chunkPos);
-                                    nom.Write((Int16)chunk.Count);
-
-                                    for (int i = 0; i < chunk.Count; i++)
+                                    if (players[id].ChunkPos == chunkPos | players[id].ChunkPos == oldPos)
                                     {
-                                        nom.Write((C_Tile[])chunk[i]);
-                                        nom.Write((C_Destrucible[])chunk[i]);
-                                        nom.Write((C_Creature[])chunk[i]);
-                                    }
+                                        nom = server.CreateMessage();
+                                        nom.Write((byte)DataType.ChunkRequest_Both);
 
-                                    server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
+                                        List<Chunk> chunk = map.GetChunks(oldPos, chunkPos);
+                                        nom.Write((Int16)chunk.Count);
+
+                                        for (int i = 0; i < chunk.Count; i++)
+                                        {
+                                            nom.Write((C_Tile[])chunk[i]);
+                                            nom.Write((C_Destrucible[])chunk[i]);
+                                            nom.Write((C_Creature[])chunk[i]);
+                                        }
+
+                                        server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
+                                    }
                                     break;
                                 case (DataType.PlayerUpdate_Both):
                                     id = msg.GetId();
@@ -168,14 +167,18 @@ namespace Mentula.SurvivalGameServer
                                     server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
                                     break;
                                 case (DataType.Attack_CSend):
+                                    id = msg.GetId();
                                     float rot = msg.ReadFloat();
-                                    int j = map.LoadedChunks.FindIndex(ch => ch.Pos == players[msg.GetId()].ChunkPos);
-                                    List<Creature> crs = ((Creature[])map.LoadedChunks[j].Creatures.ToArray().Clone()).ToList();
+                                    int chunkIndex = map.LoadedChunks.FindIndex(ch => ch.Pos == players[id].ChunkPos);
+
+                                    List<Creature> crs = ((Creature[])map.LoadedChunks[chunkIndex].Creatures.ToArray().Clone()).ToList();
                                     crs.AddRange(players.Values);
-                                    List<Creature> t = Combat.AttackCreatures(players[msg.GetId()], crs.ToArray(), rot, 120, 2);
+
+                                    List<Creature> t = Combat.AttackCreatures(players[id], crs.ToArray(), rot, 120, 2);
                                     if (t.Count != crs.Count)
                                     {
                                         Creature c = crs.FirstOrDefault(ch => !t.Contains(ch));
+
                                         if (players.ContainsValue(c))
                                         {
                                             commHand.Commands.First(cr => cr.m_Command == "KICK").Call(new string[1] { c.Name });
@@ -194,7 +197,7 @@ namespace Mentula.SurvivalGameServer
                                             server.SendMessage(nom, conn, NetDeliveryMethod.ReliableUnordered);
                                         }
                                     }
-                                    map.LoadedChunks[j].Creatures = t.Where(c => !players.Values.Contains(c)).ToList();
+                                    map.LoadedChunks[chunkIndex].Creatures = t.Where(c => !players.Values.Contains(c)).ToList();
                                     break;
                             }
                             break;
@@ -217,11 +220,7 @@ namespace Mentula.SurvivalGameServer
 
         private static void InitServer()
         {
-            NPConf config = new NPConf(Resources.AppName)
-                {
-                    Port = Ips.PORT,
-                    EnableUPnP = true
-                };
+            NPConf config = new NPConf(Resources.AppName) { Port = Ips.PORT, EnableUPnP = true };
             config.EnableMessageType(NIMT.DiscoveryRequest);
             config.EnableMessageType(NIMT.ConnectionApproval);
             server = new NetServer(config);
@@ -230,8 +229,7 @@ namespace Mentula.SurvivalGameServer
         private static void InitMap()
         {
             map = new Map();
-            map.Generate(IntVector2.Zero);
-            NIMT.Data.WriteLine("Generated at: {0}.", IntVector2.Zero);
+            if (map.Generate(IntVector2.Zero)) NIMT.Data.WriteLine("Generated at: {0}.", IntVector2.Zero);
             map.LoadChunks(IntVector2.Zero);
         }
 
@@ -240,104 +238,12 @@ namespace Mentula.SurvivalGameServer
             commHand = new CommandHandler(
                 new Exit(() => Exit = true),
                 new Status(ref server),
-                new Forward(port =>
-                    {
-                        bool forward = server.UPnP.ForwardPort(port, Resources.AppName);
-                        MentulaExtensions.WriteLine(forward ? NIMT.DebugMessage : NIMT.WarningMessage, "{0} to forward port: {1}!", forward ? "Succeted" : "Failed", port);
-                    }),
-                new Kick(name =>
-                    {
-                        bool result = false;
-                        for (int i = 0; i < players.Count; i++)
-                        {
-                            KeyValuePair<long, Creature> k_P = players.ElementAt(i);
-
-                            if (k_P.Value.Name == name)
-                            {
-                                server.Connections.Find(c => c.RemoteUniqueIdentifier == k_P.Key).Disconnect("You have been kicked!");
-                                result = true;
-                                break;
-                            }
-                        }
-
-                        MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player: {1}", result ? "Kicked" : "Failed to kick", name);
-                    }),
-                new Ban(name =>
-                    {
-                        bool result = false;
-                        for (int i = 0; i < players.Count; i++)
-                        {
-                            KeyValuePair<long, Creature> k_P = players.ElementAt(i);
-
-                            if (k_P.Value.Name == name)
-                            {
-                                NetConnection end = server.Connections.Find(c => c.RemoteUniqueIdentifier == k_P.Key);
-                                banned.Add(name, end.RemoteEndPoint.Address);
-                                end.Disconnect("You have been banned!");
-                                result = true;
-                                break;
-                            }
-                        }
-
-                        MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player: {1}", result ? "Banned" : "Failed to ban", name);
-                    }),
-                new UnBan(name =>
-                    {
-                        bool result = false;
-                        for (int i = 0; i < banned.Count; i++)
-                        {
-                            KeyValuePair<string, IPAddress> k_P = banned.ElementAt(i);
-
-                            if (k_P.Key == name)
-                            {
-                                banned.Remove(name);
-                                result = true;
-                                break;
-                            }
-                        }
-
-                        MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player: {1}", result ? "UnBanned" : "Failed to unBan", name);
-                    }),
-                new IncreaseHealth(name =>
-                    {
-                        bool result = false;
-                        for (int i = 0; i < players.Count; i++)
-                        {
-                            KeyValuePair<long, Creature> k_P = players.ElementAt(i);
-
-                            if (k_P.Value.Name == name)
-                            {
-                                k_P.Value.MaxHealth = float.MaxValue;
-                                k_P.Value.Health = float.MaxValue;
-                                result = true;
-                                break;
-                            }
-                        }
-
-                        MentulaExtensions.WriteLine(result ? NIMT.StatusChanged : NIMT.ErrorMessage, "{0} player health: {1}", result ? "Increased" : "Failed to increase", name);
-                    }),
-                new Teleport((name, pos) =>
-                    {
-                        bool result = false;
-                        for (int i = 0; i < players.Count; i++)
-                        {
-                            KeyValuePair<long, Creature> k_P = players.ElementAt(i);
-
-                            if (k_P.Value.Name == name)
-                            {
-                                players[k_P.Key].SetTilePos(pos);
-                                result = true;
-
-                                NOM nom = server.CreateMessage();
-                                nom.Write((byte)DataType.PlayerRePosition_SSend);
-                                nom.Write(players[k_P.Key].ToPlayer());
-                                server.SendMessage(nom, server.Connections.First(c => c.RemoteUniqueIdentifier == k_P.Key), NetDeliveryMethod.ReliableOrdered);
-                                break;
-                            }
-                        }
-
-                        MentulaExtensions.WriteLine(result ? NIMT.Data : NIMT.ErrorMessage, "{0} player: {1}", result ? "Teleported" : "Failed to teleport player", result ? string.Format("{0} to: {1}", name, pos) : name);
-                    }));
+                new Forward(ref server),
+                new Kick(ref server, ref players),
+                new Ban(ref server, ref players, ref banned),
+                new UnBan(ref banned),
+                new IncreaseHealth(ref players),
+                new Teleport(ref server, ref players));
         }
     }
 }

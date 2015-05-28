@@ -1,26 +1,27 @@
-﻿using Mentula.General.Res;
+﻿using Lidgren.Network;
+using Mentula.General.Res;
 using System;
+using NIMT = Lidgren.Network.NetIncomingMessageType;
 
 namespace Mentula.SurvivalGameServer.Commands
 {
     public class Forward : Command
     {
-        private Action<int> callback;
+        private NetServer server;
 
-        public Forward(Action<int> onForward)
+        public Forward(ref NetServer server)
             : base("Forward Port")
         {
-            callback = onForward;
+            this.server = server;
         }
 
         public override void Call(string[] args)
         {
-            if (callback != null)
-            {
-                int port = Ips.PORT;
-                if (args.Length > 0) int.TryParse(args[0], out port); 
-                callback.Invoke(port);
-            }
+            int port = Ips.PORT;
+            if (args.Length > 0) int.TryParse(args[0], out port);
+
+            bool forward = server.UPnP.ForwardPort(port, Resources.AppName);
+            MentulaExtensions.WriteLine(forward ? NIMT.DebugMessage : NIMT.WarningMessage, "{0} to forward port: {1}!", forward ? "Succeted" : "Failed", port);
         }
     }
 }

@@ -111,7 +111,7 @@ namespace Mentula.SurvivalGame
                 {
                     Vector2 mPos = MentulaExtensions.GetMousePos();
                     Vector2 posF = new Vector2(drawer.PreferredBackBufferWidth >> 1, drawer.PreferredBackBufferHeight >> 1);
-                    Vector2 dir = (mPos - posF); dir.Normalize();
+                    Vector2 dir = Vector2.Normalize(mPos - posF);
                     float rot = MEx.VectorToDegrees(dir);
 
                     NOM nom = client.CreateMessage();
@@ -142,7 +142,6 @@ namespace Mentula.SurvivalGame
                     nextSend = NetTime.Now;
                     NOM nom = client.CreateMessage();
                     nom.Write((byte)DataType.InitialMap_Both);
-                    nom.Write(player.ChunkPos);
                     client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
                 }
             }
@@ -163,8 +162,7 @@ namespace Mentula.SurvivalGame
                 switch (msg.MessageType)
                 {
                     case (NIMT.DiscoveryResponse):
-                        NOM nom = client.CreateMessage();
-                        nom.Write(player.Name);
+                        NOM nom = client.CreateMessage(player.Name);
                         client.Connect(msg.SenderEndPoint, nom);
                         break;
                     case (NIMT.StatusChanged):
@@ -187,8 +185,7 @@ namespace Mentula.SurvivalGame
                                         this.Exit();
                                         break;
                                     case (System.Windows.Forms.DialogResult.Retry):
-                                        nom = client.CreateMessage();
-                                        nom.Write(player.Name);
+                                        nom = client.CreateMessage(player.Name);
                                         client.Connect(msg.SenderEndPoint, nom);
                                         break;
                                 }
@@ -208,9 +205,7 @@ namespace Mentula.SurvivalGame
                                     creatures.AddRange(msg.ReadCreatureArr());
                                 }
 
-                                drawer.Tiles = tiles;
-                                drawer.Dest = dest;
-                                drawer.Creatures = creatures;
+                                drawer.SetData(ref tiles, ref dest, ref creatures);
                                 state = GameState.Game;
                                 break;
                             case (DataType.ChunkRequest_Both):
@@ -224,9 +219,7 @@ namespace Mentula.SurvivalGame
                                 }
 
                                 Unload(player.ChunkPos);
-                                drawer.Tiles = tiles;
-                                drawer.Dest = dest;
-                                drawer.Creatures = creatures;
+                                drawer.SetData(ref tiles, ref dest, ref creatures);
                                 break;
                             case (DataType.PlayerUpdate_Both):
                                 players.Clear();
@@ -237,6 +230,7 @@ namespace Mentula.SurvivalGame
                                     C_Player p_C = p_A[i];
                                     players.Add(p_C.Name, p_C);
                                 }
+
                                 drawer.Players = players;
                                 break;
                             case (DataType.PlayerRePosition_SSend):
