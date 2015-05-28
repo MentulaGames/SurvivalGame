@@ -6,8 +6,10 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using XnaGuiItems.Core;
 using XnaGuiItems.Items;
+using ClipBoard = System.Windows.Forms.Clipboard;
 
 namespace Mentula.SurvivalGame
 {
@@ -37,6 +39,7 @@ namespace Mentula.SurvivalGame
         private GuiItem main;
         private int tabIndex;
         private bool tabDown;
+        private bool vDown;
 
         private Action onVSync;
 
@@ -106,15 +109,49 @@ namespace Mentula.SurvivalGame
                     case (0):
                         name = "txtName";
                         break;
-                    case(1):
+                    case (1):
                         name = "txtScrH";
                         break;
-                    case(2):
+                    case (2):
                         name = "txtScrW";
                         break;
                 }
                 main.Controls[name].PerformClick();
             }
+
+            if ((k_S.IsKeyDown(Keys.LeftControl) | k_S.IsKeyUp(Keys.RightControl)) & k_S.IsKeyDown(Keys.V) & !vDown)
+            {
+                vDown = true;
+                string text = "";
+
+                Thread pasteThread = new Thread(() => { if (ClipBoard.ContainsText()) text = ClipBoard.GetText(); });
+                pasteThread.SetApartmentState(ApartmentState.STA);
+                pasteThread.Start();
+
+                TimeSpan time = new TimeSpan();
+                while (pasteThread.ThreadState == ThreadState.Running)
+                {
+                    time.Add(TimeSpan.FromMilliseconds(TimeSpan.TicksPerMillisecond));
+                    if (time.Milliseconds > 100) pasteThread.Abort();
+                }
+
+                string name = "";
+                switch (tabIndex)
+                {
+                    case (0):
+                        name = "txtName";
+                        break;
+                    case (1):
+                        name = "txtScrH";
+                        break;
+                    case (2):
+                        name = "txtScrW";
+                        break;
+                }
+
+                (main.Controls[name] as TextBox).Text = text;
+            }
+            else if (k_S.IsKeyUp(Keys.V)) vDown = false;
         }
 
         public void UpdateGame(float delta, ref C_Player player)
@@ -201,6 +238,7 @@ namespace Mentula.SurvivalGame
             int scrW = GraphicsDevice.Viewport.Width;
             int scrH = GraphicsDevice.Viewport.Height;
 
+            string name = main != null ? (main.Controls["txtName"] as TextBox).Text : RNG.RIntFromString("Dicks").ToString();
             main = new GuiItem(GraphicsDevice, GraphicsDevice.Viewport.Bounds) { BackColor = Color.LawnGreen };
 
             Label lblName = new Label(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3, 150, 21), menuF) { AutoSize = true, BackColor = main.BackColor, Text = "UserName:" };
@@ -211,7 +249,7 @@ namespace Mentula.SurvivalGame
             Button btnScrA = new Button(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 50, 200, 21), menuF) { Text = "Resize window" };
             Button btnVSync = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 25, 250, 21), menuF) { Text = "Toggle VSync: on" };
 
-            TextBox txtName = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 1) + 100, scrH / 3, 150, 21), menuF) { AllowDrop = true, FlickerStyle = FlickerStyle.Fast, Name = "txtName" };
+            TextBox txtName = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 1) + 100, scrH / 3, 150, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = name, Name = "txtName" };
             TextBox txtScrH = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3, 50, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = scrH.ToString(), Name = "txtScrH" };
             TextBox txtScrW = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3 + 25, 50, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = scrW.ToString(), Name = "txtScrW" };
 
