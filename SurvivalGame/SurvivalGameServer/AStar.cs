@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Mentula.General;
+using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,14 +10,14 @@ namespace Mentula.SurvivalGameServer
         public const int MOVE = 10;
 
         private static Map _map;
-        private static List<Vector2> _open;
-        private static List<Vector2> _closed;
+        private static List<IntVector2> _open;
+        private static List<IntVector2> _closed;
 
         public static Node[] GetRoute(Map map)
         {
             _map = map;
-            _open = new List<Vector2>();
-            _closed = new List<Vector2>();
+            _open = new List<IntVector2>();
+            _closed = new List<IntVector2>();
             Node current = _map.GetStartNode();
 
             while (true)
@@ -24,7 +25,7 @@ namespace Mentula.SurvivalGameServer
                 if (_open.Contains(current.Position)) _open.Remove(current.Position);
                 _closed.Add(current.Position);
 
-                Vector2[] ajNodes = FilterNodes(GetAjasonNodes(current.Position));
+                IntVector2[] ajNodes = FilterNodes(GetAjasonNodes(current.Position));
                 if (ajNodes.Contains(map.endPos)) break;
 
                 for (int i = 0; i < ajNodes.Length; i++)
@@ -44,7 +45,7 @@ namespace Mentula.SurvivalGameServer
             return Callback(ref end);
         }
 
-        private static Node[] GetAjasonNodes(Vector2 nodePos)
+        private static Node[] GetAjasonNodes(IntVector2 nodePos)
         {
             List<Node> returnV = new List<Node>();
             Rectangle dim = _map.GetDim();
@@ -57,9 +58,9 @@ namespace Mentula.SurvivalGameServer
             return returnV.ToArray();
         }
 
-        private static Vector2[] FilterNodes(Node[] ajasonNodes)
+        private static IntVector2[] FilterNodes(Node[] ajasonNodes)
         {
-            List<Vector2> result = new List<Vector2>();
+            List<IntVector2> result = new List<IntVector2>();
 
             for (int i = 0; i < ajasonNodes.Length; i++)
             {
@@ -91,7 +92,7 @@ namespace Mentula.SurvivalGameServer
 
             for (int i = 0; i < _open.Count; i++)
             {
-                Vector2 cur = _open[i];
+                IntVector2 cur = _open[i];
 
                 result.Add(_map[cur.X, cur.Y]);
             }
@@ -117,7 +118,7 @@ namespace Mentula.SurvivalGameServer
 
         public class Node
         {
-            public Vector2 Position { get; private set; }
+            public IntVector2 Position { get; private set; }
             public int Heuristic { get; private set; }
 
             public int FValue { get { return GValue + Heuristic; } }
@@ -128,27 +129,27 @@ namespace Mentula.SurvivalGameServer
 
             private Node _parent;
 
-            public Node(Vector2 position)
+            public Node(IntVector2 position)
             {
                 Position = position;
             }
 
-            public Node(Vector2 position, int g)
+            public Node(IntVector2 position, int g)
             {
                 Position = position;
                 GValue = g;
             }
 
-            public Node(Vector2 position, int g, bool pathable)
+            public Node(IntVector2 position, int g, bool pathable)
             {
                 Position = position;
                 GValue = g;
                 wall = !pathable;
             }
 
-            public void SetHeuristic(Vector2 endPoint)
+            public void SetHeuristic(IntVector2 endPoint)
             {
-                Heuristic = (int)Vector2.Distance(Position, endPoint);
+                Heuristic = IntVector2.Distance(Position, endPoint);
             }
 
             public void SetParent(Node parent, int move)
@@ -161,8 +162,8 @@ namespace Mentula.SurvivalGameServer
         public class Map
         {
             public Node[,] nodes;
-            public Vector2 startPos { get; private set; }
-            public Vector2 endPos { get; private set; }
+            public IntVector2 startPos { get; private set; }
+            public IntVector2 endPos { get; private set; }
 
             private int _width;
             private int _height;
@@ -174,7 +175,7 @@ namespace Mentula.SurvivalGameServer
                 EmptyMap();
             }
 
-            public Map(int width, int height, Vector2 start, Vector2 end)
+            public Map(int width, int height, IntVector2 start, IntVector2 end)
             {
                 _width = width;
                 _height = height;
@@ -184,7 +185,7 @@ namespace Mentula.SurvivalGameServer
                 SetHeuristic();
             }
 
-            public Map(int width, Vector2 start, Vector2 end, Node[] map)
+            public Map(int width, IntVector2 start, IntVector2 end, Node[] map)
             {
                 _width = width;
                 _height = map.Length / width;
@@ -215,12 +216,12 @@ namespace Mentula.SurvivalGameServer
                 }
             }
 
-            public void SetStart(Vector2 pos)
+            public void SetStart(IntVector2 pos)
             {
                 startPos = pos;
             }
 
-            public void SetEnd(Vector2 pos)
+            public void SetEnd(IntVector2 pos)
             {
                 endPos = pos;
                 SetHeuristic();
@@ -233,12 +234,12 @@ namespace Mentula.SurvivalGameServer
                 {
                     for (int x = 0; x < _width; x++)
                     {
-                        nodes[x, y] = new Node(new Vector2(x, y));
+                        nodes[x, y] = new Node(new IntVector2(x, y));
                     }
                 }
 
-                startPos = -Vector2.One;
-                endPos = -Vector2.One;
+                startPos = -IntVector2.One;
+                endPos = -IntVector2.One;
             }
 
             private void SetHeuristic()

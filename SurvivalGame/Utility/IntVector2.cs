@@ -19,10 +19,10 @@ namespace Mentula.General
         /// <summary> Returns a IntVector2 with both of its components set to zero. </summary>
         public static IntVector2 Zero { get { return pZero; } }
 
+        /// <summary> Gets the area of the vector. </summary>
+        public int Area { get { return X * Y; } }
         /// <summary> Gets the length of the vector. </summary>
         public float Length { get { return (float)Math.Sqrt(Math.Pow(X, 2) + Math.Pow(Y, 2)); } }
-        /// <summary> Gets the length of the vector squared. </summary>
-        public float LengthSquared { get { return (float)Math.Pow(Length, 2); } }
         /// <summary>
         /// Gets or sets the x-component of the vector.
         /// </summary>

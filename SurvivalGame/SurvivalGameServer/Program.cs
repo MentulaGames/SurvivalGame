@@ -59,9 +59,9 @@ namespace Mentula.SurvivalGameServer
                             long id = msg.GetId();
                             string name = msg.ReadString();
 
-                            if (string.IsNullOrEmpty(name) | name.Length > 20)
+                            if (string.IsNullOrEmpty(name) | name.Length > 16)
                             {
-                                msg.SenderConnection.Deny("Your name must between 1 and 20 characters!");
+                                msg.SenderConnection.Deny("Your name must between 1 and 16 characters!");
                                 break;
                             }
                             else if (banned.Values.Contains(msg.SenderConnection.RemoteEndPoint.Address))

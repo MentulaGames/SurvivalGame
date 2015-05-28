@@ -9,7 +9,7 @@ namespace Mentula.Network.Xna
 {
     public static class MentulaExtensions
     {
-        private static int ChunkSize;
+        public static int ChunkSize;
 
         static MentulaExtensions()
         {

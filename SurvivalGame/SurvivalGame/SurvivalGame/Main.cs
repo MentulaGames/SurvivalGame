@@ -105,7 +105,23 @@ namespace Mentula.SurvivalGame
                 if (k_State.IsKeyDown(Keys.A)) inp.X = -1;
                 else if (k_State.IsKeyDown(Keys.D)) inp.X = 1;
 
-                if (inp != Vector2.Zero) player.Move(Vector2.Normalize(inp) * 10f * delta);
+                if (inp != Vector2.Zero)
+                {
+                    inp = Vector2.Normalize(inp) * 10f * delta;
+                    IntVector2 old = new IntVector2(player.GetTilePos());
+                    IntVector2 @new = new IntVector2(Actor.FormatPos(player.GetTilePos() + inp));
+                    player.Move(inp);
+
+                    if ((@new - old).Length > 0)
+                    {
+                        C_Destrucible c_D_LU = dest.FirstOrDefault(d => d.ChunkPos == player.ChunkPos & d.Pos == @new);
+                        C_Destrucible c_D_RU = dest.FirstOrDefault(d => d.ChunkPos == player.ChunkPos & d.Pos == new IntVector2(@new.X + 1, @new.Y));
+                        C_Destrucible c_D_LD = dest.FirstOrDefault(d => d.ChunkPos == player.ChunkPos & d.Pos == new IntVector2(@new.X, @new.Y + 1));
+                        C_Destrucible c_D_RD = dest.FirstOrDefault(d => d.ChunkPos == player.ChunkPos & d.Pos == new IntVector2(@new.X + 1, @new.Y + 1));
+
+                        if ((c_D_LU != null && !c_D_LU.Walkable) | (c_D_RU != null && !c_D_RU.Walkable) | (c_D_LD != null && !c_D_LD.Walkable) | (c_D_RD != null && !c_D_RD.Walkable)) player.Move(-inp);
+                    }
+                }
 
                 if (Mouse.GetState().LeftButton == BtnSt.Pressed & now > attackTime)
                 {
