@@ -16,18 +16,22 @@ namespace Mentula.General.MathExtensions
         {
             return (value - Min) / (Max - Min);
         }
+
         public static float GetMaxDiff(Vector2 a, Vector2 b)
         {
             return math.Max(math.Abs(a.X - b.X), math.Abs(a.Y - b.Y));
         }
+
         public static float GetMaxDiff(IntVector2 a, IntVector2 b)
         {
             return math.Max(math.Abs(a.X - b.X), math.Abs(a.Y - b.Y));
         }
+
         public static float GetMinDiff(Vector2 a, Vector2 b)
         {
             return math.Min(math.Abs(a.X - b.X), math.Abs(a.Y - b.Y));
         }
+
         public static float GetMinDiff(IntVector2 a, IntVector2 b)
         {
             return math.Min(math.Abs(a.X - b.X), math.Abs(a.Y - b.Y));
@@ -46,6 +50,7 @@ namespace Mentula.General.MathExtensions
         {
             v.Normalize(); return (float)math.Atan2(v.Y, v.X) * (float)(180f / math.PI);
         }
+
         public static int Round(double d)
         {
             int a = (int)d;

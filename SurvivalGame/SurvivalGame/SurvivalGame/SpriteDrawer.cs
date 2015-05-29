@@ -54,6 +54,10 @@ namespace Mentula.SurvivalGame
             counter = new FPS();
             this.debug = debug;
 
+            PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            ApplyChanges();
+
             onVSync = () =>
             {
                 SynchronizeWithVerticalRetrace = !SynchronizeWithVerticalRetrace;

@@ -1,4 +1,7 @@
-﻿namespace Mentula.General
+﻿using Mentula.Network.Xna;
+using Microsoft.Xna.Framework;
+
+namespace Mentula.General
 {
     public class C_Destrucible : Destructible
     {
@@ -14,6 +17,11 @@
             : base(health, pos, texture, layer, walkable)
         {
             ChunkPos = chunkPos;
+        }
+
+        public static implicit operator bool(C_Destrucible d)
+        {
+            return d != null && !d.Walkable;
         }
     }
 }

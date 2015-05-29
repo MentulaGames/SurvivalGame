@@ -353,7 +353,7 @@ namespace Mentula.General
             {
                 int hash = (int)2166136261;
                 hash = hash * 16777619 ^ X.GetHashCode();
-                hash = hash * 16777619 ^ Y.GetHashCode();
+                hash += hash * 16777619 ^ Y.GetHashCode();
                 return hash;
             }
         }

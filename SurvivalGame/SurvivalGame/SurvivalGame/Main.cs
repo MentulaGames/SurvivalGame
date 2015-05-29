@@ -72,7 +72,7 @@ namespace Mentula.SurvivalGame
             state = GameState.Loading;
             player = new C_Player();
             oldPos = player.ChunkPos;
-
+            
             drawer.Load(Content, ref player, "R/Textures", "Fonts/ConsoleFont", "Fonts/MenuFont", "Fonts/NameFont", "Actors/Player_Temp", name =>
             {
                 player.Name = name;
@@ -107,27 +107,35 @@ namespace Mentula.SurvivalGame
 
                 if (inp != Vector2.Zero)
                 {
-                    inp = Vector2.Normalize(inp) * 10f * delta;
-                    IntVector2 old = new IntVector2(player.GetTilePos());
-                    IntVector2 @new = new IntVector2(Actor.FormatPos(player.GetTilePos() + inp));
+                    inp = Vector2.Normalize(inp) * 100f * delta;
+                    IntVector2 oldTPos = new IntVector2(player.GetTilePos());
+                    Vector2 newTPos = Actor.FormatPos(player.GetTilePos() + inp);
+                    IntVector2 iNewTPos = new IntVector2(newTPos);
+
                     player.Move(inp);
 
-                    if ((@new - old).Length > 0)
-                    {
-                        C_Destrucible c_D_LU = dest.FirstOrDefault(d => d.ChunkPos == player.ChunkPos & d.Pos == @new);
-                        C_Destrucible c_D_RU = dest.FirstOrDefault(d => d.ChunkPos == player.ChunkPos & d.Pos == new IntVector2(@new.X + 1, @new.Y));
-                        C_Destrucible c_D_LD = dest.FirstOrDefault(d => d.ChunkPos == player.ChunkPos & d.Pos == new IntVector2(@new.X, @new.Y + 1));
-                        C_Destrucible c_D_RD = dest.FirstOrDefault(d => d.ChunkPos == player.ChunkPos & d.Pos == new IntVector2(@new.X + 1, @new.Y + 1));
+                    /*IntVector2 NW_CPos = player.ChunkPos;
+                    IntVector2 NE_CPos = player.GetTilePos().X >= 31 ? player.ChunkPos + IntVector2.UnitX : player.ChunkPos;
+                    IntVector2 SW_CPos = player.GetTilePos().Y >= 31 ? player.ChunkPos + IntVector2.UnitY : player.ChunkPos;
+                    IntVector2 SE_CPos = NE_CPos.X > player.ChunkPos.X & SW_CPos.Y > player.ChunkPos.Y ? player.ChunkPos + IntVector2.One : (NE_CPos.X > player.ChunkPos.X ? player.ChunkPos + IntVector2.UnitX : ((NE_CPos.Y > player.ChunkPos.Y ? player.ChunkPos + IntVector2.UnitY : player.ChunkPos)));
 
-                        if ((c_D_LU != null && !c_D_LU.Walkable) | (c_D_RU != null && !c_D_RU.Walkable) | (c_D_LD != null && !c_D_LD.Walkable) | (c_D_RD != null && !c_D_RD.Walkable)) player.Move(-inp);
-                    }
+                    IntVector2 NW_TPos = new IntVector2(player.GetTilePos());
+                    IntVector2 NE_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(.95f, 0)));
+                    IntVector2 SW_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(0, .95f)));
+                    IntVector2 SE_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(.95f)));
+                        
+                    C_Destrucible NW = dest.FirstOrDefault(d => d.ChunkPos == NW_CPos & d.Pos == NW_TPos);
+                    C_Destrucible NE = dest.FirstOrDefault(d => d.ChunkPos == NE_CPos & d.Pos == NE_TPos);
+                    C_Destrucible SW = dest.FirstOrDefault(d => d.ChunkPos == SW_CPos & d.Pos == SW_TPos);
+                    C_Destrucible SE = dest.FirstOrDefault(d => d.ChunkPos == SE_CPos & d.Pos == SE_TPos);
+
+                    if (NW | NE | SW | SE) player.Move(-inp);*/
                 }
 
                 if (Mouse.GetState().LeftButton == BtnSt.Pressed & now > attackTime)
                 {
-                    Vector2 mPos = MentulaExtensions.GetMousePos();
                     Vector2 posF = new Vector2(drawer.PreferredBackBufferWidth >> 1, drawer.PreferredBackBufferHeight >> 1);
-                    Vector2 dir = Vector2.Normalize(mPos - posF);
+                    Vector2 dir = Vector2.Normalize(MentulaExtensions.GetMousePos() - posF);
                     float rot = MEx.VectorToDegrees(dir);
 
                     NOM nom = client.CreateMessage();
@@ -186,7 +194,6 @@ namespace Mentula.SurvivalGame
                         switch (status)
                         {
                             case (NCS.Connected):
-                                player.ChunkPos = IntVector2.Zero;
                                 player.SetTilePos(Vector2.Zero);
                                 break;
                             case (NCS.Disconnected):
@@ -276,6 +283,7 @@ namespace Mentula.SurvivalGame
                     drawer.UpdateGame(delta, ref player);
                     break;
             }
+
             Thread.Sleep(1);
             base.Update(gameTime);
         }
