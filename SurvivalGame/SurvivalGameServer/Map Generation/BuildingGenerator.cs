@@ -61,12 +61,12 @@ namespace Mentula.SurvivalGameServer
             }
             for (int i = 0; i < a.Count - 1; i++)
             {
-                Vector2 startpos = new Vector2(a[i].X + a[i].Width / 2, a[i].Y + a[i].Height / 2);
-                Vector2 endpos = new Vector2(a[i + 1].X + a[i + 1].Width / 2, a[i + 1].Y + a[i + 1].Height / 2);
+                IntVector2 startpos = new IntVector2(a[i].X + a[i].Width / 2, a[i].Y + a[i].Height / 2);
+                IntVector2 endpos = new IntVector2(a[i + 1].X + a[i + 1].Width / 2, a[i + 1].Y + a[i + 1].Height / 2);
                 AStar.Node[] NodeArray = new AStar.Node[size.X * size.Y];
                 for (int j = 0; j < NodeArray.Length; j++)
                 {
-                    Vector2 p = new Vector2(j%size.X,j/size.X);
+                    IntVector2 p = new IntVector2(j%size.X,j/size.X);
                     if (dList[j].Walkable)
                     {
                         NodeArray[j] = new AStar.Node(p, -10);
@@ -83,7 +83,7 @@ namespace Mentula.SurvivalGameServer
                     int index= (int)(path[j].Position.X%size.X+path[j].Position.Y*size.X);
                     if (!dList[index].Walkable)
                     {
-                        dList[index] = new Destructible(100,new IntVector2( path[j].Position) + pos, 12, 2, true);
+                        dList[index] = new Destructible(100, path[j].Position + pos, 12, 2, true);
                     }
                 }
             }
