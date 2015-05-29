@@ -34,6 +34,24 @@ namespace Mentula.SurvivalGameServer.Commands
                 {
                     Vector2 pos = new Vector2(x, y);
                     bool result = false;
+
+                    if (args[0].ToUpper() == "ALL")
+                    {
+                        for (int i = 0; i < players.Count; i++)
+                        {
+                            KeyValuePair<long, Creature> k_P = players.ElementAt(i);
+                            players[k_P.Key].SetTilePos(pos);
+
+                            NOM nom = server.CreateMessage();
+                            nom.Write((byte)DataType.PlayerRePosition_SSend);
+                            nom.Write(players[k_P.Key].ToPlayer());
+                            server.SendMessage(nom, server.Connections.Find(c => c.RemoteUniqueIdentifier == k_P.Key), NetDeliveryMethod.ReliableOrdered);
+                        }
+
+                        NIMT.Data.WriteLine("Teleported All to: {0}", pos);
+                        return;
+                    }
+
                     for (int i = 0; i < players.Count; i++)
                     {
                         KeyValuePair<long, Creature> k_P = players.ElementAt(i);
