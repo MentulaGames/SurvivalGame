@@ -267,7 +267,7 @@ namespace Mentula.SurvivalGame
                                 if (health <= 0) creatures.RemoveAll(c => c.ChunkPos == cPos & c.Pos == pos);
                                 else creatures.Find(c => c.ChunkPos == cPos & c.Pos == pos).Health = health;
 
-                                drawer.Creatures = creatures;
+                                drawer.Creatures = creatures.ToArray();
                                 break;
                         }
                         break;

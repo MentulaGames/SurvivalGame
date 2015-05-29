@@ -15,9 +15,9 @@ namespace Mentula.SurvivalGame
 {
     public class SpriteDrawer : GraphicsDeviceManager
     {
-        public List<C_Tile> Tiles;
-        public List<C_Destrucible> Dest;
-        public List<C_Creature> Creatures;
+        public C_Tile[] Tiles;
+        public C_Destrucible[] Dest;
+        public C_Creature[] Creatures;
         public Dictionary<string, C_Player> Players;
 
         private SpriteBatch batch;
@@ -46,9 +46,9 @@ namespace Mentula.SurvivalGame
         public SpriteDrawer(Game game, bool debug)
             : base(game)
         {
-            Tiles = new List<C_Tile>();
-            Dest = new List<C_Destrucible>();
-            Creatures = new List<C_Creature>();
+            Tiles = new C_Tile[0];
+            Dest = new C_Destrucible[0];
+            Creatures = new C_Creature[0];
             Players = new Dictionary<string, C_Player>();
 
             counter = new FPS();
@@ -84,9 +84,9 @@ namespace Mentula.SurvivalGame
 
         public void SetData(ref List<C_Tile> tiles, ref List<C_Destrucible> dest, ref List<C_Creature> crs)
         {
-            Tiles = tiles;
-            Dest = dest;
-            Creatures = crs;
+            Tiles = tiles.ToArray();
+            Dest = dest.ToArray();
+            Creatures = crs.ToArray();
         }
 
         public void UpdateMain(float delta, MouseState m_S, ref KeyboardState k_S)
@@ -184,21 +184,21 @@ namespace Mentula.SurvivalGame
                 case (GameState.Game):
                     Vector2 relPos;
 
-                    for (int i = 0; i < Tiles.Count; i++)
+                    for (int i = 0; i < Tiles.Length; i++)
                     {
                         C_Tile t = Tiles[i];
 
                         if (cam.TryGetRelativePosition(t.ChunkPos, t.Pos.ToVector2(), out relPos)) batch.Draw(texC[t.TextureId], relPos, Color.White, t.Layer);
                     }
 
-                    for (int i = 0; i < Dest.Count; i++)
+                    for (int i = 0; i < Dest.Length; i++)
                     {
                         C_Destrucible d = Dest[i];
 
                         if (cam.TryGetRelativePosition(d.ChunkPos, d.Pos.ToVector2(), out relPos)) batch.Draw(texC[d.TextureId], relPos, Color.White, d.Layer);
                     }
 
-                    for (int i = 0; i < Creatures.Count; i++)
+                    for (int i = 0; i < Creatures.Length; i++)
                     {
                         C_Creature c = Creatures[i];
 
@@ -228,8 +228,8 @@ namespace Mentula.SurvivalGame
                     if (debug)
                     {
                         batch.DrawString(debugF, string.Format("Fps: {0}", counter.ToString()), Vector2.Zero, Color.Red);
-                        batch.DrawString(debugF, string.Format("Dest: {0}", Dest.Count), new Vector2(0, 16), Color.Red);
-                        batch.DrawString(debugF, string.Format("Creatures: {0}", Creatures.Count), new Vector2(0, 32), Color.Red);
+                        batch.DrawString(debugF, string.Format("Dest: {0}", Dest.Length), new Vector2(0, 16), Color.Red);
+                        batch.DrawString(debugF, string.Format("Creatures: {0}", Creatures.Length), new Vector2(0, 32), Color.Red);
                         batch.DrawString(debugF, string.Format("Player Pos: {0}", player.GetTotalPos()), new Vector2(0, 48), Color.Red);
                     }
                     break;
