@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Mentula.General
 {
-    [DebuggerDisplay("CPos={ChunkPos}, TPos={tilePos}")]
+    [DebuggerDisplay("CPos={ChunkPos},TPos={tilePos},Total={GetTotalPos()}")]
     public class Actor
     {
         public IntVector2 ChunkPos;

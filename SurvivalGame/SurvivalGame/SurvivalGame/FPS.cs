@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Mentula.SurvivalGame
 {
+    [DebuggerDisplay("Avarage={Avarage}")]
     public class FPS
     {
         protected const int FRAME_BUFFER = 100;

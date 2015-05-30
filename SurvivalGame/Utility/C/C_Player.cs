@@ -4,6 +4,8 @@ namespace Mentula.General
 {
     public class C_Player : Actor
     {
+        public const float Diff = .8f;
+        public const float Movement = 10f;
         public string Name;
 
         public C_Player()

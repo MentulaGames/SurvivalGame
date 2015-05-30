@@ -175,7 +175,7 @@ namespace Mentula.SurvivalGame
         {
             counter.Update(delta);
 
-            batch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
+            batch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.Identity);
             switch (state)
             {
                 case (GameState.MainMenu):
@@ -242,7 +242,7 @@ namespace Mentula.SurvivalGame
             int scrW = GraphicsDevice.Viewport.Width;
             int scrH = GraphicsDevice.Viewport.Height;
 
-            string name = main != null ? (main.Controls["txtName"] as TextBox).Text : RNG.RIntFromString("Dicks").ToString();
+            string name = main != null ? (main.Controls["txtName"] as TextBox).Text : new Random().Next().ToString();
             main = new GuiItem(GraphicsDevice, GraphicsDevice.Viewport.Bounds) { BackColor = Color.LawnGreen };
 
             Label lblName = new Label(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3, 150, 21), menuF) { AutoSize = true, BackColor = main.BackColor, Text = "UserName:" };
