@@ -56,5 +56,10 @@ namespace Mentula.General.MathExtensions
             int a = (int)d;
             return a + ((d > 0) & (a < (int)(d + 0.5)) ? 1 : ((d < 0) & a > (int)(d - 0.5) ? -1 : 0));
         }
+
+        public static Vector2 Abs(Vector2 vec)
+        {
+            return new Vector2(vec.X < 0 ? vec.X * -1 : vec.X, vec.Y < 0 ? vec.Y * -1 : vec.Y);
+        }
     }
 }

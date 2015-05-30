@@ -175,7 +175,7 @@ namespace Mentula.SurvivalGame
         {
             counter.Update(delta);
 
-            batch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.Identity);
+            batch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.Identity);
             switch (state)
             {
                 case (GameState.MainMenu):

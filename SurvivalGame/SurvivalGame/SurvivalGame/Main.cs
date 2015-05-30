@@ -153,9 +153,9 @@ namespace Mentula.SurvivalGame
                     {
                         if (SE & !NE & !SW)
                         {
-                            Vector2 dist = player.GetTotalPos() - (SE_CPos * MentulaExtensions.ChunkSize + SE_TPos).ToVector2();
-                            if (dist.X < dist.Y) outp.X = -inp.X;
-                            else if (dist.X > dist.Y) outp.Y = -inp.Y;
+                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (SE_CPos * MentulaExtensions.ChunkSize + SE_TPos).ToVector2());
+                            if (dist.X > dist.Y) outp.X = -inp.X;
+                            else if (dist.X < dist.Y) outp.Y = -inp.Y;
                             else outp = -inp;
                         }
                         else if ((SE | NE) & !SW) outp.X = -inp.X;                  // Move right false, down
@@ -166,7 +166,7 @@ namespace Mentula.SurvivalGame
                     {
                         if (NE & !SE & !NW)
                         {
-                            Vector2 dist = player.GetTotalPos() - (NE_CPos * MentulaExtensions.ChunkSize + NE_TPos).ToVector2();
+                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (NE_CPos * MentulaExtensions.ChunkSize + NE_TPos).ToVector2());
                             if (dist.X > dist.Y) outp.X = -inp.X;
                             else if (dist.X < dist.Y) outp.Y = -inp.Y;
                             else outp = -inp;
@@ -179,9 +179,9 @@ namespace Mentula.SurvivalGame
                     {
                         if (SW & !NW & !SE)
                         {
-                            Vector2 dist = player.GetTotalPos() - (SW_CPos * MentulaExtensions.ChunkSize + SW_TPos).ToVector2();
-                            if (dist.X < dist.Y) outp.X = -inp.X;
-                            else if (dist.X > dist.Y) outp.Y = -inp.Y;
+                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (SW_CPos * MentulaExtensions.ChunkSize + SW_TPos).ToVector2());
+                            if (dist.X > dist.Y) outp.X = -inp.X;
+                            else if (dist.X < dist.Y) outp.Y = -inp.Y;
                             else outp = -inp;
                         }
                         else if ((SW | NW) & !SE) outp.X = -inp.X;                  // Move left false, down
@@ -192,7 +192,7 @@ namespace Mentula.SurvivalGame
                     {
                         if (NW & !SW & !NE)
                         {
-                            Vector2 dist = player.GetTotalPos() - (NW_CPos * MentulaExtensions.ChunkSize + NW_TPos).ToVector2();
+                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (NW_CPos * MentulaExtensions.ChunkSize + NW_TPos).ToVector2());
                             if (dist.X > dist.Y) outp.X = -inp.X;
                             else if (dist.X < dist.Y) outp.Y = -inp.Y;
                             else outp = -inp;
@@ -226,7 +226,7 @@ namespace Mentula.SurvivalGame
 
                     nom.Write(player.ChunkPos);
                     nom.Write(oldPos);
-                    client.SendMessage(nom, NetDeliveryMethod.Unreliable);
+                    client.SendMessage(nom, NetDeliveryMethod.ReliableOrdered);
                     oldPos = player.ChunkPos;
                 }
 
