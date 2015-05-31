@@ -91,6 +91,13 @@ namespace Mentula.SurvivalGameServer
                             Chunk generatedChunk = HouseGenerator.GenerateHouse(new IntVector2(pos.X + x, pos.Y + y));
                             ChunkList.Add(generatedChunk);
                         }
+                        else if (MegaChunkList[mchunknum].ChunkData[xinmchunk % 128 + (yinmchunk * MCS)].ChunkType == 2)
+                        {
+                            gen = true;
+                            Chunk generatedChunk = new Chunk(new IntVector2(pos.X + x, pos.Y + y));
+                            generatedChunk.Generate(9);
+                            ChunkList.Add(generatedChunk);
+                        }
                         else
                         {
                             gen = true;
