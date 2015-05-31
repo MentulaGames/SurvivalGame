@@ -1,6 +1,7 @@
 ﻿using Mentula.General;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Mentula.SurvivalGameServer
@@ -116,6 +117,7 @@ namespace Mentula.SurvivalGameServer
             return result.ToArray();
         }
 
+        [DebuggerDisplay("Pos={Position}")]
         public class Node
         {
             public IntVector2 Position { get; private set; }
