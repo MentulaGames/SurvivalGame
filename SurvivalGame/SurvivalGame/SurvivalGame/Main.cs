@@ -105,6 +105,8 @@ namespace Mentula.SurvivalGame
                 if (k_State.IsKeyDown(Keys.S)) inp.Y += 1;
                 if (k_State.IsKeyDown(Keys.A)) inp.X -= 1;
                 if (k_State.IsKeyDown(Keys.D)) inp.X += 1;
+                if (k_State.IsKeyDown(Keys.F)) { drawer.IsFullScreen = true; drawer.ApplyChanges(); }
+                if (k_State.IsKeyDown(Keys.PrintScreen)) drawer.TakeScreenshot();
 
                 if (inp != Vector2.Zero)
                 {
@@ -132,18 +134,18 @@ namespace Mentula.SurvivalGame
                     {
                         C_Destrucible d = dest[i];
 
-                        if (NW_T == null & d.ChunkPos == NW_CPos & d.Pos == NW_TPos) NW_T = d;
-                        if (NE_T == null & d.ChunkPos == NE_CPos & d.Pos == NE_TPos) NE_T = d;
-                        if (SW_T == null & d.ChunkPos == SW_CPos & d.Pos == SW_TPos) SW_T = d;
-                        if (SE_T == null & d.ChunkPos == SE_CPos & d.Pos == SE_TPos) SE_T = d;
+                        if (!NW_T.HasValue & d.ChunkPos == NW_CPos & d.Pos == NW_TPos) NW_T = d;
+                        if (!NE_T.HasValue & d.ChunkPos == NE_CPos & d.Pos == NE_TPos) NE_T = d;
+                        if (!SW_T.HasValue & d.ChunkPos == SW_CPos & d.Pos == SW_TPos) SW_T = d;
+                        if (!SE_T.HasValue & d.ChunkPos == SE_CPos & d.Pos == SE_TPos) SE_T = d;
 
-                        if (NW_T != null & NE_T != null & SW_T != null & SE_T != null) break;
+                        if (NW_T.HasValue & NE_T.HasValue & SW_T.HasValue & SE_T.HasValue) break;
                     }
 
-                    bool NW = NW_T != null ? (bool)NW_T : false;
-                    bool NE = NE_T != null ? (bool)NE_T : false;
-                    bool SW = SW_T != null ? (bool)SW_T : false;
-                    bool SE = SE_T != null ? (bool)SE_T : false;
+                    bool NW = NW_T.HasValue ? NW_T.Value : false;
+                    bool NE = NE_T.HasValue ? NE_T.Value : false;
+                    bool SW = SW_T.HasValue ? SW_T.Value : false;
+                    bool SE = SE_T.HasValue ? SE_T.Value : false;
 
                     if ((NE | SE) & inp.X > 0 & inp.Y == 0) outp.X = -inp.X;        // Move right false
                     else if ((NW | SW) & inp.X < 0 & inp.Y == 0) outp.X = -inp.X;   // Move left false
@@ -226,7 +228,7 @@ namespace Mentula.SurvivalGame
 
                     nom.Write(player.ChunkPos);
                     nom.Write(oldPos);
-                    client.SendMessage(nom, NetDeliveryMethod.ReliableOrdered);
+                    client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
                     oldPos = player.ChunkPos;
                 }
 

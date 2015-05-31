@@ -56,7 +56,6 @@ namespace Mentula.SurvivalGame
 
             PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-            ApplyChanges();
 
             onVSync = () =>
             {
@@ -79,7 +78,7 @@ namespace Mentula.SurvivalGame
             this.pTexture = content.Load<Texture2D>(pTexture);
             this.player = player;
 
-            InitMain(onDiscovery);
+            InitMain(onDiscovery, content.Load<Texture2D>("MainMenuBackground"));
         }
 
         public void SetData(ref List<C_Tile> tiles, ref List<C_Destrucible> dest, ref List<C_Creature> crs)
@@ -175,7 +174,7 @@ namespace Mentula.SurvivalGame
         {
             counter.Update(delta);
 
-            batch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.Identity);
+            batch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
             switch (state)
             {
                 case (GameState.MainMenu):
@@ -237,25 +236,25 @@ namespace Mentula.SurvivalGame
             batch.End();
         }
 
-        private void InitMain(Action<string> onDisc)
+        private void InitMain(Action<string> onDisc, Texture2D background)
         {
             int scrW = GraphicsDevice.Viewport.Width;
             int scrH = GraphicsDevice.Viewport.Height;
 
             string name = main != null ? (main.Controls["txtName"] as TextBox).Text : new Random().Next().ToString();
-            main = new GuiItem(GraphicsDevice, GraphicsDevice.Viewport.Bounds) { BackColor = Color.LawnGreen };
+            main = new GuiItem(GraphicsDevice, GraphicsDevice.Viewport.Bounds) { BackgroundImage = background };
 
-            Label lblName = new Label(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3, 150, 21), menuF) { AutoSize = true, BackColor = main.BackColor, Text = "UserName:" };
-            Label lblScrH = new Label(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3, 150, 21), menuF) { AutoSize = true, BackColor = main.BackColor, Text = "Screen height :" };
-            Label lblScrW = new Label(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 25, 150, 21), menuF) { AutoSize = true, BackColor = main.BackColor, Text = "Screen width  :" };
+            Label lblName = new Label(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3, 150, 22), menuF) { AutoSize = true, BackColor = Color.Transparent, Text = "UserName:" };
+            Label lblScrH = new Label(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3, 150, 22), menuF) { AutoSize = true, BackColor = Color.Transparent, Text = "Screen height :" };
+            Label lblScrW = new Label(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 25, 150, 22), menuF) { AutoSize = true, BackColor = Color.Transparent, Text = "Screen width  :" };
 
-            Button btnDisc = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 50, 250, 21), menuF) { Text = "Discover server" };
-            Button btnScrA = new Button(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 50, 200, 21), menuF) { Text = "Resize window" };
-            Button btnVSync = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 25, 250, 21), menuF) { Text = "Toggle VSync: on" };
+            Button btnDisc = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 55, 250, 22), menuF) { Text = "Discover server" };
+            Button btnScrA = new Button(GraphicsDevice, main, new Rectangle(scrW >> 2, scrH / 3 + 55, 200, 22), menuF) { Text = "Resize window" };
+            Button btnVSync = new Button(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3 + 25, 250, 22), menuF) { Text = "Toggle VSync: on" };
 
-            TextBox txtName = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 1) + 100, scrH / 3, 150, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = name, Name = "txtName" };
-            TextBox txtScrH = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3, 50, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = scrH.ToString(), Name = "txtScrH" };
-            TextBox txtScrW = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3 + 25, 50, 21), menuF) { FlickerStyle = FlickerStyle.Fast, Text = scrW.ToString(), Name = "txtScrW" };
+            TextBox txtName = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 1) + 100, scrH / 3, 150, 22), menuF) { FlickerStyle = FlickerStyle.Fast, BorderStyle = BorderStyle.Fixed3D, Text = name, Name = "txtName" };
+            TextBox txtScrH = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3, 50, 22), menuF) { FlickerStyle = FlickerStyle.Fast, BorderStyle = BorderStyle.Fixed3D, Text = scrH.ToString(), Name = "txtScrH" };
+            TextBox txtScrW = new TextBox(GraphicsDevice, main, new Rectangle((scrW >> 2) + 140, scrH / 3 + 25, 50, 22), menuF) { FlickerStyle = FlickerStyle.Fast, BorderStyle = BorderStyle.Fixed3D, Text = scrW.ToString(), Name = "txtScrW" };
 
             MouseEventHandler me = (sender, e) =>
                 {
@@ -305,7 +304,7 @@ namespace Mentula.SurvivalGame
                     PreferredBackBufferWidth = scrW;
                     ApplyChanges();
                     cam = new Camera(GraphicsDevice, player.ChunkPos, player.GetTilePos());
-                    InitMain(onDisc);
+                    InitMain(onDisc, background);
                 }
                 else System.Windows.Forms.MessageBox.Show(string.Format("The screen {0}({1}) is an invalid value!", scrH < 1 ? "height" : "width", scrH < 1 ? scrH : scrW), "Invalid dimentions!");
             };
@@ -314,6 +313,29 @@ namespace Mentula.SurvivalGame
                     btnVSync.Text = btnVSync.Text == "Toggle VSync: off" ? "Toggle VSync: on" : "Toggle VSync: off";
                     onVSync();
                 };
+        }
+
+        public bool TakeScreenshot()
+        {
+            try
+            {
+                int width = PreferredBackBufferWidth;
+                int height = PreferredBackBufferHeight;
+                RenderTarget2D screenShot = new RenderTarget2D(GraphicsDevice, width, height, false, SurfaceFormat.Color, DepthFormat.None);
+
+                GraphicsDevice.SetRenderTarget(screenShot);
+                Draw(0, GameState.Game);
+                GraphicsDevice.SetRenderTarget(null);
+
+                using (System.IO.FileStream fs = new System.IO.FileStream(string.Format("{0}\\{1}.png", System.IO.Directory.GetCurrentDirectory(), DateTime.Now.ToString("dd-mm-yy H;mm;ss")), System.IO.FileMode.OpenOrCreate))
+                {
+                    screenShot.SaveAsPng(fs, width, height);
+                }
+
+                screenShot.Dispose();
+                return true;
+            }
+            catch (Exception) { return false; }
         }
     }
 }

@@ -148,7 +148,7 @@ namespace Mentula.SurvivalGameServer
                                             nom.Write((C_Creature[])chunk[i]);
                                         }
 
-                                        server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
+                                        server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.ReliableUnordered);
                                     }
                                     break;
                                 case (DataType.PlayerUpdate_Both):

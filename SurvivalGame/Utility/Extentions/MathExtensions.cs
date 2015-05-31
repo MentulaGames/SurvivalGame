@@ -59,7 +59,9 @@ namespace Mentula.General.MathExtensions
 
         public static Vector2 Abs(Vector2 vec)
         {
-            return new Vector2(vec.X < 0 ? vec.X * -1 : vec.X, vec.Y < 0 ? vec.Y * -1 : vec.Y);
+            if (vec.X < 0) vec.X *= -1;
+            if (vec.Y < 0) vec.Y *= -1;
+            return vec;
         }
     }
 }
