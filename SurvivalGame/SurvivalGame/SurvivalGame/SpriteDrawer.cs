@@ -324,7 +324,7 @@ namespace Mentula.SurvivalGame
                 RenderTarget2D screenShot = new RenderTarget2D(GraphicsDevice, width, height, false, SurfaceFormat.Color, DepthFormat.None);
 
                 GraphicsDevice.SetRenderTarget(screenShot);
-                Draw(0, GameState.Game);
+                Draw(-1, GameState.Game);
                 GraphicsDevice.SetRenderTarget(null);
 
                 using (System.IO.FileStream fs = new System.IO.FileStream(string.Format("{0}\\{1}.png", System.IO.Directory.GetCurrentDirectory(), DateTime.Now.ToString("dd-mm-yy H;mm;ss")), System.IO.FileMode.OpenOrCreate))

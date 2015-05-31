@@ -22,6 +22,7 @@ namespace Mentula.SurvivalGame
 
         public void Update(float delta)
         {
+            if (delta < 0) return;
             Current = 1 / delta;
             buffer.Enqueue(Current);
 
