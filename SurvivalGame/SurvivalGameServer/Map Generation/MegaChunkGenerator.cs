@@ -132,7 +132,7 @@ namespace Mentula.SurvivalGameServer
                     {
                         if (blist[j + 1].ChunkType != 2)
                         {
-                            AStar.Node[] path = AStar.GetRoute(new AStar.Map(citySize, blist[j].ChunkPos, blist[j + 1].ChunkPos, NodeArray));
+                            AStar.Node[] path = AStar.GetRoute(new AStar.Map(citySize << 1, blist[j].ChunkPos, blist[j + 1].ChunkPos, NodeArray));
                             for (int k = 0; k < path.Length; k++)
                             {
                                 int index=0;
