@@ -64,7 +64,7 @@ namespace Mentula.SurvivalGameServer
                 int citySize = (int)cities[i].CitySize;
                 int numOfBuildings = (int)(cities[i].CitySize * cities[i].CitySize) / 2;
                 int numOfBuildingsToPlace = numOfBuildings;
-                int numOfHousesToPlace = numOfBuildings;
+                //int numOfHousesToPlace = numOfBuildings;
                 cities[i].CityChunks.Add(new ChunkData(IntVector2.Zero, 1));
                 bool allBuildingsAccesible = false;
                 do
@@ -100,70 +100,66 @@ namespace Mentula.SurvivalGameServer
                             }
                         }
                     }
-                    AStar.Node[] NodeArray = new AStar.Node[citySize * citySize * 4];
+                    //generate a nodearray
                     IntVector2 offset = new IntVector2(citySize);
-                    for (int j = 0; j < NodeArray.Length; j++)
+                    AStar.Node[] nodeArray = new AStar.Node[citySize * citySize * 4];
+                    for (int j= 0; j < nodeArray.Length; j++)
                     {
-                        IntVector2 NodePos = new IntVector2(j % (citySize * 2), j / (citySize * 2));
-                        NodeArray[j] = new AStar.Node(NodePos, 2000);
+                        IntVector2 pos = new IntVector2(j%(citySize*2),j/(citySize*2));
+                        nodeArray[j]= new AStar.Node(pos,2000,false);
                     }
-
                     for (int j = 0; j < cities[i].CityChunks.Count; j++)
                     {
-                        IntVector2 pos = cities[i].CityChunks[j].ChunkPos+offset;
-                        int index = (citySize + pos.X) + (citySize + pos.Y) * citySize;
-                        if (cities[i].CityChunks[j].ChunkType != 2)
+                        int index = (cities[i].CityChunks[j].ChunkPos.X + citySize) + (cities[i].CityChunks[j].ChunkPos.Y + citySize) * (citySize+2);
+                        if (cities[i].CityChunks[j].ChunkType!=2)
                         {
-                            NodeArray[index] = new AStar.Node(cities[i].CityChunks[j].ChunkPos, 8000 + (int)(r.NextDouble() * 8000));
+                            nodeArray[index] = new AStar.Node(cities[i].CityChunks[j].ChunkPos + offset,4000+(int)(r.NextDouble()*4000),true);
                         }
                         else
                         {
-                            NodeArray[index] = new AStar.Node(pos, -10);
+                            nodeArray[index] = new AStar.Node(cities[i].CityChunks[j].ChunkPos + offset, -10,true);
                         }
                     }
-
-                    int count = cities[i].CityChunks.Count;
-                    List<ChunkData> alist = new List<ChunkData>(cities[i].CityChunks);
+                    //end generating a nodearray
+                    // generate streets between all houses
+                    List<ChunkData> alist =new List<ChunkData>( cities[i].CityChunks);
                     List<ChunkData> blist = new List<ChunkData>();
-
-                    for (int j = 0; j < alist.Count; )
+                    for (int j = 0; j < alist.Count;)
                     {
-                        int rand = (int)(r.NextDouble() * alist.Count);
-                        blist.Add(alist[rand]);
-                        alist.RemoveAt(rand);
+                        int index = (int)(r.NextDouble() * alist.Count);
+                        blist.Add(alist[index]);
+                        alist.RemoveAt(index);
                     }
-
-                    for (int j = 0; j < count - 1; j++)
+                    int count = blist.Count - 1;
+                    for (int j = 0; j < count; j++)
                     {
-                        if (blist[j + 1].ChunkType != 2)
+                        AStar.Map cityMap = new AStar.Map(citySize << 1, blist[j].ChunkPos+offset, blist[j + 1].ChunkPos+offset, nodeArray);
+                        AStar.Node[] path = AStar.GetRoute(cityMap);
+                        for (int k = 0; k < path.Length; k++)
                         {
-                            AStar.Map asdfg = new AStar.Map(citySize << 1, blist[j].ChunkPos+offset, blist[j + 1].ChunkPos+offset, NodeArray);
-                            AStar.Node[] path = AStar.GetRoute(asdfg);
-                            for (int k = 0; k < path.Length; k++)
+                            ChunkData c=new ChunkData();
+                            int chunkIndex = -1;
+                            for (int l = 0; l < blist.Count; l++)
                             {
-                                int index=0;
-                                ChunkData c = new ChunkData();
-                                for (int l = 0; l < count; l++)
+                                if (blist[l].ChunkPos==path[k].Position-offset)
                                 {
-                                    if (blist[l].ChunkPos == path[k].Position-offset)
-                                    {
-                                        index = l;
-                                        c = blist[l];
-                                    }
+                                    chunkIndex = l;
+                                    c = blist[l];
+                                    break;
                                 }
-                                if (c.ChunkType == 1)
-                                {
-                                    allBuildingsAccesible = false;
-                                    cities[i].CityChunks[index].ChunkType = 2;
-                                    numOfBuildingsToPlace++;
-                                    numOfHousesToPlace++;
-                                }
+                            }
+                            if (c.ChunkType!=2)
+                            {
+                                int nodeIndex=(c.ChunkPos.X+offset.X)+(c.ChunkPos.Y+offset.Y)*citySize*2;
+                                nodeArray[nodeIndex]= new AStar.Node(cities[i].CityChunks[j].ChunkPos + offset, 0,true);
+                                blist[chunkIndex].ChunkType = 2;
                             }
                         }
                     }
+                    cities[i].CityChunks=blist;
                 } while (!allBuildingsAccesible);
             }
-            //endfor
+            //end generating all cities
             for (int i = 0; i < cities.Length; i++)
             {
                 for (int j = 0; j < cities[i].CityChunks.Count; j++)

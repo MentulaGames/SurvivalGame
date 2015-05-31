@@ -1,7 +1,9 @@
 ﻿using Mentula.General;
+using System.Diagnostics;
 
 namespace Mentula.SurvivalGameServer
 {
+
     public class ChunkData
     {
         public IntVector2 ChunkPos;
