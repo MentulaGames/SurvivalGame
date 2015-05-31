@@ -101,14 +101,16 @@ namespace Mentula.SurvivalGameServer
                         }
                     }
                     AStar.Node[] NodeArray = new AStar.Node[citySize * citySize * 4];
+                    IntVector2 offset = new IntVector2(citySize);
                     for (int j = 0; j < NodeArray.Length; j++)
                     {
-                        IntVector2 NodePos = new IntVector2(j % (citySize * 2), j / (citySize * 2)) - new IntVector2(citySize);
+                        IntVector2 NodePos = new IntVector2(j % (citySize * 2), j / (citySize * 2));
                         NodeArray[j] = new AStar.Node(NodePos, 2000);
                     }
+
                     for (int j = 0; j < cities[i].CityChunks.Count; j++)
                     {
-                        IntVector2 pos = cities[i].CityChunks[j].ChunkPos;
+                        IntVector2 pos = cities[i].CityChunks[j].ChunkPos+offset;
                         int index = (citySize + pos.X) + (citySize + pos.Y) * citySize;
                         if (cities[i].CityChunks[j].ChunkType != 2)
                         {
@@ -119,27 +121,31 @@ namespace Mentula.SurvivalGameServer
                             NodeArray[index] = new AStar.Node(pos, -10);
                         }
                     }
+
                     int count = cities[i].CityChunks.Count;
                     List<ChunkData> alist = new List<ChunkData>(cities[i].CityChunks);
                     List<ChunkData> blist = new List<ChunkData>();
+
                     for (int j = 0; j < alist.Count; )
                     {
                         int rand = (int)(r.NextDouble() * alist.Count);
                         blist.Add(alist[rand]);
                         alist.RemoveAt(rand);
                     }
+
                     for (int j = 0; j < count - 1; j++)
                     {
                         if (blist[j + 1].ChunkType != 2)
                         {
-                            AStar.Node[] path = AStar.GetRoute(new AStar.Map(citySize << 1, blist[j].ChunkPos, blist[j + 1].ChunkPos, NodeArray));
+                            AStar.Map asdfg = new AStar.Map(citySize << 1, blist[j].ChunkPos+offset, blist[j + 1].ChunkPos+offset, NodeArray);
+                            AStar.Node[] path = AStar.GetRoute(asdfg);
                             for (int k = 0; k < path.Length; k++)
                             {
                                 int index=0;
                                 ChunkData c = new ChunkData();
                                 for (int l = 0; l < count; l++)
                                 {
-                                    if (blist[l].ChunkPos == path[k].Position)
+                                    if (blist[l].ChunkPos == path[k].Position-offset)
                                     {
                                         index = l;
                                         c = blist[l];
@@ -157,7 +163,6 @@ namespace Mentula.SurvivalGameServer
                     }
                 } while (!allBuildingsAccesible);
             }
-
             //endfor
             for (int i = 0; i < cities.Length; i++)
             {
