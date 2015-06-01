@@ -66,98 +66,36 @@ namespace Mentula.SurvivalGameServer
                 int numOfBuildingsToPlace = numOfBuildings;
                 //int numOfHousesToPlace = numOfBuildings;
                 cities[i].CityChunks.Add(new ChunkData(IntVector2.Zero, 1));
-                bool allBuildingsAccesible = false;
-                do
+                while (numOfBuildingsToPlace > 0)
                 {
-                    allBuildingsAccesible = true;
-                    while (numOfBuildingsToPlace > 0)
+                    IntVector2 posToPlace = IntVector2.Zero;
+                    Vector2 CheckingPos = Vector2.Zero;
+                    bool FinnishedRayTracing = false;
+                    Vector2 dir = new Vector2((float)(r.NextDouble() - 0.5f), (float)(r.NextDouble() - 0.5f));
+                    dir.Normalize();
+                    while (!FinnishedRayTracing & ((Math.Abs(posToPlace.X) <= cities[i].CitySize) & Math.Abs(posToPlace.Y) <= cities[i].CitySize))
                     {
-                        IntVector2 posToPlace = IntVector2.Zero;
-                        Vector2 CheckingPos = Vector2.Zero;
-                        bool FinnishedRayTracing = false;
-                        Vector2 dir = new Vector2((float)(r.NextDouble() - 0.5f), (float)(r.NextDouble() - 0.5f));
-                        dir.Normalize();
-                        while (!FinnishedRayTracing & ((Math.Abs(posToPlace.X) <= cities[i].CitySize) & Math.Abs(posToPlace.Y) <= cities[i].CitySize))
+                        bool buildingIsOnPos = false;
+                        while ((int)CheckingPos.X == posToPlace.X & (int)CheckingPos.Y == posToPlace.Y)
                         {
-                            bool buildingIsOnPos = false;
-                            while ((int)CheckingPos.X == posToPlace.X & (int)CheckingPos.Y == posToPlace.Y)
+                            CheckingPos += (dir / 10);
+                        }
+                        posToPlace = new IntVector2(CheckingPos);
+                        for (int j = 0; j < cities[i].CityChunks.Count; j++)
+                        {
+                            if (cities[i].CityChunks[j].ChunkPos == posToPlace)
                             {
-                                CheckingPos += (dir / 10);
-                            }
-                            posToPlace = new IntVector2(CheckingPos);
-                            for (int j = 0; j < cities[i].CityChunks.Count; j++)
-                            {
-                                if (cities[i].CityChunks[j].ChunkPos == posToPlace)
-                                {
-                                    buildingIsOnPos = true;
-                                }
-                            }
-                            if (!buildingIsOnPos)
-                            {
-                                cities[i].CityChunks.Add(new ChunkData(posToPlace, 1));
-                                numOfBuildingsToPlace--;
-                                FinnishedRayTracing = true;
+                                buildingIsOnPos = true;
                             }
                         }
-                    }
-                    //generate a nodearray
-                    IntVector2 offset = new IntVector2(citySize);
-                    AStar.Node[] nodeArray = new AStar.Node[citySize * citySize * 4];
-                    for (int j= 0; j < nodeArray.Length; j++)
-                    {
-                        IntVector2 pos = new IntVector2(j%(citySize*2),j/(citySize*2));
-                        nodeArray[j]= new AStar.Node(pos,2000,false);
-                    }
-                    for (int j = 0; j < cities[i].CityChunks.Count; j++)
-                    {
-                        int index = (cities[i].CityChunks[j].ChunkPos.X + citySize) + (cities[i].CityChunks[j].ChunkPos.Y + citySize) * (citySize+2);
-                        if (cities[i].CityChunks[j].ChunkType!=2)
+                        if (!buildingIsOnPos)
                         {
-                            nodeArray[index] = new AStar.Node(cities[i].CityChunks[j].ChunkPos + offset,4000+(int)(r.NextDouble()*4000),true);
-                        }
-                        else
-                        {
-                            nodeArray[index] = new AStar.Node(cities[i].CityChunks[j].ChunkPos + offset, -10,true);
+                            cities[i].CityChunks.Add(new ChunkData(posToPlace, 1));
+                            numOfBuildingsToPlace--;
+                            FinnishedRayTracing = true;
                         }
                     }
-                    //end generating a nodearray
-                    // generate streets between all houses
-                    List<ChunkData> alist =new List<ChunkData>( cities[i].CityChunks);
-                    List<ChunkData> blist = new List<ChunkData>();
-                    for (int j = 0; j < alist.Count;)
-                    {
-                        int index = (int)(r.NextDouble() * alist.Count);
-                        blist.Add(alist[index]);
-                        alist.RemoveAt(index);
-                    }
-                    int count = blist.Count - 1;
-                    for (int j = 0; j < count; j++)
-                    {
-                        AStar.Map cityMap = new AStar.Map(citySize << 1, blist[j].ChunkPos+offset, blist[j + 1].ChunkPos+offset, nodeArray);
-                        AStar.Node[] path = AStar.GetRoute(cityMap);
-                        for (int k = 0; k < path.Length; k++)
-                        {
-                            ChunkData c=new ChunkData();
-                            int chunkIndex = -1;
-                            for (int l = 0; l < blist.Count; l++)
-                            {
-                                if (blist[l].ChunkPos==path[k].Position-offset)
-                                {
-                                    chunkIndex = l;
-                                    c = blist[l];
-                                    break;
-                                }
-                            }
-                            if (c.ChunkType!=2)
-                            {
-                                int nodeIndex=(c.ChunkPos.X+offset.X)+(c.ChunkPos.Y+offset.Y)*citySize*2;
-                                nodeArray[nodeIndex]= new AStar.Node(cities[i].CityChunks[j].ChunkPos + offset, 0,true);
-                                blist[chunkIndex].ChunkType = 2;
-                            }
-                        }
-                    }
-                    cities[i].CityChunks=blist;
-                } while (!allBuildingsAccesible);
+                }
             }
             //end generating all cities
             for (int i = 0; i < cities.Length; i++)

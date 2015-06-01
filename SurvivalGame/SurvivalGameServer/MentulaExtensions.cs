@@ -11,6 +11,19 @@ namespace Mentula.SurvivalGameServer
             return message.SenderConnection.RemoteUniqueIdentifier;
         }
 
+        public static AStar.Node[] PropperClone(this AStar.Node[] arr)
+        {
+            AStar.Node[] result = new AStar.Node[arr.Length];
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                AStar.Node cur = arr[i];
+                result[i] = new AStar.Node(cur.Position, cur.GValue, !cur.wall);
+            }
+
+            return result;
+        }
+
         public static void WriteLine(this NIMT nimt, string format, params object[] arg)
         {
             string mode = "";

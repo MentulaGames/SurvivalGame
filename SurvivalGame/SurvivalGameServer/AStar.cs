@@ -117,7 +117,7 @@ namespace Mentula.SurvivalGameServer
             return result.ToArray();
         }
 
-        [DebuggerDisplay("Pos={Position}")]
+        [DebuggerDisplay("Pos={Position} Parent={Parent != null}")]
         public class Node
         {
             public IntVector2 Position { get; private set; }
