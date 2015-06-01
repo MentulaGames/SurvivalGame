@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Mentula
+namespace Mentula.General
 {
     public struct BytePoint
     {

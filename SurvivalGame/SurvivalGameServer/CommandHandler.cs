@@ -3,7 +3,7 @@ using Mentula.SurvivalGameServer;
 using System;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 
-namespace Mentula
+namespace Mentula.SurvivalGameServer
 {
     public class CommandHandler
     {

@@ -54,6 +54,9 @@
     <Compile Include="Commands\UnBan.cs" />
     <Compile Include="Creatures\Creature.cs" />
     <Compile Include="Creatures\ForestWildLife.cs" />
+    <Compile Include="Items\Material.cs" />
+    <Compile Include="Items\Metal.cs" />
+    <Compile Include="Items\StateOfMatter.cs" />
     <Compile Include="Map Generation\BinarySplitGenerator.cs" />
     <Compile Include="Map Generation\BuildingGenerator.cs" />
     <Compile Include="Map Generation\City.cs" />

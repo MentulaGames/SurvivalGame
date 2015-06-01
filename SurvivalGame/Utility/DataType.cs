@@ -1,4 +1,4 @@
-﻿namespace Mentula
+﻿namespace Mentula.Network.Xna
 {
     public enum DataType
     {
