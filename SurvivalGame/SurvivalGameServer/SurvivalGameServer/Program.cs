@@ -1,14 +1,18 @@
 ﻿using Lidgren.Network;
 using Lidgren.Network.Xna;
+using Mentula.Content;
 using Mentula.General;
 using Mentula.General.Res;
 using Mentula.Network.Xna;
 using Mentula.SurvivalGameServer.Commands;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading;
 using NCS = Lidgren.Network.NetConnectionStatus;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
@@ -19,6 +23,7 @@ namespace Mentula.SurvivalGameServer
 {
     public class Program
     {
+        private static ContentManager Content;
         private static NetServer server;
         private static CommandHandler commHand;
         private static bool Exit;
@@ -30,6 +35,8 @@ namespace Mentula.SurvivalGameServer
         {
             players = new Dictionary<long, Creature>();
             banned = new Dictionary<string, IPAddress>();
+
+            Content = new ContentManager(new ServiceContainer(), "Content");
 
             InitConsole();
             InitServer();
@@ -43,7 +50,7 @@ namespace Mentula.SurvivalGameServer
 
             while (!Exit)
             {
-                commHand.Update();
+                //commHand.Update();
 
                 NetIncomingMessage msg;
 
@@ -212,10 +219,10 @@ namespace Mentula.SurvivalGameServer
 
         private static void InitConsole()
         {
-            Console.SetBufferSize(1080, 1920);
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Title = string.Format("{0}_Sever", Resources.AppName);
-            Console.CancelKeyPress += (sender, e) => e.Cancel = e.SpecialKey == ConsoleSpecialKey.ControlC ? true : false;
+            //Console.SetBufferSize(1080, 1920);
+            //Console.ForegroundColor = ConsoleColor.White;
+            //Console.Title = string.Format("{0}_Sever", Resources.AppName);
+            //Console.CancelKeyPress += (sender, e) => e.Cancel = e.SpecialKey == ConsoleSpecialKey.ControlC ? true : false;
         }
 
         private static void InitServer()

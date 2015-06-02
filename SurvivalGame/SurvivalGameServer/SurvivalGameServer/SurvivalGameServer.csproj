@@ -1,24 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{BC4D12D2-F5A0-4509-A2B9-9D0FF69E48DB}</ProjectGuid>
+    <ProjectGuid>{BB19B7E8-1C9D-4220-B2A0-28BF515CD380}</ProjectGuid>
     <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Mentula</RootNamespace>
-    <AssemblyName>SurvivalGame</AssemblyName>
+    <RootNamespace>Mentula.SurvivalGameServer</RootNamespace>
+    <AssemblyName>SurvivalGameServer</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
     <XnaProfile>Reach</XnaProfile>
-    <XnaCrossPlatformGroupID>3f216a56-0c0d-497d-be22-baa57bce36a2</XnaCrossPlatformGroupID>
+    <XnaCrossPlatformGroupID>2beeac0b-8e72-493f-ae65-f010ad3a9336</XnaCrossPlatformGroupID>
     <XnaOutputType>Game</XnaOutputType>
-    <ApplicationIcon>Icons\Game.ico</ApplicationIcon>
-    <Thumbnail>Icons\GameThumbnail.png</Thumbnail>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <Thumbnail>
+    </Thumbnail>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -64,7 +66,8 @@
     <Reference Include="Lidgren.Network">
       <HintPath>..\..\..\Dlls\Lidgren.Network.dll</HintPath>
     </Reference>
-    <Reference Include="MentulaContent">
+    <Reference Include="MentulaContent, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dlls\MentulaContent.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -73,41 +76,54 @@
     <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Net" />
-    <Reference Include="XnaGuiItems">
-      <HintPath>..\..\..\Dlls\XnaGuiItems.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Camera.cs" />
-    <Compile Include="FPS.cs" />
-    <Compile Include="GameState.cs" />
+    <Compile Include="AStar.cs" />
+    <Compile Include="Combat.cs" />
+    <Compile Include="CommandHandler.cs" />
+    <Compile Include="Commands\Ban.cs" />
+    <Compile Include="Commands\Cls.cs" />
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\Exit.cs" />
+    <Compile Include="Commands\Forward.cs" />
+    <Compile Include="Commands\Help.cs" />
+    <Compile Include="Commands\IncreaseHealth.cs" />
+    <Compile Include="Commands\Kick.cs" />
+    <Compile Include="Commands\Status.cs" />
+    <Compile Include="Commands\Teleport.cs" />
+    <Compile Include="Commands\UnBan.cs" />
+    <Compile Include="Creatures\Creature.cs" />
+    <Compile Include="Creatures\ForestWildLife.cs" />
+    <Compile Include="Map Generation\BinarySplitGenerator.cs" />
+    <Compile Include="Map Generation\BuildingGenerator.cs" />
+    <Compile Include="Map Generation\City.cs" />
+    <Compile Include="Map Generation\HouseGenerator.cs" />
+    <Compile Include="Map Generation\MapGenerator.cs" />
+    <Compile Include="Map Generation\MegaChunkGenerator.cs" />
+    <Compile Include="Map Generation\PerlinNoise.cs" />
+    <Compile Include="Map Generation\TerrainGenerator.cs" />
+    <Compile Include="Map\Chunk.cs" />
+    <Compile Include="Map\ChunkData.cs" />
+    <Compile Include="Map\Map.cs" />
+    <Compile Include="Map\MegaChunk.cs" />
     <Compile Include="MentulaExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Main.cs" />
-    <Compile Include="SpriteDrawer.cs" />
-    <Compile Include="TextureCollection.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Icons\Game.ico" />
-    <Content Include="Icons\GameThumbnail.png">
-      <XnaPlatformSpecific>true</XnaPlatformSpecific>
-    </Content>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stats.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Utility\General.csproj">
       <Project>{55b5102d-b105-4975-8de9-bd44cd45e609}</Project>
       <Name>General</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SurvivalGameContent\ClientContent.contentproj">
-      <Name>ClientContent</Name>
+    <ProjectReference Include="..\SurvivalGameServerContent\ServerContent.contentproj">
+      <Name>ServerContent</Name>
       <XnaReferenceType>Content</XnaReferenceType>
-      <Project>{34CA7EC0-2303-4C95-BCED-E8EDBBE2632A}</Project>
+      <Project>{1C3C8D4D-40C8-42D4-9BE4-7857D608B30F}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -26,6 +26,7 @@ namespace Mentula.SurvivalGameServer
 
         public static void WriteLine(this NIMT nimt, string format, params object[] arg)
         {
+            return;
             string mode = "";
 
             switch (nimt)
