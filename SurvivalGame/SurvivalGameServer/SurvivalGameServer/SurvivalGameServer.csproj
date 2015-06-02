@@ -100,6 +100,7 @@
     <Compile Include="Commands\UnBan.cs" />
     <Compile Include="Creatures\Creature.cs" />
     <Compile Include="Creatures\ForestWildLife.cs" />
+    <Compile Include="ImpactObject.cs" />
     <Compile Include="Map Generation\BinarySplitGenerator.cs" />
     <Compile Include="Map Generation\BuildingGenerator.cs" />
     <Compile Include="Map Generation\City.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Map\ChunkData.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="Map\MegaChunk.cs" />
+    <Compile Include="MaterialLayer.cs" />
     <Compile Include="MentulaExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
