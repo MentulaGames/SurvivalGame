@@ -101,6 +101,7 @@
       <DependentUpon>GUI.cs</DependentUpon>
     </Compile>
     <Compile Include="ImpactObject.cs" />
+    <Compile Include="ImpactSimulator.cs" />
     <Compile Include="Map Generation\BinarySplitGenerator.cs" />
     <Compile Include="Map Generation\BuildingGenerator.cs" />
     <Compile Include="Map Generation\City.cs" />

@@ -13,6 +13,13 @@ namespace Mentula.SurvivalGameServer
         public float Thickness;
         public readonly float Area;
         public float CurrArea;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="m">Matter of which the object is made</param>
+        /// <param name="thickness">Thickness is in cm</param>
+        /// <param name="area">area is in cm^2</param>
         public MaterialLayer(Material m, float thickness, float area)
         {
             Matter = m;

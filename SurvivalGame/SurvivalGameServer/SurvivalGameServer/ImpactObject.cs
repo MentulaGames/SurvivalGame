@@ -18,7 +18,14 @@ namespace Mentula.SurvivalGameServer
         public float E_k { get; private set; }
         public float MPa { get; private set; }
 
-        public ImpactObject(Material m, float velocity, float volume,float contactArea)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="m">Matter of which the object is made</param>
+        /// <param name="velocity">Velocity is in m/s</param>
+        /// <param name="volume">Volume is in cm^3</param>
+        /// <param name="contactArea">Contact Area is in cm^2</param>
+        public ImpactObject(Material m, float velocity, float volume, float contactArea)
         {
             Matter = m;
             Velocity = velocity;
@@ -26,7 +33,7 @@ namespace Mentula.SurvivalGameServer
             Volume = volume;
             ContactArea = contactArea;
             E_k = Weight * velocity * velocity / 2;
-            MPa = E_k / contactArea /100;
+            MPa = E_k / contactArea / 100;
         }
         public void SetMPa(float MPa)
         {
