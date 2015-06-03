@@ -216,6 +216,8 @@ namespace Mentula.SurvivalGameServer
 
                         Thread.Sleep(1);
                     }
+
+                    GUI.UpdateStats();
                 }
 
                 server.Shutdown(string.Format("{0} Exiting", Resources.AppName));

@@ -93,6 +93,7 @@
     <Compile Include="Combat.cs" />
     <Compile Include="Creatures\Creature.cs" />
     <Compile Include="Creatures\ForestWildLife.cs" />
+    <Compile Include="GUI\CPUUsage.cs" />
     <Compile Include="GUI\GUI.cs">
       <SubType>Form</SubType>
     </Compile>

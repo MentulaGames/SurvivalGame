@@ -33,7 +33,9 @@
             this.lbl_Status = new System.Windows.Forms.ToolStripStatusLabel();
             this.lbl_LastMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.gBox_Info = new System.Windows.Forms.GroupBox();
-            this.btn_netState = new System.Windows.Forms.Button();
+            this.lbl_CPU = new System.Windows.Forms.Label();
+            this.proBarCPU = new System.Windows.Forms.ProgressBar();
+            this.btn_Stop = new System.Windows.Forms.Button();
             this.btn_Restart = new System.Windows.Forms.Button();
             this.btn_Kill = new System.Windows.Forms.Button();
             this.dGrid_Connections = new System.Windows.Forms.DataGridView();
@@ -67,22 +69,35 @@
             // 
             resources.ApplyResources(this.lbl_LastMessage, "lbl_LastMessage");
             this.lbl_LastMessage.Name = "lbl_LastMessage";
+            this.lbl_LastMessage.Padding = new System.Windows.Forms.Padding(50, 0, 0, 0);
             // 
             // gBox_Info
             // 
             resources.ApplyResources(this.gBox_Info, "gBox_Info");
-            this.gBox_Info.Controls.Add(this.btn_netState);
+            this.gBox_Info.Controls.Add(this.lbl_CPU);
+            this.gBox_Info.Controls.Add(this.proBarCPU);
+            this.gBox_Info.Controls.Add(this.btn_Stop);
             this.gBox_Info.Controls.Add(this.btn_Restart);
             this.gBox_Info.Controls.Add(this.btn_Kill);
             this.gBox_Info.Name = "gBox_Info";
             this.gBox_Info.TabStop = false;
             // 
-            // btn_netState
+            // lbl_CPU
             // 
-            resources.ApplyResources(this.btn_netState, "btn_netState");
-            this.btn_netState.Name = "btn_netState";
-            this.btn_netState.UseVisualStyleBackColor = true;
-            this.btn_netState.Click += new System.EventHandler(this.btn_netState_Click);
+            resources.ApplyResources(this.lbl_CPU, "lbl_CPU");
+            this.lbl_CPU.Name = "lbl_CPU";
+            // 
+            // proBarCPU
+            // 
+            resources.ApplyResources(this.proBarCPU, "proBarCPU");
+            this.proBarCPU.Name = "proBarCPU";
+            // 
+            // btn_Stop
+            // 
+            resources.ApplyResources(this.btn_Stop, "btn_Stop");
+            this.btn_Stop.Name = "btn_Stop";
+            this.btn_Stop.UseVisualStyleBackColor = true;
+            this.btn_Stop.Click += new System.EventHandler(this.btn_Stop_Click);
             // 
             // btn_Restart
             // 
@@ -158,6 +173,7 @@
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.gBox_Info.ResumeLayout(false);
+            this.gBox_Info.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGrid_Connections)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -175,12 +191,14 @@
         private System.Windows.Forms.ToolStripStatusLabel lbl_LastMessage;
         private System.Windows.Forms.GroupBox gBox_Info;
         public System.Windows.Forms.Button btn_Kill;
-        public System.Windows.Forms.Button btn_netState;
+        public System.Windows.Forms.Button btn_Stop;
         public System.Windows.Forms.Button btn_Restart;
         private System.Windows.Forms.DataGridView dGrid_Connections;
         private System.Windows.Forms.RichTextBox txt_Console;
         private System.Windows.Forms.DataGridViewTextBoxColumn coll_Name;
         private System.Windows.Forms.DataGridViewTextBoxColumn coll_Ip;
         private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.Label lbl_CPU;
+        private System.Windows.Forms.ProgressBar proBarCPU;
     }
 }

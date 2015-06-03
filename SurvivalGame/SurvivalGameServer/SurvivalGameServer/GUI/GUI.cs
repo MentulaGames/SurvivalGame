@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Mentula.General.Res;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -12,16 +14,30 @@ namespace Mentula.SurvivalGameServer.GUI
     public partial class form_GUI : Form
     {
         private Dictionary<IPAddress, int> players;
+        private CPUUsage cpu;
 
         public form_GUI()
         {
-            players = new Dictionary<IPAddress, int>();
             InitializeComponent();
+            WriteFirstLine("Console Created");
+            players = new Dictionary<IPAddress, int>();
+            cpu = new CPUUsage();
         }
 
         public void SetState(string state)
         {
             lbl_Status.Text = string.Format("Status: {0}", state);
+        }
+
+        public void UpdateStats()
+        {
+            short value = cpu.GetUsage();
+
+            InvokeIfRequired(lbl_CPU, () =>
+                {
+                    lbl_CPU.Text = string.Format("CPU Usage: {0}%", value);
+                    proBarCPU.Value = (int)value;
+                });
         }
 
         public void AddPlayer(IPAddress IP, string name)
@@ -38,17 +54,17 @@ namespace Mentula.SurvivalGameServer.GUI
         {
             if (string.IsNullOrWhiteSpace(format)) return;
 
-            string line = string.Format("[{0}][Info] {1}\n", string.Format("{0:H:mm:ss}", DateTime.Now), string.Format(format, args));
+            string line = string.Format("\n[{0}][Info] {1}", string.Format("{0:H:mm:ss}", DateTime.Now), string.Format(format, args));
 
             InvokeIfRequired(txt_Console, () =>
-            {
-                txt_Console.SelectionColor = Color.HotPink;
-                txt_Console.AppendText(line);
-                txt_Console.Find(line);
-                txt_Console.ScrollToCaret();
-            });
+                {
+                    txt_Console.SelectionColor = Color.DodgerBlue;
+                    txt_Console.AppendText(line);
+                    txt_Console.Find(line);
+                    txt_Console.ScrollToCaret();
+                });
 
-            lbl_LastMessage.Text = line;
+            lbl_LastMessage.Text = line.TrimStart('\n');
         }
 
         public void WriteLine(NIMT nimt, string format, params object[] args)
@@ -99,7 +115,7 @@ namespace Mentula.SurvivalGameServer.GUI
                     break;
             }
 
-            string line = string.Format("[{0}][{1}] {2}\n", string.Format("{0:H:mm:ss}", DateTime.Now), mode, string.Format(format, args));
+            string line = string.Format("\n[{0}][{1}] {2}", string.Format("{0:H:mm:ss}", DateTime.Now), mode, string.Format(format, args));
 
             InvokeIfRequired(txt_Console, () =>
                 {
@@ -112,6 +128,16 @@ namespace Mentula.SurvivalGameServer.GUI
 
         [DllImport("user32.dll")]
         private static extern int HideCaret(IntPtr hwnd);
+
+        private void WriteFirstLine(string format, params object[] args)
+        {
+            string line = string.Format("[{0}][Info] {1}", string.Format("{0:H:mm:ss}", DateTime.Now), string.Format(format, args));
+
+            txt_Console.SelectionColor = Color.DodgerBlue;
+            txt_Console.AppendText(line);
+            txt_Console.Find(line);
+            txt_Console.ScrollToCaret();
+        }
 
         private void InvokeIfRequired(Control control, MethodInvoker action)
         {
@@ -126,7 +152,7 @@ namespace Mentula.SurvivalGameServer.GUI
 
         private void btn_Kill_Click(object sender, EventArgs e)
         {
-            if (Program.updateTask != null && Program.updateTask.ThreadState == ThreadState.Running)
+            if (Program.updateTask != null && Program.updateTask.ThreadState == System.Threading.ThreadState.Running)
             {
                 DialogResult result = MessageBox.Show("Are you just you want to kill the server?", "WARNING", MessageBoxButtons.YesNo);
 
@@ -139,7 +165,7 @@ namespace Mentula.SurvivalGameServer.GUI
             }
         }
 
-        private void btn_netState_Click(object sender, EventArgs e)
+        private void btn_Stop_Click(object sender, EventArgs e)
         {
             Program.Exit = true;
         }
