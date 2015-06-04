@@ -49,6 +49,11 @@ namespace Mentula.SurvivalGameServer.GUI
         {
             InvokeIfRequired(dGrid_Connections, () => dGrid_Connections.Rows.RemoveAt(players[IP]));
         }
+        
+        public void ClearPlayers()
+        {
+            InvokeIfRequired(dGrid_Connections, () => dGrid_Connections.Rows.Clear());
+        }
 
         public void WriteLine(string format, params object[] args)
         {
@@ -152,13 +157,13 @@ namespace Mentula.SurvivalGameServer.GUI
 
         private void btn_Kill_Click(object sender, EventArgs e)
         {
-            if (Program.updateTask != null && Program.updateTask.ThreadState == System.Threading.ThreadState.Running)
+            if (Program.updateThread != null && Program.updateThread.ThreadState == System.Threading.ThreadState.Running)
             {
                 DialogResult result = MessageBox.Show("Are you just you want to kill the server?", "WARNING", MessageBoxButtons.YesNo);
 
                 if (result == DialogResult.Yes)
                 {
-                    Program.updateTask.Abort();
+                    Program.updateThread.Abort();
                     WriteLine("Killed server!");
                     Close();
                 }
