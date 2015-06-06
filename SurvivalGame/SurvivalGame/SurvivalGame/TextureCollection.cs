@@ -8,23 +8,23 @@ namespace Mentula
 {
     public class TextureCollection : Dictionary<int, Texture2D>
     {
-        private ContentManager m_Content;
+        private ContentManager content;
 
         public TextureCollection(ContentManager content)
             : base()
         {
-            m_Content = content;
+            this.content = content;
         }
 
         public TextureCollection(ContentManager content, int size)
             : base(size)
         {
-            m_Content = content;
+            this.content = content;
         }
 
         public void LoadFromConfig(string name)
         {
-            R config = m_Content.Load<R>(name);
+            R config = content.Load<R>(name);
 
             for (int i = 0; i < config.Values.Count; i++)
             {
@@ -35,7 +35,7 @@ namespace Mentula
 
         public void Add(int id, string name)
         {
-            Add(id, m_Content.Load<Texture2D>(name));
+            Add(id, content.Load<Texture2D>(name));
         }
     }
 }

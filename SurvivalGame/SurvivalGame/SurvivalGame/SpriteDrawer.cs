@@ -1,4 +1,5 @@
 ﻿using Mentula.General;
+using Mentula.General.Resources;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,9 +16,9 @@ namespace Mentula.SurvivalGame
 {
     public class SpriteDrawer : GraphicsDeviceManager
     {
-        public C_Tile[] Tiles;
-        public C_Destrucible[] Dest;
-        public C_Creature[] Creatures;
+        public List<C_Tile> Tiles;
+        public List<C_Destrucible> Dest;
+        public List<C_Creature> Creatures;
         public Dictionary<string, C_Player> Players;
 
         private SpriteBatch batch;
@@ -46,9 +47,9 @@ namespace Mentula.SurvivalGame
         public SpriteDrawer(Game game, bool debug)
             : base(game)
         {
-            Tiles = new C_Tile[0];
-            Dest = new C_Destrucible[0];
-            Creatures = new C_Creature[0];
+            Tiles = new List<C_Tile>();
+            Dest = new List<C_Destrucible>();
+            Creatures = new List<C_Creature>();
             Players = new Dictionary<string, C_Player>();
 
             counter = new FPS();
@@ -83,9 +84,9 @@ namespace Mentula.SurvivalGame
 
         public void SetData(ref List<C_Tile> tiles, ref List<C_Destrucible> dest, ref List<C_Creature> crs)
         {
-            Tiles = tiles.ToArray();
-            Dest = dest.ToArray();
-            Creatures = crs.ToArray();
+            Tiles = tiles;
+            Dest = dest;
+            Creatures = crs;
         }
 
         public void UpdateMain(float delta, MouseState m_S, ref KeyboardState k_S)
@@ -96,6 +97,7 @@ namespace Mentula.SurvivalGame
             {
                 GuiItem g = main.Controls[i];
 
+                // don't update g as textbox if ctrl v is down, else it will write a v at the end.
                 if (g is TextBox & !((k_S.IsKeyDown(Keys.LeftControl) | k_S.IsKeyDown(Keys.RightControl)) & k_S.IsKeyDown(Keys.V))) (g as TextBox).Update(m_S, k_S, delta);
                 else if (g is Button) (g as Button).Update(m_S, delta);
             }
@@ -128,14 +130,14 @@ namespace Mentula.SurvivalGame
                 string text = "";
 
                 Thread pasteThread = new Thread(() => { if (ClipBoard.ContainsText()) text = ClipBoard.GetText(); });
-                pasteThread.SetApartmentState(ApartmentState.STA);
+                pasteThread.SetApartmentState(ApartmentState.STA);  // Get clipboard text data from sta thread.
                 pasteThread.Start();
 
                 TimeSpan time = new TimeSpan();
                 while (pasteThread.ThreadState == ThreadState.Running)
                 {
                     time.Add(TimeSpan.FromMilliseconds(TimeSpan.TicksPerMillisecond));
-                    if (time.Milliseconds > 100) pasteThread.Abort();
+                    if (time.Milliseconds > 100) pasteThread.Abort();   // Wait 100 milliseconds for the clipboard thread to end.
                 }
 
                 string name = "";
@@ -159,15 +161,16 @@ namespace Mentula.SurvivalGame
 
         public void UpdateGame(float delta, ref C_Player player)
         {
+            const int ARROW_OFFSET = 24;
             this.player = player;
 
             cam.Update(player.ChunkPos, player.GetTilePos());
             relPlayerPos = cam.GetRelativePosition(player.ChunkPos, player.GetTilePos());
 
-            Vector2 camb = new Vector2(relPlayerPos.X + 16, relPlayerPos.Y + 16);
+            Vector2 camb = new Vector2(relPlayerPos.X + (Res.TileSize >> 1), relPlayerPos.Y + (Res.TileSize >> 1));
             Vector2 dir = Vector2.Normalize(MentulaExtensions.GetMousePos() - camb);
             arrowRot = (float)Math.Atan2(dir.X, dir.Y);
-            arrowPos = camb + dir * 24 + new Vector2(-dir.Y * 8, dir.X * 8);
+            arrowPos = camb + dir * ARROW_OFFSET + new Vector2(-dir.Y * (Res.TileSize >> 2), dir.X * (Res.TileSize >> 2));
         }
 
         public void Draw(float delta, GameState state)
@@ -183,28 +186,31 @@ namespace Mentula.SurvivalGame
                 case (GameState.Game):
                     Vector2 relPos;
 
-                    for (int i = 0; i < Tiles.Length; i++)
+                    for (int i = 0; i < Tiles.Count; i++)
                     {
                         C_Tile t = Tiles[i];
 
                         if (cam.TryGetRelativePosition(t.ChunkPos, t.Pos.ToVector2(), out relPos)) batch.Draw(texC[t.TextureId], relPos, Color.White, t.Layer);
                     }
 
-                    for (int i = 0; i < Dest.Length; i++)
+                    for (int i = 0; i < Dest.Count; i++)
                     {
                         C_Destrucible d = Dest[i];
 
                         if (cam.TryGetRelativePosition(d.ChunkPos, d.Pos.ToVector2(), out relPos)) batch.Draw(texC[d.TextureId], relPos, Color.White, d.Layer);
                     }
 
-                    for (int i = 0; i < Creatures.Length; i++)
+                    const int PLAYER_LAYER = 2;
+                    Vector2 nameOffset = new Vector2(0, 25);
+
+                    for (int i = 0; i < Creatures.Count; i++)
                     {
                         C_Creature c = Creatures[i];
 
                         if (cam.TryGetRelativePosition(c.ChunkPos, c.Pos, out relPos))
                         {
-                            batch.Draw(texC[c.TextureId], relPos, c.Color, 2);
-                            batch.DrawString(nameF, c.Health.ToString(), relPos - new Vector2(0, 25), Color.Black);
+                            batch.Draw(texC[c.TextureId], relPos, c.Color, PLAYER_LAYER);
+                            batch.DrawString(nameF, c.Health.ToString(), relPos - nameOffset, Color.Black);
                         }
                     }
 
@@ -215,20 +221,20 @@ namespace Mentula.SurvivalGame
                         if (cam.TryGetRelativePosition(p.ChunkPos, p.GetTilePos(), out relPos))
                         {
                             batch.Draw(pTexture, relPos, Color.White);
-                            batch.DrawString(nameF, p.Name, relPos - new Vector2(0, 25), Color.Black);
+                            batch.DrawString(nameF, p.Name, relPos - nameOffset, Color.Black);
                         }
                     }
 
                     batch.Draw(pTexture, relPlayerPos, Color.White);
-                    batch.DrawString(nameF, player.Name, relPlayerPos - new Vector2(0, 25), Color.Black);
-                    batch.Draw(texC[9], MentulaExtensions.GetMousePos() - new Vector2(8, 8), Color.Red);
+                    batch.DrawString(nameF, player.Name, relPlayerPos - nameOffset, Color.Black);
+                    batch.Draw(texC[9], MentulaExtensions.GetMousePos() - new Vector2(Res.TileSize >> 2, Res.TileSize >> 2), Color.Red);
                     batch.Draw(texC[10], arrowPos, Color.Red, -arrowRot);
 
                     if (debug)
                     {
                         batch.DrawString(debugF, string.Format("Fps: {0}", counter.ToString()), Vector2.Zero, Color.Red);
-                        batch.DrawString(debugF, string.Format("Dest: {0}", Dest.Length), new Vector2(0, 16), Color.Red);
-                        batch.DrawString(debugF, string.Format("Creatures: {0}", Creatures.Length), new Vector2(0, 32), Color.Red);
+                        batch.DrawString(debugF, string.Format("Dest: {0}", Dest.Count), new Vector2(0, 16), Color.Red);
+                        batch.DrawString(debugF, string.Format("Creatures: {0}", Creatures.Count), new Vector2(0, 32), Color.Red);
                         batch.DrawString(debugF, string.Format("Player Pos: {0}", player.GetTotalPos()), new Vector2(0, 48), Color.Red);
                     }
                     break;

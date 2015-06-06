@@ -8,6 +8,7 @@ namespace Mentula.SurvivalGameServer
     {
         public IntVector2 ChunkPos;
         public int ChunkType;
+
         public ChunkData()
         {
             ChunkPos = IntVector2.Zero;

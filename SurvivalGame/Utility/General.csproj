@@ -56,6 +56,7 @@
     <Compile Include="Extentions\MentulaExtensions.cs" />
     <Compile Include="IntVector2.cs" />
     <Compile Include="C\C_Player.cs" />
+    <Compile Include="Res\Res.cs" />
     <Compile Include="RNG.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,7 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Res\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
+      <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>

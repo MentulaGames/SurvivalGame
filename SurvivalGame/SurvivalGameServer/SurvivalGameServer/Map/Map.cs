@@ -1,5 +1,5 @@
 ﻿using Mentula.General;
-using Mentula.General.Res;
+using Mentula.General.Resources;
 using System;
 using System.Collections.Generic;
 

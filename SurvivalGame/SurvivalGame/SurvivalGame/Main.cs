@@ -4,25 +4,22 @@
 using Lidgren.Network;
 using Lidgren.Network.Xna;
 using Mentula.General;
-using Mentula.General.Res;
+using Mentula.General.Resources;
 using Mentula.Network.Xna;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using XnaGuiItems.Core;
-using XnaGuiItems.Items;
 using BtnSt = Microsoft.Xna.Framework.Input.ButtonState;
+using Forms = System.Windows.Forms;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
+using MEx = Mentula.General.MathExtensions.Math;
 using NCS = Lidgren.Network.NetConnectionStatus;
 using NIM = Lidgren.Network.NetIncomingMessage;
 using NIMT = Lidgren.Network.NetIncomingMessageType;
 using NOM = Lidgren.Network.NetOutgoingMessage;
 using NPConf = Lidgren.Network.NetPeerConfiguration;
-using MEx = Mentula.General.MathExtensions.Math;
 
 namespace Mentula.SurvivalGame
 {
@@ -50,10 +47,9 @@ namespace Mentula.SurvivalGame
 
             Content.RootDirectory = "Content";
 
-            NPConf config = new NPConf(Resources.AppName);
+            NPConf config = new NPConf(Res.AppName);
             config.EnableMessageType(NIMT.DiscoveryResponse);
             client = new NetClient(config);
-            client.Start();
         }
 
         protected override void Initialize()
@@ -64,6 +60,7 @@ namespace Mentula.SurvivalGame
             dest = new List<C_Destrucible>();
             creatures = new List<C_Creature>();
             players = new Dictionary<string, C_Player>();
+            client.Start();
 
             base.Initialize();
         }
@@ -97,21 +94,21 @@ namespace Mentula.SurvivalGame
             if (state == GameState.Game & IsActive)
             {
                 IsMouseVisible = false;
-                Vector2 inp = Vector2.Zero;
+                Vector2 inp = default(Vector2);
 
                 if (k_State.IsKeyDown(Keys.Escape)) this.Exit();
+                if (k_State.IsKeyDown(Keys.PrintScreen)) drawer.TakeScreenshot();
+                if (k_State.IsKeyDown(Keys.F)) { drawer.ToggleFullScreen(); drawer.ApplyChanges(); }
 
                 if (k_State.IsKeyDown(Keys.W)) inp.Y -= 1;
                 if (k_State.IsKeyDown(Keys.S)) inp.Y += 1;
                 if (k_State.IsKeyDown(Keys.A)) inp.X -= 1;
                 if (k_State.IsKeyDown(Keys.D)) inp.X += 1;
-                if (k_State.IsKeyDown(Keys.F)) { drawer.IsFullScreen = true; drawer.ApplyChanges(); }
-                if (k_State.IsKeyDown(Keys.PrintScreen)) drawer.TakeScreenshot();
 
-                if (inp != Vector2.Zero)
+                if (inp != default(Vector2))
                 {
                     inp = Vector2.Normalize(inp) * C_Player.Movement * delta;
-                    Vector2 outp = Vector2.Zero;
+                    Vector2 outp = default(Vector2);
 
                     player.Move(inp);
 #if COLLISION
@@ -155,7 +152,7 @@ namespace Mentula.SurvivalGame
                     {
                         if (SE & !NE & !SW)
                         {
-                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (SE_CPos * MentulaExtensions.ChunkSize + SE_TPos).ToVector2());
+                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (SE_CPos * Res.ChunkSize + SE_TPos).ToVector2());
                             if (dist.X > dist.Y) outp.X = -inp.X;
                             else if (dist.X < dist.Y) outp.Y = -inp.Y;
                             else outp = -inp;
@@ -168,7 +165,7 @@ namespace Mentula.SurvivalGame
                     {
                         if (NE & !SE & !NW)
                         {
-                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (NE_CPos * MentulaExtensions.ChunkSize + NE_TPos).ToVector2());
+                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (NE_CPos * Res.ChunkSize + NE_TPos).ToVector2());
                             if (dist.X > dist.Y) outp.X = -inp.X;
                             else if (dist.X < dist.Y) outp.Y = -inp.Y;
                             else outp = -inp;
@@ -181,7 +178,7 @@ namespace Mentula.SurvivalGame
                     {
                         if (SW & !NW & !SE)
                         {
-                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (SW_CPos * MentulaExtensions.ChunkSize + SW_TPos).ToVector2());
+                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (SW_CPos * Res.ChunkSize + SW_TPos).ToVector2());
                             if (dist.X > dist.Y) outp.X = -inp.X;
                             else if (dist.X < dist.Y) outp.Y = -inp.Y;
                             else outp = -inp;
@@ -194,7 +191,7 @@ namespace Mentula.SurvivalGame
                     {
                         if (NW & !SW & !NE)
                         {
-                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (NW_CPos * MentulaExtensions.ChunkSize + NW_TPos).ToVector2());
+                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (NW_CPos * Res.ChunkSize + NW_TPos).ToVector2());
                             if (dist.X > dist.Y) outp.X = -inp.X;
                             else if (dist.X < dist.Y) outp.Y = -inp.Y;
                             else outp = -inp;
@@ -204,15 +201,14 @@ namespace Mentula.SurvivalGame
                         else if (NE & NW & SW) outp = -inp;                         // Move left false, up false
                     }
 
-                    player.Move(outp);
+                    if (outp != default(Vector2)) player.Move(outp);
 #endif
                 }
 
-                if (Mouse.GetState().LeftButton == BtnSt.Pressed & now > attackTime)
+                if (Mouse.GetState().LeftButton == BtnSt.Pressed & now > attackTime)    // If the player tyd to attack and can attack.
                 {
-                    Vector2 posF = new Vector2(drawer.PreferredBackBufferWidth >> 1, drawer.PreferredBackBufferHeight >> 1);
-                    Vector2 dir = Vector2.Normalize(MentulaExtensions.GetMousePos() - posF);
-                    float rot = MEx.VectorToDegrees(dir);
+                    Vector2 playerPos = new Vector2(drawer.PreferredBackBufferWidth >> 1, drawer.PreferredBackBufferHeight >> 1);
+                    float rot = MEx.VectorToDegrees(MentulaExtensions.GetMousePos() - playerPos);
 
                     NOM nom = client.CreateMessage();
                     nom.Write((byte)DataType.Attack_CSend);
@@ -233,10 +229,11 @@ namespace Mentula.SurvivalGame
                 }
 
             }
-            else if (state == GameState.MainMenu & IsActive)
+            else if (state == GameState.MainMenu & IsActive)    // If the player is in the main menu.
             {
                 IsMouseVisible = true;
-                if (client.ConnectionStatus == NCS.Connected)
+
+                if (client.ConnectionStatus == NCS.Connected)   // If the client has connected to the server.
                 {
                     state = GameState.Loading;
                     nextSend = NetTime.Now;
@@ -253,10 +250,10 @@ namespace Mentula.SurvivalGame
                 nom.Write(player.ChunkPos);
                 nom.Write(player.GetTilePos());
                 client.SendMessage(nom, NetDeliveryMethod.UnreliableSequenced);
-                nextSend += (1f / 30f);
+                nextSend += .033f;
             }
 
-            NIM msg;
+            NIM msg = null;
             while ((msg = client.ReadMessage()) != null)
             {
                 switch (msg.MessageType)
@@ -267,24 +264,24 @@ namespace Mentula.SurvivalGame
                         break;
                     case (NIMT.StatusChanged):
                         NCS status = msg.ReadEnum<NCS>();
+
                         switch (status)
                         {
-                            case (NCS.Connected):
+                            case (NCS.Connected):       // The client succesfully connected to the server.
                                 player.SetTilePos(Vector2.Zero);
                                 break;
-                            case (NCS.Disconnected):
+                            case (NCS.Disconnected):    // The client has been disconected from the server.
                                 string message = msg.ReadString();
-                                System.Windows.Forms.DialogResult r = System.Windows.Forms.MessageBox.Show(message,
-                                    "The server closed the connection.",
-                                    System.Windows.Forms.MessageBoxButtons.AbortRetryIgnore);
 
-                                switch (r)
+                                Forms.DialogResult result = Forms.MessageBox.Show(message, "The server closed the connection.", Forms.MessageBoxButtons.AbortRetryIgnore);
+
+                                switch (result)
                                 {
                                     case (System.Windows.Forms.DialogResult.Abort):
                                         this.Exit();
                                         break;
-                                    case (System.Windows.Forms.DialogResult.Retry):
-                                        nom = client.CreateMessage(player.Name);
+                                    case (Forms.DialogResult.Retry):
+                                        nom = client.CreateMessage(player.Name);    // Resent a connection request.
                                         client.Connect(msg.SenderEndPoint, nom);
                                         break;
                                 }
@@ -294,7 +291,7 @@ namespace Mentula.SurvivalGame
                     case (NIMT.Data):
                         switch (msg.ReadEnum<DataType>())
                         {
-                            case (DataType.InitialMap_Both):
+                            case (DataType.InitialMap_Both):        // Initialze the map.
                                 int length = msg.ReadInt16();
 
                                 for (int i = 0; i < length; i++)
@@ -307,7 +304,7 @@ namespace Mentula.SurvivalGame
                                 drawer.SetData(ref tiles, ref dest, ref creatures);
                                 state = GameState.Game;
                                 break;
-                            case (DataType.ChunkRequest_Both):
+                            case (DataType.ChunkRequest_Both):      // new chunks for the player.
                                 length = msg.ReadInt16();
 
                                 for (int i = 0; i < length; i++)
@@ -320,28 +317,28 @@ namespace Mentula.SurvivalGame
                                 Unload(player.ChunkPos);
                                 drawer.SetData(ref tiles, ref dest, ref creatures);
                                 break;
-                            case (DataType.PlayerUpdate_Both):
+                            case (DataType.PlayerUpdate_Both):      // Update the players.
                                 players.Clear();
-                                C_Player[] p_A = msg.ReadPlayers();
+                                C_Player[] a_Players = msg.ReadPlayers();
 
-                                for (int i = 0; i < p_A.Length; i++)
+                                for (int i = 0; i < a_Players.Length; i++)
                                 {
-                                    C_Player p_C = p_A[i];
-                                    players.Add(p_C.Name, p_C);
+                                    C_Player curr = a_Players[i];
+                                    players.Add(curr.Name, curr);
                                 }
 
                                 drawer.Players = players;
                                 break;
-                            case (DataType.PlayerRePosition_SSend):
+                            case (DataType.PlayerRePosition_SSend): // The players movement has been denied.
                                 msg.ReadReSetPlayer(ref player);
                                 break;
-                            case (DataType.CreatureChange_SSend):
+                            case (DataType.CreatureChange_SSend):   // A single creature has been changed by the server.
                                 IntVector2 cPos = msg.ReadVector();
-                                Vector2 pos = msg.ReadVector2();
+                                Vector2 tPos = msg.ReadVector2();
                                 float health = msg.ReadFloat();
 
-                                if (health <= 0) creatures.RemoveAll(c => c.ChunkPos == cPos & c.Pos == pos);
-                                else creatures.Find(c => c.ChunkPos == cPos & c.Pos == pos).Health = health;
+                                if (health <= 0) creatures.RemoveAll(c => c.ChunkPos == cPos & c.Pos == tPos);
+                                else creatures.Find(c => c.ChunkPos == cPos & c.Pos == tPos).Health = health;
 
                                 drawer.Creatures = creatures.ToArray();
                                 break;
@@ -378,21 +375,24 @@ namespace Mentula.SurvivalGame
 
         private void Unload(IntVector2 pos)
         {
+            // Unload all chunks where the player is not present or are not ajason to the player chunk.
+            const int RADIUS = 1;
+
             for (int i = 0; i < tiles.Count; )
             {
-                if (Math.Abs(tiles[i].ChunkPos.X - pos.X) > 1 | Math.Abs(tiles[i].ChunkPos.Y - pos.Y) > 1) tiles.RemoveAt(i);
+                if (Math.Abs(tiles[i].ChunkPos.X - pos.X) > RADIUS | Math.Abs(tiles[i].ChunkPos.Y - pos.Y) > RADIUS) tiles.RemoveAt(i);
                 else i++;
             }
 
             for (int i = 0; i < dest.Count; )
             {
-                if (Math.Abs(dest[i].ChunkPos.X - pos.X) > 1 | Math.Abs(dest[i].ChunkPos.Y - pos.Y) > 1) dest.RemoveAt(i);
+                if (Math.Abs(dest[i].ChunkPos.X - pos.X) > RADIUS | Math.Abs(dest[i].ChunkPos.Y - pos.Y) > RADIUS) dest.RemoveAt(i);
                 else i++;
             }
 
             for (int i = 0; i < creatures.Count; )
             {
-                if (Math.Abs(creatures[i].ChunkPos.X - pos.X) > 1 | Math.Abs(creatures[i].ChunkPos.Y - pos.Y) > 1) creatures.RemoveAt(i);
+                if (Math.Abs(creatures[i].ChunkPos.X - pos.X) > RADIUS | Math.Abs(creatures[i].ChunkPos.Y - pos.Y) > RADIUS) creatures.RemoveAt(i);
                 else i++;
             }
         }

@@ -1,7 +1,7 @@
 ﻿using Lidgren.Network;
 using Lidgren.Network.Xna;
 using Mentula.General;
-using Mentula.General.Res;
+using Mentula.General.Resources;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -9,13 +9,6 @@ namespace Mentula.Network.Xna
 {
     public static class MentulaExtensions
     {
-        public static int ChunkSize;
-
-        static MentulaExtensions()
-        {
-            ChunkSize = int.Parse(Resources.ChunkSize);
-        }
-
         public static void Write(this NetBuffer msg, BytePoint value)
         {
             msg.Write(value.X);
@@ -155,7 +148,7 @@ namespace Mentula.Network.Xna
 
                 pos.X++;
 
-                if (pos.X >= ChunkSize)
+                if (pos.X >= Res.ChunkSize)
                 {
                     pos.X = 0;
                     pos.Y++;

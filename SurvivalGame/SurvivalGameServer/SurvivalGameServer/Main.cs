@@ -1,7 +1,7 @@
 ﻿using Lidgren.Network;
 using Lidgren.Network.Xna;
 using Mentula.General;
-using Mentula.General.Res;
+using Mentula.General.Resources;
 using Mentula.Network.Xna;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -58,7 +58,7 @@ namespace Mentula.SurvivalGameServer
         {
             players = new Dictionary<long, Creature>();
             addQueue = new Dictionary<long, string>();
-            server.Shutdown(string.Format("{0} Exiting", Resources.AppName));
+            server.Shutdown(string.Format("{0} Exiting", Res.AppName));
         }
 
         public void Update()
@@ -250,7 +250,7 @@ namespace Mentula.SurvivalGameServer
 
         private void InitServer()
         {
-            NPConf config = new NPConf(Resources.AppName) { Port = Ips.PORT, EnableUPnP = true };
+            NPConf config = new NPConf(Res.AppName) { Port = Ips.PORT, EnableUPnP = true };
             config.EnableMessageType(NIMT.DiscoveryRequest);
             config.EnableMessageType(NIMT.ConnectionApproval);
             server = new NetServer(config);

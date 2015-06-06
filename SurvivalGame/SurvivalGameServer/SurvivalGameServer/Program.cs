@@ -1,7 +1,7 @@
 ﻿using Lidgren.Network;
 using Lidgren.Network.Xna;
 using Mentula.General;
-using Mentula.General.Res;
+using Mentula.General.Resources;
 using Mentula.Network.Xna;
 using Mentula.SurvivalGameServer.GUI;
 using Microsoft.Xna.Framework;
@@ -66,6 +66,7 @@ namespace Mentula.SurvivalGameServer
                 Thread.Sleep(1);
             }
 
+            GUI.UpdateStats(true);
             GUI.ClearPlayers();
             main.Stop();
         }
