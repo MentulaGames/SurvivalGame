@@ -4,6 +4,7 @@ namespace Mentula.SurvivalGameServer
 {
     public class ImpactObject
     {
+
         public Material Matter;
         public float Velocity { get; private set; }
         public float Weight { get; private set; }
@@ -32,5 +33,7 @@ namespace Mentula.SurvivalGameServer
             this.MPa = MPa;
             E_k = MPa * ContactArea * 100;
         }
+
+
     }
 }

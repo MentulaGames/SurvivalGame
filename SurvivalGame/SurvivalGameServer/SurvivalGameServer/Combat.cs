@@ -1,5 +1,6 @@
 ﻿using Mentula.General.Resources;
 using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MEx = Mentula.General.MathExtensions.Math;
@@ -9,7 +10,14 @@ namespace Mentula.SurvivalGameServer
 {
     public static class Combat
     {
-        public static List<Creature> AttackCreatures(Creature attacker, Creature[] creatures, float degrees, float arc, float range)
+        private static Random r;
+
+        static Combat()
+        {
+            r = new Random();
+        }
+
+        public static List<Creature> AttackCreatures(Creature attacker,ImpactObject im, Creature[] creatures, float degrees, float arc, float range)
         {
             Vector2 apos = attacker.GetTotalPos();
             List<Creature> creatureArray = creatures.ToList();
@@ -26,12 +34,9 @@ namespace Mentula.SurvivalGameServer
                         float bdeg = MEx.VectorToDegrees(bpos - apos+new Vector2(0.5f,0.5f));
                         if (MEx.DifferenceBetweenDegrees(degrees, bdeg) < arc / 2)
                         {
-                            creatureArray[i].Health -= attacker.Stats.Str;
-                            if (creatureArray[i].Health <= 0)
-                            {
-                                creatureArray.RemoveAt(i);
-                                remain = false;
-                            }
+                            int b =(int)(r.NextDouble()*creatures[i].bhe.Length);
+                            MaterialLayer[] ml = creatures[i].bhe[b].Layers;
+                            ImpactSimulator.OnHit(ref ml,ref im);
                         }
                     }
                 }

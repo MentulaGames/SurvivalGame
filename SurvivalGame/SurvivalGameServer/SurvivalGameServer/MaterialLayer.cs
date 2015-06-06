@@ -6,8 +6,10 @@ namespace Mentula.SurvivalGameServer
     {
         public Material Matter;
         public float Thickness;
-        public readonly float Area;
+        public float MaxArea;
         public float CurrArea;
+        public float BiggestHoleSize;
+        private float Weight;
 
         /// <param name="m">Matter of which the object is made</param>
         /// <param name="thickness">Thickness is in cm</param>
@@ -16,8 +18,25 @@ namespace Mentula.SurvivalGameServer
         {
             Matter = m;
             Thickness = thickness;
-            Area = area;
+            MaxArea = area;
             CurrArea = area;
+            BiggestHoleSize = 0;
+            Weight = CurrArea * Thickness;
+        }
+        
+        public MaterialLayer(MaterialLayer m)
+        {
+            Matter = m.Matter;
+            Thickness = m.Thickness;
+            MaxArea = m.MaxArea;
+            CurrArea = MaxArea;
+            BiggestHoleSize = m.BiggestHoleSize;
+            Weight = m.Weight;
+        }
+        public float GetWeight()
+        {
+            Weight = Thickness * CurrArea * Matter.Density;
+            return Weight;
         }
     }
 }

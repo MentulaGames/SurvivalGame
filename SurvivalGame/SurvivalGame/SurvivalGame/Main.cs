@@ -334,13 +334,6 @@ namespace Mentula.SurvivalGame
                                 break;
                             case (DataType.CreatureChange_SSend):   // A single creature has been changed by the server.
                                 IntVector2 cPos = msg.ReadVector();
-                                Vector2 tPos = msg.ReadVector2();
-                                float health = msg.ReadFloat();
-
-                                if (health <= 0) creatures.RemoveAll(c => c.ChunkPos == cPos & c.Pos == tPos);
-                                else creatures.Find(c => c.ChunkPos == cPos & c.Pos == tPos).Health = health;
-
-                                drawer.Creatures = creatures;
                                 break;
                         }
                         break;
