@@ -338,11 +338,6 @@ namespace Mentula.SurvivalGame
                             case (DataType.CreatureChange_SSend):
                                 IntVector2 cPos = msg.ReadVector();
                                 Vector2 pos = msg.ReadVector2();
-                                float health = msg.ReadFloat();
-
-                                if (health <= 0) creatures.RemoveAll(c => c.ChunkPos == cPos & c.Pos == pos);
-                                else creatures.Find(c => c.ChunkPos == cPos & c.Pos == pos).Health = health;
-
                                 drawer.Creatures = creatures.ToArray();
                                 break;
                         }

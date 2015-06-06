@@ -12,31 +12,26 @@ namespace Mentula.SurvivalGameServer
             r = new Random();
         }
 
-        public static MaterialLayer[] OnHit(MaterialLayer[] layers, ImpactObject impacter)
+        public static void OnHit(ref MaterialLayer[] layers,ref  ImpactObject impacter)
         {
-            MaterialLayer[] result = layers;
-            ImpactObject im = impacter;
-
-            for (int i = 0; i < result.Length; i++)
+            for (int i = layers.Length-1; i >=0 ; i--)
             {
-                float lintr = result[i].CurrArea / result[i].Area;
-                float dNeeded = result[i].Thickness * MEx.Lerp(lintr * lintr, (float)Math.Sqrt(lintr), (float)r.NextDouble());
-                float d = im.MPa / result[i].Matter.Tensile_Strain_At_Yield;
-
+                float lintr = layers[i].CurrArea / layers[i].MaxArea;
+                float dNeeded = layers[i].Thickness * MEx.Lerp(lintr * lintr, (float)Math.Sqrt(lintr), (float)r.NextDouble());
+                float d = impacter.MPa / layers[i].Matter.Tensile_Strain_At_Yield;
                 if (d > dNeeded)
                 {
-                    result[i].CurrArea -= im.ContactArea;
-                    im.SetMPa(im.MPa - dNeeded * result[i].Matter.Tensile_Strain_At_Yield);
+                    layers[i].BiggestHoleSize = impacter.ContactArea;
+                    layers[i].CurrArea -= impacter.ContactArea;
+                    impacter.SetMPa(impacter.MPa - dNeeded * layers[i].Matter.Tensile_Strain_At_Yield);
                 }
                 else
                 {
-                    result[i].CurrArea -= im.ContactArea * d / dNeeded;
-                    im.SetMPa(0);
+                    layers[i].CurrArea -= impacter.ContactArea * d / dNeeded;
+                    impacter.SetMPa(0);
                     break;
                 }
             }
-
-            return result;
         }
     }
 }

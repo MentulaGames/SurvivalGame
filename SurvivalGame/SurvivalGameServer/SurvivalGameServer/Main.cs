@@ -1,5 +1,6 @@
 ﻿using Lidgren.Network;
 using Lidgren.Network.Xna;
+using Mentula.Content;
 using Mentula.General;
 using Mentula.General.Res;
 using Mentula.Network.Xna;
@@ -234,7 +235,7 @@ namespace Mentula.SurvivalGameServer
                                         nom.Write((byte)DataType.CreatureChange_SSend);
                                         nom.Write(c.ChunkPos);
                                         nom.Write(c.GetTilePos());
-                                        nom.Write(c.Health);
+                                        
                                         server.SendMessage(nom, conn, NetDeliveryMethod.ReliableUnordered);
                                     }
                                 }
