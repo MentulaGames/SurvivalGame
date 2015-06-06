@@ -28,6 +28,7 @@ namespace Mentula.SurvivalGameServer
 
         internal NetServer server;
         internal Map map;
+        internal Content content;
 
         private ContentManager Content;
         private Dictionary<long, Creature> players;
@@ -46,7 +47,8 @@ namespace Mentula.SurvivalGameServer
         public void Initialize()
         {
             InitServer();
-            InitMap(); 
+            InitMap();
+            content = new Content(ref Content, "Metals");
         }
 
         public void Start()

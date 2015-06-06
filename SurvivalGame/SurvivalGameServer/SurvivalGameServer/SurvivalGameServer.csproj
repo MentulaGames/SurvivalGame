@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="AStar.cs" />
     <Compile Include="Combat.cs" />
+    <Compile Include="Content.cs" />
     <Compile Include="Creatures\Creature.cs" />
     <Compile Include="Creatures\ForestWildLife.cs" />
     <Compile Include="Delegates.cs" />

@@ -113,8 +113,8 @@ namespace Mentula.SurvivalGame
                     player.Move(inp);
 #if COLLISION
                     IntVector2 NW_CPos = player.ChunkPos;
-                    IntVector2 NE_CPos = player.GetTilePos().X + C_Player.Diff >= 32 ? player.ChunkPos + IntVector2.UnitX : player.ChunkPos;
-                    IntVector2 SW_CPos = player.GetTilePos().Y + C_Player.Diff >= 32 ? player.ChunkPos + IntVector2.UnitY : player.ChunkPos;
+                    IntVector2 NE_CPos = player.GetTilePos().X + C_Player.Diff >= Res.ChunkSize ? player.ChunkPos + IntVector2.UnitX : player.ChunkPos;
+                    IntVector2 SW_CPos = player.GetTilePos().Y + C_Player.Diff >= Res.ChunkSize ? player.ChunkPos + IntVector2.UnitY : player.ChunkPos;
                     IntVector2 SE_CPos = new IntVector2(NE_CPos.X, SW_CPos.Y);
 
                     IntVector2 NW_TPos = new IntVector2(player.GetTilePos());
