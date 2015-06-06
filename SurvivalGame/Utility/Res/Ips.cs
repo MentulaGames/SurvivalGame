@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Mentula.General.Res
+namespace Mentula.General.Resources
 {
     public static class Ips
     {

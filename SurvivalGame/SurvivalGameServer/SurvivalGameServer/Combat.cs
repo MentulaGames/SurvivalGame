@@ -1,4 +1,4 @@
-﻿using Mentula.General.Res;
+﻿using Mentula.General.Resources;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -11,11 +11,12 @@ namespace Mentula.SurvivalGameServer
     public static class Combat
     {
         private static Random r;
-        private static int cSize = int.Parse(Resources.ChunkSize);
+
         static Combat()
         {
             r = new Random();
         }
+
         public static List<Creature> AttackCreatures(Creature attacker,ImpactObject im, Creature[] creatures, float degrees, float arc, float range)
         {
             Vector2 apos = attacker.GetTotalPos();

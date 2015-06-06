@@ -54,6 +54,5 @@
         {
             return new Stats(s.Str * c, s.Dex * c, s.Int * c, s.Per * c, s.End * c);
         }
-
     }
 }

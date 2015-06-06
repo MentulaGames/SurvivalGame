@@ -1,5 +1,5 @@
 ﻿using Mentula.General;
-using Mentula.General.Res;
+using Mentula.General.Resources;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,13 +12,10 @@ namespace Mentula.SurvivalGameServer
         public List<Destructible> Destructibles;
         public List<Creature> Creatures;
 
-        private readonly int CS;
-
         public Chunk(IntVector2 pos)
         {
             Pos = pos;
-            CS = int.Parse(Resources.ChunkSize);
-            Tiles = new Tile[CS * CS];
+            Tiles = new Tile[Res.ChunkSize * Res.ChunkSize];
             Destructibles = new List<Destructible>();
             Creatures = new List<Creature>();
         }
@@ -49,11 +46,11 @@ namespace Mentula.SurvivalGameServer
 
         public void Generate(byte id)
         {
-            for (int y = 0; y < CS; y++)
+            for (int y = 0; y < Res.ChunkSize; y++)
             {
-                for (int x = 0; x < CS; x++)
+                for (int x = 0; x < Res.ChunkSize; x++)
                 {
-                    Tiles[x + (y * CS)] = new Tile(new IntVector2(x, y), id);
+                    Tiles[x + (y * Res.ChunkSize)] = new Tile(new IntVector2(x, y), id);
                 }
             }
         }

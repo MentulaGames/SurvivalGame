@@ -1,4 +1,4 @@
-﻿using Mentula.General.Res;
+﻿using Mentula.General.Resources;
 using Mentula.Network.Xna;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
@@ -45,7 +45,7 @@ namespace Mentula.General
 
         public Vector2 GetTotalPos()
         {
-            return this.ChunkPos.ToVector2() * MentulaExtensions.ChunkSize + tilePos;
+            return this.ChunkPos.ToVector2() * Res.ChunkSize + tilePos;
         }
 
         public Vector2 GetTilePos()
@@ -55,27 +55,27 @@ namespace Mentula.General
 
         private void FormatPos()
         {
-            while (tilePos.X < 0 | tilePos.Y < 0 | tilePos.X > MentulaExtensions.ChunkSize | tilePos.Y > MentulaExtensions.ChunkSize)
+            while (tilePos.X < 0 | tilePos.Y < 0 | tilePos.X > Res.ChunkSize | tilePos.Y > Res.ChunkSize)
             {
                 if (tilePos.X < 0)
                 {
-                    tilePos.X += MentulaExtensions.ChunkSize;
+                    tilePos.X += Res.ChunkSize;
                     ChunkPos.X--;
                 }
-                else if (tilePos.X > MentulaExtensions.ChunkSize)
+                else if (tilePos.X > Res.ChunkSize)
                 {
-                    tilePos.X -= MentulaExtensions.ChunkSize;
+                    tilePos.X -= Res.ChunkSize;
                     ChunkPos.X++;
                 }
 
                 if (tilePos.Y < 0)
                 {
-                    tilePos.Y += MentulaExtensions.ChunkSize;
+                    tilePos.Y += Res.ChunkSize;
                     ChunkPos.Y--;
                 }
-                else if (tilePos.Y > MentulaExtensions.ChunkSize)
+                else if (tilePos.Y > Res.ChunkSize)
                 {
-                    tilePos.Y -= MentulaExtensions.ChunkSize;
+                    tilePos.Y -= Res.ChunkSize;
                     ChunkPos.Y++;
                 }
             }
@@ -83,13 +83,13 @@ namespace Mentula.General
 
         public static Vector2 FormatPos(Vector2 tilePos)
         {
-            while (tilePos.X < 0 | tilePos.Y < 0 | tilePos.X > MentulaExtensions.ChunkSize | tilePos.Y > MentulaExtensions.ChunkSize)
+            while (tilePos.X < 0 | tilePos.Y < 0 | tilePos.X > Res.ChunkSize | tilePos.Y > Res.ChunkSize)
             {
-                if (tilePos.X < 0) tilePos.X += MentulaExtensions.ChunkSize;
-                else if (tilePos.X > MentulaExtensions.ChunkSize) tilePos.X -= MentulaExtensions.ChunkSize;
+                if (tilePos.X < 0) tilePos.X += Res.ChunkSize;
+                else if (tilePos.X > Res.ChunkSize) tilePos.X -= Res.ChunkSize;
 
-                if (tilePos.Y < 0) tilePos.Y += MentulaExtensions.ChunkSize;
-                else if (tilePos.Y > MentulaExtensions.ChunkSize) tilePos.Y -= MentulaExtensions.ChunkSize;
+                if (tilePos.Y < 0) tilePos.Y += Res.ChunkSize;
+                else if (tilePos.Y > Res.ChunkSize) tilePos.Y -= Res.ChunkSize;
             }
 
             return tilePos;

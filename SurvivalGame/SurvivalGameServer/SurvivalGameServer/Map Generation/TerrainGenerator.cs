@@ -1,8 +1,6 @@
 ﻿using Mentula.General;
-using Mentula.General.Res;
+using Mentula.General.Resources;
 using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 
 namespace Mentula.SurvivalGameServer
 {
@@ -10,14 +8,8 @@ namespace Mentula.SurvivalGameServer
     {
         private static Chunk chunk;
         private static float[] rainArray;
-        private static int cSize;
         private static IntVector2 _pos;
         private static Random r;
-
-        static TerrainGenerator()
-        {
-            cSize = int.Parse(Resources.ChunkSize);
-        }
 
         public static Chunk GenerateAll(IntVector2 pos)
         {
@@ -55,14 +47,14 @@ namespace Mentula.SurvivalGameServer
 
         private static void GenerateRain()
         {
-            rainArray = new float[cSize * cSize];
+            rainArray = new float[Res.ChunkSize * Res.ChunkSize];
             for (int i = 0; i < rainArray.Length; i++)
             {
-                int x = _pos.X * cSize + i % cSize;
-                int y = _pos.Y * cSize + i / cSize;
-                rainArray[i] += PerlinNoise.Generate(70, cSize * 4, x, y, "1");
-                rainArray[i] += PerlinNoise.Generate(20, cSize, x, y, "2");
-                rainArray[i] += PerlinNoise.Generate(10, cSize / 4, x, y, "3");
+                int x = _pos.X * Res.ChunkSize + i % Res.ChunkSize;
+                int y = _pos.Y * Res.ChunkSize + i / Res.ChunkSize;
+                rainArray[i] += PerlinNoise.Generate(70, Res.ChunkSize * 4, x, y, "1");
+                rainArray[i] += PerlinNoise.Generate(20, Res.ChunkSize, x, y, "2");
+                rainArray[i] += PerlinNoise.Generate(10, Res.ChunkSize / 4, x, y, "3");
             }
         }
 
@@ -70,7 +62,7 @@ namespace Mentula.SurvivalGameServer
         {
             for (int i = 0; i < rainArray.Length; i++)
             {
-                IntVector2 tPos = new IntVector2(i % cSize, i / cSize);
+                IntVector2 tPos = new IntVector2(i % Res.ChunkSize, i / Res.ChunkSize);
                 byte t = byte.MaxValue;
                 if (rainArray[i] > 0 & rainArray[i] <= 25)
                 {
@@ -95,10 +87,10 @@ namespace Mentula.SurvivalGameServer
         private static void GenerateTrees()
         {
             int destructibleC = chunk.Destructibles.Count;
-            for (int i = 0; i < cSize * cSize; i++)
+            for (int i = 0; i < Res.ChunkSize * Res.ChunkSize; i++)
             {
                 bool isinuse = false;
-                IntVector2 p = new IntVector2(i % cSize, i / cSize);
+                IntVector2 p = new IntVector2(i % Res.ChunkSize, i / Res.ChunkSize);
                 for (int j = 0; j < destructibleC; j++)
                 {
                     if (chunk.Destructibles[j].Pos == p)
@@ -119,11 +111,11 @@ namespace Mentula.SurvivalGameServer
         }
         private static void GenerateLakes()
         {
-            for (int i = 0; i < cSize * cSize; i++)
+            for (int i = 0; i < Res.ChunkSize * Res.ChunkSize; i++)
             {
-                IntVector2 p = new IntVector2(i % cSize, i / cSize);
-                float lake = PerlinNoise.Generate(50, cSize / 2, p.X + _pos.X * cSize, p.Y + _pos.Y * cSize, "lakey");
-                lake += PerlinNoise.Generate(50, cSize / 4, p.X + _pos.X * cSize, p.Y + _pos.Y * cSize, "lakey2");
+                IntVector2 p = new IntVector2(i % Res.ChunkSize, i / Res.ChunkSize);
+                float lake = PerlinNoise.Generate(50, Res.ChunkSize / 2, p.X + _pos.X * Res.ChunkSize, p.Y + _pos.Y * Res.ChunkSize, "lakey");
+                lake += PerlinNoise.Generate(50, Res.ChunkSize / 4, p.X + _pos.X * Res.ChunkSize, p.Y + _pos.Y * Res.ChunkSize, "lakey2");
                 if (lake > 80)
                 {
                     chunk.Destructibles.Add(new Destructible(100, p, 5, 2, false));
@@ -133,10 +125,10 @@ namespace Mentula.SurvivalGameServer
 
         private static void GenerateCreatures()
         {
-            for (int i = 0; i < cSize * cSize; i++)
+            for (int i = 0; i < Res.ChunkSize * Res.ChunkSize; i++)
             {
                 bool isInUse = false;
-                IntVector2 p = new IntVector2(i % cSize, i / cSize);
+                IntVector2 p = new IntVector2(i % Res.ChunkSize, i / Res.ChunkSize);
                 for (int j = 0; j < chunk.Destructibles.Count; j++)
                 {
                     if (chunk.Destructibles[j].Pos == p)
@@ -152,7 +144,7 @@ namespace Mentula.SurvivalGameServer
                     {
                         chunk.Creatures.Add(new Creature(ForestWildLife.CreatureList[0], _pos, p.ToVector2()));
                     }
-                    else if (r.NextDouble()*100<=chanceToSpawnDif)
+                    else if (r.NextDouble() * 100 <= chanceToSpawnDif)
                     {
                         int index = (int)Math.Min(1 + r.NextDouble() * 2, 2);
                         chunk.Creatures.Add(new Creature(ForestWildLife.CreatureList[index], _pos, p.ToVector2()));

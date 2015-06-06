@@ -1,4 +1,4 @@
-﻿using Mentula.General.Res;
+﻿using Mentula.General.Resources;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,9 +29,9 @@ namespace Mentula.SurvivalGameServer.GUI
             lbl_Status.Text = string.Format("Status: {0}", state);
         }
 
-        public void UpdateStats()
+        public void UpdateStats(bool last = false)
         {
-            short value = cpu.GetUsage();
+            short value = last ? (short)0 : cpu.GetUsage();
 
             InvokeIfRequired(lbl_CPU, () =>
                 {

@@ -1,4 +1,4 @@
-﻿using Mentula.General.Res;
+﻿using Mentula.General.Resources;
 
 namespace Mentula.General
 {
