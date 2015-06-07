@@ -125,7 +125,7 @@ namespace Mentula.SurvivalGameServer
                                 if (result)
                                 {
 
-                                    players.Add(id, new Creature(content.Creatures[0], IntVector2.Zero, Vector2.Zero) { Name = addQueue[id] });
+                                    players.Add(id, new Creature(content.Creatures[1], IntVector2.Zero, Vector2.Zero) { Name = addQueue[id] });
                                     addQueue.Remove(id);
                                     if (CustomMessage != null) CustomMessage(NIMT.StatusChanged, "{0}({1}) connected!", NetUtility.ToHexString(id), players[id].Name);
                                 }
@@ -217,7 +217,7 @@ namespace Mentula.SurvivalGameServer
 
                                 List<Creature> crs = ((Creature[])map.LoadedChunks[chunkIndex].Creatures.ToArray().Clone()).ToList();
                                 crs.AddRange(players.Values);
-                                ImpactObject sword = new ImpactObject(Cheats.Unobtanium, 14, 256, 60);
+                                ImpactObject sword = new ImpactObject(content.Metals[0], 14,256, 6);
                                 List<Creature> t = Combat.AttackCreatures(players[id], sword, crs.ToArray(), rot, 120, 2);
                                 for (int i = 0; i < t.Count; i++)
                                 {
