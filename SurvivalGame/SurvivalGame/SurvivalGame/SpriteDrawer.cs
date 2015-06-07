@@ -247,7 +247,7 @@ namespace Mentula.SurvivalGame
             int scrW = GraphicsDevice.Viewport.Width;
             int scrH = GraphicsDevice.Viewport.Height;
 
-            string name = main != null ? (main.Controls["txtName"] as TextBox).Text : new Random().Next().ToString();
+            string name = main != null ? (main.Controls["txtName"] as TextBox).Text : "Humon_" + new Random().Next().ToString();
             main = new GuiItem(GraphicsDevice, GraphicsDevice.Viewport.Bounds) { BackgroundImage = background };
 
             Label lblName = new Label(GraphicsDevice, main, new Rectangle(scrW >> 1, scrH / 3, 150, 22), menuF) { AutoSize = true, BackColor = Color.Transparent, Text = "UserName:" };
