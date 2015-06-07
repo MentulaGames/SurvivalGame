@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Mentula.Content
+namespace Mentula.Content.MR
 {
     internal class MRSource
     {

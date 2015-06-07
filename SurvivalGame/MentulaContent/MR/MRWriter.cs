@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Mentula.Content
+namespace Mentula.Content.MR
 {
     [ContentTypeWriter]
     internal class MRWriter : ContentTypeWriter<R>
@@ -66,7 +66,7 @@ namespace Mentula.Content
 
         public override string GetRuntimeReader(TargetPlatform targetPlatform)
         {
-            return "Mentula.Content.MRReader, MentulaContent, Version=1.0.0.0, Culture=neutral";
+            return "Mentula.Content.MR.MRReader, MentulaContent, Version=1.0.0.0, Culture=neutral";
         }
     }
 }

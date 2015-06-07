@@ -5,7 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Mentula.Content.MM;
 
-namespace Mentula.Content
+namespace Mentula.Content.MM
 {
     [ContentProcessor(DisplayName = "Mentula Metals Processor")]
     internal class MMetalProcessor : ContentProcessor<MMSource, Metal[]>

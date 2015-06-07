@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 
-namespace Mentula.Content
+namespace Mentula.Content.MM
 {
     [ContentTypeWriter]
     internal class MMetalWriter : ContentTypeWriter<Metal[]>
@@ -29,7 +29,7 @@ namespace Mentula.Content
 
         public override string GetRuntimeReader(TargetPlatform targetPlatform)
         {
-            return "Mentula.Content.MMetalReader, MentulaContent, Version=1.0.0.0, Culture=neutral";
+            return "Mentula.Content.MM.MMetalReader, MentulaContent, Version=1.0.0.0, Culture=neutral";
         }
     }
 }

@@ -1,9 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mentula.Content.MM
 {
@@ -60,7 +56,7 @@ namespace Mentula.Content.MM
 
         public override string GetRuntimeReader(Microsoft.Xna.Framework.Content.Pipeline.TargetPlatform targetPlatform)
         {
-            return "Mentula.Content.MCreatureReader, MentulaContent, Version=1.0.0.0, Culture=neutral";
+            return "Mentula.Content.MM.MCreatureReader, MentulaContent, Version=1.0.0.0, Culture=neutral";
         }
     }
 }

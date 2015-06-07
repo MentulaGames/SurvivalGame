@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Content;
 
-namespace Mentula.Content
+namespace Mentula.Content.MM
 {
     internal class MMetalReader : ContentTypeReader<Metal[]>
     {

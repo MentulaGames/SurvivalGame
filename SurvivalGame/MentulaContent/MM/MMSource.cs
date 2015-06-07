@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Mentula.Content
+namespace Mentula.Content.MM
 {
     internal class MMSource
     {

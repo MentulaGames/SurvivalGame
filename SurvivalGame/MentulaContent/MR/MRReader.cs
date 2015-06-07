@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Mentula.Content
+namespace Mentula.Content.MR
 {
     internal class MRReader : ContentTypeReader<R>
     {

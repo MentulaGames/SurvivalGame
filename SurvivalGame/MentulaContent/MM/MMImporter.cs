@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Content.Pipeline;
 using System.IO;
 
-namespace Mentula.Content
+namespace Mentula.Content.MM
 {
     [ContentImporter(".mm", DefaultProcessor = "MMProcessor", DisplayName = "Mentula Material Importer")]
     internal class MMImporter : ContentImporter<MMSource>

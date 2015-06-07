@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using System.Collections.Generic;
 
-namespace Mentula.Content
+namespace Mentula.Content.MM
 {
     internal class MCreatureReader : ContentTypeReader<Creature[]>
     {

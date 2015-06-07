@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Mentula.Content
+namespace Mentula.Content.MR
 {
     [ContentProcessor(DisplayName = "Mentula R Processor")]
     internal class MRProcessor : ContentProcessor<MRSource, R>

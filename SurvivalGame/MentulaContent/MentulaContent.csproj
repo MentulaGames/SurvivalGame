@@ -56,11 +56,11 @@
   <ItemGroup>
     <Compile Include="Cheats.cs" />
     <Compile Include="MM\Container.cs" />
-    <Compile Include="MM\Creatures\BodyParts.cs" />
-    <Compile Include="MM\Creatures\Creature.cs" />
-    <Compile Include="MM\Creatures\MaterialLayer.cs" />
-    <Compile Include="MM\Creatures\Stats.cs" />
-    <Compile Include="MM\Creatures\TissueLayer.cs" />
+    <Compile Include="MM\Actors\BodyParts.cs" />
+    <Compile Include="MM\Actors\Creature.cs" />
+    <Compile Include="MM\Actors\MaterialLayer.cs" />
+    <Compile Include="MM\Actors\Stats.cs" />
+    <Compile Include="MM\Actors\TissueLayer.cs" />
     <Compile Include="MM\Creature\MCreatureProcessor.cs" />
     <Compile Include="MM\Creature\MCreatureReader.cs" />
     <Compile Include="MM\Creature\MCreatureWriter.cs" />

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Content.Pipeline;
 using System.IO;
 
-namespace Mentula.Content
+namespace Mentula.Content.MR
 {
     [ContentImporter(".mr", DefaultProcessor = "MRProcessor", DisplayName = "Mentula R Importer")]
     internal class MRImporter : ContentImporter<MRSource>
