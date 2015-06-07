@@ -125,7 +125,7 @@ namespace Mentula.SurvivalGameServer
                                 if (result)
                                 {
 
-                                    players.Add(id, new Creature(content.Creatures[0], IntVector2.Zero, Vector2.Zero) {Name=addQueue[id] });
+                                    players.Add(id, new Creature(content.Creatures[0], IntVector2.Zero, Vector2.Zero) { Name = addQueue[id] });
                                     addQueue.Remove(id);
                                     if (CustomMessage != null) CustomMessage(NIMT.StatusChanged, "{0}({1}) connected!", NetUtility.ToHexString(id), players[id].Name);
                                 }
@@ -217,31 +217,22 @@ namespace Mentula.SurvivalGameServer
 
                                 List<Creature> crs = ((Creature[])map.LoadedChunks[chunkIndex].Creatures.ToArray().Clone()).ToList();
                                 crs.AddRange(players.Values);
-
-                                List<Creature> t = new List<Creature>();//Combat.AttackCreatures(players[id], crs.ToArray(), rot, 120, 2);
-                                if (false)
+                                ImpactObject sword = new ImpactObject(Cheats.Unobtanium, 14, 256, 60);
+                                List<Creature> t = Combat.AttackCreatures(players[id], sword, crs.ToArray(), rot, 120, 2);
+                                for (int i = 0; i < t.Count; i++)
                                 {
-                                    Creature c = crs.FirstOrDefault(ch => !t.Contains(ch));
-
-                                    if (players.ContainsValue(c))
+                                    for (int j = 0; j < t[i].Parts.Length; j++)
                                     {
-                                        long playerId = players.First(p => p.Value.Name == c.Name).Key;
-                                        server.Connections.First(conn => conn.RemoteUniqueIdentifier == playerId).Disconnect("You have been kicked!");
-                                        break;
-                                    }
-
-                                    for (int i = 0; i < server.Connections.Count; i++)
-                                    {
-                                        NetConnection conn = server.Connections[i];
-
-                                        nom = server.CreateMessage();
-                                        nom.Write((byte)DataType.CreatureChange_SSend);
-                                        nom.Write(c.ChunkPos);
-                                        nom.Write(c.GetTilePos());
-                                        
-                                        server.SendMessage(nom, conn, NetDeliveryMethod.ReliableUnordered);
+                                        for (int k = 0; k < t[i].Parts[j].Layers.Length; k++)
+                                        {
+                                            if (t[i].Parts[j].Layers[k].essential & t[i].Parts[j].Layers[k].BiggestHoleSize > 0)
+                                            {
+                                                int blaze = 420;
+                                            }
+                                        }
                                     }
                                 }
+
                                 map.LoadedChunks[chunkIndex].Creatures = t.Where(c => !players.Values.Contains(c)).ToList();
                                 break;
                         }
