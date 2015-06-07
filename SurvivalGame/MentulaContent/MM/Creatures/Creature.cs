@@ -13,7 +13,7 @@ namespace Mentula.Content
         public int Id;
         public string Name;
         public Stats Stats;
-        public BodyParts[] bhe;
+        public BodyParts[] Parts;
         public Color SkinColor;
         public int Texture;
 
@@ -23,7 +23,7 @@ namespace Mentula.Content
             Id = id;
             Name = name;
             Stats = stats;
-            bhe = bodyParts;
+            Parts = bodyParts;
             SkinColor = skinColor;
             Texture = texture;
         }
@@ -33,7 +33,7 @@ namespace Mentula.Content
         {
             Name = c.Name;
             Stats = c.Stats;
-            bhe = c.bhe;
+            Parts = c.Parts;
             SkinColor = c.SkinColor;
             Texture = c.Texture;
         }

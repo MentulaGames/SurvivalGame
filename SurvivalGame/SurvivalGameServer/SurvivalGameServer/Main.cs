@@ -124,7 +124,8 @@ namespace Mentula.SurvivalGameServer
 
                                 if (result)
                                 {
-                                    //players.Add(id, new Creature(new Creature(addQueue[id], new Stats(10), 100, Color.Purple, -1), IntVector2.Zero, Vector2.Zero));
+
+                                    players.Add(id, new Creature(content.Creatures[0], IntVector2.Zero, Vector2.Zero) {Name=addQueue[id] });
                                     addQueue.Remove(id);
                                     if (CustomMessage != null) CustomMessage(NIMT.StatusChanged, "{0}({1}) connected!", NetUtility.ToHexString(id), players[id].Name);
                                 }
@@ -218,7 +219,7 @@ namespace Mentula.SurvivalGameServer
                                 crs.AddRange(players.Values);
 
                                 List<Creature> t = new List<Creature>();//Combat.AttackCreatures(players[id], crs.ToArray(), rot, 120, 2);
-                                if (t.Count != crs.Count)
+                                if (false)
                                 {
                                     Creature c = crs.FirstOrDefault(ch => !t.Contains(ch));
 

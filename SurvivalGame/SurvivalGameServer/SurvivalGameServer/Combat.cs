@@ -35,8 +35,8 @@ namespace Mentula.SurvivalGameServer
                         float bdeg = MEx.VectorToDegrees(bpos - apos+new Vector2(0.5f,0.5f));
                         if (MEx.DifferenceBetweenDegrees(degrees, bdeg) < arc / 2)
                         {
-                            int b =(int)(r.NextDouble()*creatures[i].bhe.Length);
-                            MaterialLayer[] ml = creatures[i].bhe[b].Layers;
+                            int b =(int)(r.NextDouble()*creatures[i].Parts.Length);
+                            MaterialLayer[] ml = creatures[i].Parts[b].Layers;
                             ImpactSimulator.OnHit(ref ml,ref im);
                         }
                     }

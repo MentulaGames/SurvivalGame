@@ -82,7 +82,7 @@
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\GitHub\SurvivalGame\SurvivalGame\Utility\General.csproj">
+    <ProjectReference Include="..\Utility\General.csproj">
       <Project>{55b5102d-b105-4975-8de9-bd44cd45e609}</Project>
       <Name>General</Name>
     </ProjectReference>

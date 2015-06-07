@@ -24,11 +24,11 @@ namespace Mentula.Content.MM
                 output.Write(cur.SkinColor);
                 output.Write(cur.Stats);
 
-                output.Write(cur.bhe.Length);
+                output.Write(cur.Parts.Length);
 
-                for (int j = 0; j < cur.bhe.Length; j++)
+                for (int j = 0; j < cur.Parts.Length; j++)
                 {
-                    BodyParts curr = cur.bhe[j];
+                    BodyParts curr = cur.Parts[j];
 
                     output.WriteString(curr.Name);
 
