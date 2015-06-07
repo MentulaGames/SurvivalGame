@@ -1,17 +1,16 @@
-﻿using Mentula.Content;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace Mentula.Content
 {
     public class MaterialLayer : Material
     {
+        public readonly float MaxArea;
         public float Thickness;
-        public float MaxArea;
         public float CurrArea;
         public float BiggestHoleSize;
         private float Weight;
 
-        public MaterialLayer()
+        internal MaterialLayer()
         {
             Thickness = 0;
             MaxArea = 0;
@@ -21,7 +20,7 @@ namespace Mentula.Content
         }
 
         internal MaterialLayer(int id, string name, Vector3 stats, float thickness, float area)
-            :base(id, name, stats.X, stats.Y, stats.Z)
+            : base(id, name, stats.X, stats.Y, stats.Z)
         {
             Thickness = thickness;
             MaxArea = area;
@@ -30,20 +29,7 @@ namespace Mentula.Content
             Weight = CurrArea * Thickness;
         }
 
-        /// <param name="m">Matter of which the object is made</param>
-        /// <param name="thickness">Thickness is in cm</param>
-        /// <param name="area">area is in cm^2</param>
-        public MaterialLayer(Material m, float thickness, float area)
-            :base(m)
-        {
-            Thickness = thickness;
-            MaxArea = area;
-            CurrArea = area;
-            BiggestHoleSize = 0;
-            Weight = CurrArea * Thickness;
-        }
-        
-        public MaterialLayer(MaterialLayer m)
+        internal MaterialLayer(MaterialLayer m)
             : base(m)
         {
             Thickness = m.Thickness;
@@ -52,6 +38,7 @@ namespace Mentula.Content
             BiggestHoleSize = m.BiggestHoleSize;
             Weight = m.Weight;
         }
+
         public float GetWeight()
         {
             Weight = Thickness * CurrArea * Density;

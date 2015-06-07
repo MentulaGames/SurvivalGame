@@ -55,6 +55,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cheats.cs" />
+    <Compile Include="MM\Biomass\MBioProcessor.cs" />
+    <Compile Include="MM\Biomass\MBioReader.cs" />
+    <Compile Include="MM\Biomass\MBioWriter.cs" />
+    <Compile Include="MM\Items\Biomass.cs" />
     <Compile Include="MM\Container.cs" />
     <Compile Include="MM\Actors\BodyParts.cs" />
     <Compile Include="MM\Actors\Creature.cs" />
@@ -87,6 +91,7 @@
       <Name>General</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.ContentPipelineExtensions.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

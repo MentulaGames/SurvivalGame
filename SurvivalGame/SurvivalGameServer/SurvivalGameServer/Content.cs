@@ -6,12 +6,19 @@ namespace Mentula.SurvivalGameServer
     public class Content
     {
         public readonly Metal[] Metals;
+        public readonly Biomass[] BioMasses;
+
         public readonly Creature[] Creatures;
 
-        public Content(ref ContentManager content, string metals, string creatures)
+        public Content(ref ContentManager content)
         {
-            Metals = content.Load<Metal[]>(metals);
-            Creatures = content.Load<Creature[]>(creatures);
+            const string METALS = "Metals";
+            const string BIO = "Biomass";
+            const string CREATURES = "Creatures";
+
+            Metals = content.Load<Metal[]>(METALS);
+            BioMasses = content.Load<Biomass[]>(BIO);
+            Creatures = content.Load<Creature[]>(CREATURES);
 
             for (int i = 0; i < Creatures.Length; i++)
             {
@@ -22,7 +29,7 @@ namespace Mentula.SurvivalGameServer
                     for (int k = 0; k < part.Layers.Length; k++)
                     {
                         TissueLayer t = part.Layers[k];
-                        t.InitRefrence(Metals);
+                        t.InitRefrence(BioMasses);
                         t.Thickness /= 10;
                     }
                 }

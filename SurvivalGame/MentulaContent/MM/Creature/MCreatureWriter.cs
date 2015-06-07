@@ -54,7 +54,7 @@ namespace Mentula.Content.MM
             return typeof(Creature[]).AssemblyQualifiedName;
         }
 
-        public override string GetRuntimeReader(Microsoft.Xna.Framework.Content.Pipeline.TargetPlatform targetPlatform)
+        public override string GetRuntimeReader(TargetPlatform targetPlatform)
         {
             return "Mentula.Content.MM.MCreatureReader, MentulaContent, Version=1.0.0.0, Culture=neutral";
         }

@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Mentula.Content
+﻿namespace Mentula.Content
 {
     public class TissueLayer : MaterialLayer
     {
-        public bool essential;
-        public bool influencesEffectiveness;
+        public readonly bool essential;
+        public readonly bool influencesEffectiveness;
 
-        public TissueLayer()
+        internal TissueLayer()
         {
             essential = false;
             influencesEffectiveness = false;
         }
 
-        public TissueLayer(MaterialLayer matter, bool essential, bool i)
+        internal TissueLayer(MaterialLayer matter, bool essential, bool i)
             : base(matter)
         {
             this.essential = essential;

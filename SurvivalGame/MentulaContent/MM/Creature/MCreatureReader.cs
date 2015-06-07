@@ -27,8 +27,7 @@ namespace Mentula.Content.MM
 
                 for (int j = 0; j < partsLength; j++)
                 {
-                    BodyParts cur = new BodyParts();
-                    cur.Name = input.ReadCString();
+                    BodyParts cur = new BodyParts(input.ReadCString());
 
                     int tissueLength = input.ReadInt32();
                     cur.Layers = new TissueLayer[tissueLength];

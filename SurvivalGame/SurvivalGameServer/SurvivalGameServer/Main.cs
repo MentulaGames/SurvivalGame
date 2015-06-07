@@ -49,7 +49,7 @@ namespace Mentula.SurvivalGameServer
         {
             InitServer();
             InitMap();
-            content = new Content(ref Content, "Metals", "Creatures");
+            content = new Content(ref Content);
         }
 
         public void Start()
