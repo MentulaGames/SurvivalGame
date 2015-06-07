@@ -49,7 +49,7 @@ namespace Mentula.SurvivalGameServer
         {
             InitServer();
             InitMap();
-            content = new Content(ref Content, "Metals");
+            content = new Content(ref Content, "Metals", "Creatures");
         }
 
         public void Start()
@@ -124,7 +124,7 @@ namespace Mentula.SurvivalGameServer
 
                                 if (result)
                                 {
-                                    players.Add(id, new Creature(new Creature(addQueue[id], new Stats(10), 100, Color.Purple, -1), IntVector2.Zero, Vector2.Zero));
+                                    //players.Add(id, new Creature(new Creature(addQueue[id], new Stats(10), 100, Color.Purple, -1), IntVector2.Zero, Vector2.Zero));
                                     addQueue.Remove(id);
                                     if (CustomMessage != null) CustomMessage(NIMT.StatusChanged, "{0}({1}) connected!", NetUtility.ToHexString(id), players[id].Name);
                                 }
@@ -217,7 +217,7 @@ namespace Mentula.SurvivalGameServer
                                 List<Creature> crs = ((Creature[])map.LoadedChunks[chunkIndex].Creatures.ToArray().Clone()).ToList();
                                 crs.AddRange(players.Values);
 
-                                List<Creature> t = Combat.AttackCreatures(players[id], crs.ToArray(), rot, 120, 2);
+                                List<Creature> t = new List<Creature>();//Combat.AttackCreatures(players[id], crs.ToArray(), rot, 120, 2);
                                 if (t.Count != crs.Count)
                                 {
                                     Creature c = crs.FirstOrDefault(ch => !t.Contains(ch));

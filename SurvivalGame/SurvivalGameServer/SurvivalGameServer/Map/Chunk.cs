@@ -2,6 +2,7 @@
 using Mentula.General.Resources;
 using System.Collections.Generic;
 using System.Linq;
+using Mentula.Content;
 
 namespace Mentula.SurvivalGameServer
 {

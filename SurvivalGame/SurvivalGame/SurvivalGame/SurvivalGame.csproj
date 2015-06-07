@@ -64,9 +64,6 @@
     <Reference Include="Lidgren.Network">
       <HintPath>..\..\..\Dlls\Lidgren.Network.dll</HintPath>
     </Reference>
-    <Reference Include="MentulaContent">
-      <HintPath>..\..\..\Dlls\MentulaContent.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -100,6 +97,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\MentulaContent\MentulaContent.csproj">
+      <Project>{5f59fca6-3077-4019-b551-355c4dfc147b}</Project>
+      <Name>MentulaContent</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Utility\General.csproj">
       <Project>{55b5102d-b105-4975-8de9-bd44cd45e609}</Project>
       <Name>General</Name>

@@ -6,19 +6,21 @@ using System.Threading.Tasks;
 using Mentula.General;
 using Microsoft.Xna.Framework;
 
-namespace Mentula.SurvivalGameServer
+namespace Mentula.Content
 {
     public class Creature : Actor
     {
+        public int Id;
         public string Name;
         public Stats Stats;
         public BodyParts[] bhe;
         public Color SkinColor;
         public int Texture;
 
-        public Creature(string name, Stats stats, BodyParts[] bodyParts, Color skinColor, int texture)
+        public Creature(int id, string name, Stats stats, BodyParts[] bodyParts, Color skinColor, int texture)
             : base()
         {
+            Id = id;
             Name = name;
             Stats = stats;
             bhe = bodyParts;

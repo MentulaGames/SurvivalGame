@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mentula.Content;
+using System;
 using MEx = Mentula.General.MathExtensions.Math;
 
 namespace Mentula.SurvivalGameServer
@@ -18,12 +19,12 @@ namespace Mentula.SurvivalGameServer
             {
                 float lintr = layers[i].CurrArea / layers[i].MaxArea;
                 float dNeeded = layers[i].Thickness * MEx.Lerp(lintr * lintr, (float)Math.Sqrt(lintr), (float)r.NextDouble());
-                float d = impacter.MPa / layers[i].Matter.Tensile_Strain_At_Yield;
+                float d = impacter.MPa / layers[i].Tensile_Strain_At_Yield;
                 if (d > dNeeded)
                 {
                     layers[i].BiggestHoleSize = impacter.ContactArea;
                     layers[i].CurrArea -= impacter.ContactArea;
-                    impacter.SetMPa(impacter.MPa - dNeeded * layers[i].Matter.Tensile_Strain_At_Yield);
+                    impacter.SetMPa(impacter.MPa - dNeeded * layers[i].Tensile_Strain_At_Yield);
                 }
                 else
                 {

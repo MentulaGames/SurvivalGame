@@ -11,7 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "General", "Utility\General.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurvivalGameServer", "SurvivalGameServer\SurvivalGameServer\SurvivalGameServer.csproj", "{BB19B7E8-1C9D-4220-B2A0-28BF515CD380}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "ServerContent", "SurvivalGameServer\SurvivalGameServerContent\ServerContent.contentproj", "{1C3C8D4D-40C8-42D4-9BE4-7857D608B30F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerContent", "SurvivalGameServer\SurvivalGameServerContent\ServerContent.contentproj", "{1C3C8D4D-40C8-42D4-9BE4-7857D608B30F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MentulaContent", "MentulaContent\MentulaContent.csproj", "{5F59FCA6-3077-4019-B551-355C4DFC147B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,18 @@ Global
 		{1C3C8D4D-40C8-42D4-9BE4-7857D608B30F}.Release|Any CPU.ActiveCfg = Release|x86
 		{1C3C8D4D-40C8-42D4-9BE4-7857D608B30F}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{1C3C8D4D-40C8-42D4-9BE4-7857D608B30F}.Release|x86.ActiveCfg = Release|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Debug|Any CPU.Build.0 = Debug|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Debug|x86.ActiveCfg = Debug|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Debug|x86.Build.0 = Debug|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Release|Any CPU.ActiveCfg = Release|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Release|Any CPU.Build.0 = Release|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Release|Mixed Platforms.Build.0 = Release|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Release|x86.ActiveCfg = Release|x86
+		{5F59FCA6-3077-4019-B551-355C4DFC147B}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

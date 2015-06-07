@@ -1,4 +1,4 @@
-[Container: id=0, size=0, name="Metal"]
+[Container: "Metals"]
 {
 	[Item: id=0, name="Iron"]
 	{

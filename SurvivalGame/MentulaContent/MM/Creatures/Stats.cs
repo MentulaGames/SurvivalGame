@@ -1,4 +1,4 @@
-﻿namespace Mentula.SurvivalGameServer
+﻿namespace Mentula.Content
 {
     public class Stats
     {

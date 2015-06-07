@@ -22,9 +22,6 @@
     <RootNamespace>SurvivalGameServerContent</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MentulaContent">
-      <HintPath>..\..\..\Dlls\MentulaContent.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.EffectImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.FBXImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.TextureImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
@@ -33,11 +30,22 @@
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.VideoImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Creatures.mm">
+      <Name>Creatures</Name>
+      <Importer>MMImporter</Importer>
+      <Processor>MCreatureProcessor</Processor>
+    </Compile>
     <Compile Include="Metals.mm">
       <Name>Metals</Name>
       <Importer>MMImporter</Importer>
       <Processor>MMetalProcessor</Processor>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MentulaContent\MentulaContent.csproj">
+      <Project>{5f59fca6-3077-4019-b551-355c4dfc147b}</Project>
+      <Name>MentulaContent</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--  To modify your build process, add your task inside one of the targets below and uncomment it. 

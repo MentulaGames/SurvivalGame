@@ -142,12 +142,12 @@ namespace Mentula.SurvivalGameServer
                     float chanceToSpawnDif = (rainArray[i] - 50) / 50;
                     if (r.NextDouble() * 100 <= chanceToSpawnRabbits)
                     {
-                        chunk.Creatures.Add(new Creature(ForestWildLife.CreatureList[0], _pos, p.ToVector2()));
+                        //chunk.Creatures.Add(new Creature(ForestWildLife.CreatureList[0], _pos, p.ToVector2()));
                     }
                     else if (r.NextDouble() * 100 <= chanceToSpawnDif)
                     {
                         int index = (int)Math.Min(1 + r.NextDouble() * 2, 2);
-                        chunk.Creatures.Add(new Creature(ForestWildLife.CreatureList[index], _pos, p.ToVector2()));
+                        //chunk.Creatures.Add(new Creature(ForestWildLife.CreatureList[index], _pos, p.ToVector2()));
                     }
                 }
             }

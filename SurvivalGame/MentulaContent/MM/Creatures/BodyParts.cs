@@ -4,12 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mentula.SurvivalGameServer
+namespace Mentula.Content
 {
     public class BodyParts
     {
         public string Name;
         public TissueLayer[] Layers;
+
+        public BodyParts()
+        {
+            Name = "";
+            Layers = new TissueLayer[0];
+        }
 
         public BodyParts(string name,TissueLayer[] tissueLayers)
         {
