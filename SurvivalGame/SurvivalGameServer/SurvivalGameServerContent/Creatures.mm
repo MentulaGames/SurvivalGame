@@ -15,13 +15,14 @@
 		{
 			[TissueLayer: true]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 1]
 				[InfluencesEffectiveness: false]
 				[Thickness: 2]
 				[Area: 30]
 			}
 		}
+	}
 	[Item: id=1, name="Human"]
 	{
 		[Texture: 0]
@@ -38,7 +39,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 0]
 				[InfluencesEffectiveness: true]
 				[Thickness: 30]
@@ -47,7 +48,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 1]
 				[InfluencesEffectiveness: true]
 				[Thickness: 60]
@@ -56,7 +57,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 2]
 				[InfluencesEffectiveness: false]
 				[Thickness: 1]
@@ -69,7 +70,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 0]
 				[InfluencesEffectiveness: true]
 				[Thickness: 30]
@@ -78,7 +79,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 1]
 				[InfluencesEffectiveness: true]
 				[Thickness: 60]
@@ -87,7 +88,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 2]
 				[InfluencesEffectiveness: false]
 				[Thickness: 1]
@@ -100,7 +101,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 0]
 				[InfluencesEffectiveness: true]
 				[Thickness: 20]
@@ -109,7 +110,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 1]
 				[InfluencesEffectiveness: true]
 				[Thickness: 20]
@@ -118,7 +119,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 2]
 				[InfluencesEffectiveness: false]
 				[Thickness: 1]
@@ -131,7 +132,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 0]
 				[InfluencesEffectiveness: true]
 				[Thickness: 20]
@@ -140,7 +141,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 1]
 				[InfluencesEffectiveness: true]
 				[Thickness: 20]
@@ -149,7 +150,7 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
+				[Type: "Biomass"]
 				[Id: 2]
 				[InfluencesEffectiveness: false]
 				[Thickness: 1]
@@ -162,8 +163,8 @@
 
 			[TissueLayer: true]
 			{
-				[Type: "Metal"]
-				[Id: 0]
+				[Type: "Biomass"]
+				[Id: 1]
 				[InfluencesEffectiveness: true]
 				[Thickness: 86]
 				[Area: 1486]
@@ -171,8 +172,8 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
-				[Id: 1]
+				[Type: "Biomass"]
+				[Id: 0]
 				[InfluencesEffectiveness: true]
 				[Thickness: 20]
 				[Area: 3317]
@@ -180,8 +181,8 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
-				[Id: 0]
+				[Type: "Biomass"]
+				[Id: 1]
 				[InfluencesEffectiveness: true]
 				[Thickness: 20]
 				[Area: 4009]
@@ -189,8 +190,8 @@
 			
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
-				[Id: 0]
+				[Type: "Biomass"]
+				[Id: 2]
 				[InfluencesEffectiveness: false]
 				[Thickness: 1]
 				[Area: 4372]
@@ -202,8 +203,8 @@
 
 			[TissueLayer: true]
 			{
-				[Type: "Metal"]
-				[Id: 0]
+				[Type: "Biomass"]
+				[Id: 1]
 				[InfluencesEffectiveness: true]
 				[Thickness: 40]
 				[Area: 314]
@@ -211,8 +212,8 @@
 
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
-				[Id: 1]
+				[Type: "Biomass"]
+				[Id: 0]
 				[InfluencesEffectiveness: true]
 				[Thickness: 10]
 				[Area: 707]
@@ -220,8 +221,8 @@
 			
 			[TissueLayer: false]
 			{
-				[Type: "Metal"]
-				[Id: 0]
+				[Type: "Biomass"]
+				[Id: 2]
 				[InfluencesEffectiveness: false]
 				[Thickness: 1]
 				[Area: 739]
