@@ -30,7 +30,6 @@ namespace Mentula.SurvivalGameServer
                     {
                         TissueLayer t = part.Layers[k];
                         t.InitRefrence(BioMasses);
-                        t.Thickness /= 10;
                     }
                 }
             }

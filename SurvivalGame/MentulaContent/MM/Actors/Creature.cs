@@ -38,6 +38,18 @@ namespace Mentula.Content
             return new C_Player(Name, ChunkPos, tilePos);
         }
 
+        public float GetTotalWeight()
+        {
+            float result = 0;
+
+            for (int i = 0; i < Parts.Length; i++)
+            {
+                result += Parts[i].GetTotalWeight();
+            }
+
+            return result;
+        }
+
         public override string ToString()
         {
             return "Name=" + Name + " Actor=" + base.ToString();

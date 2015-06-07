@@ -15,40 +15,40 @@ namespace Mentula.Content.MM
 
             for (int i = 0; i < result.Length; i++)
             {
-                Container curr = input.Container.Childs[i];
+                Container creatureContainer = input.Container.Childs[i];
                 Manifest mani = new Manifest();
                 mani.BodyParts = new List<BodyParts>();
                 mani.Stats = new Stats();
 
                 string rawValue = "";
 
-                if (curr.TryGetValue("Id", out rawValue)) mani.Id = int.Parse(rawValue);
-                if (curr.TryGetValue("Name", out rawValue)) mani.Name = rawValue;
+                if (creatureContainer.TryGetValue("Id", out rawValue)) mani.Id = int.Parse(rawValue);
+                if (creatureContainer.TryGetValue("Name", out rawValue)) mani.Name = rawValue;
 
-                if (curr.TryGetValue("Texture", out rawValue)) mani.TextureId = int.Parse(rawValue);
-                if (curr.TryGetValue("Color.R", out rawValue)) mani.Color.R = byte.Parse(rawValue);
-                if (curr.TryGetValue("Color.G", out rawValue)) mani.Color.G = byte.Parse(rawValue);
-                if (curr.TryGetValue("Color.B", out rawValue)) mani.Color.B = byte.Parse(rawValue);
-                if (curr.TryGetValue("Color.A", out rawValue)) mani.Color.A = byte.Parse(rawValue);
+                if (creatureContainer.TryGetValue("Texture", out rawValue)) mani.TextureId = int.Parse(rawValue);
+                if (creatureContainer.TryGetValue("Color.R", out rawValue)) mani.Color.R = byte.Parse(rawValue);
+                if (creatureContainer.TryGetValue("Color.G", out rawValue)) mani.Color.G = byte.Parse(rawValue);
+                if (creatureContainer.TryGetValue("Color.B", out rawValue)) mani.Color.B = byte.Parse(rawValue);
+                if (creatureContainer.TryGetValue("Color.A", out rawValue)) mani.Color.A = byte.Parse(rawValue);
 
-                if (curr.TryGetValue("Strength", out rawValue)) mani.Stats.Str = int.Parse(rawValue);
-                if (curr.TryGetValue("Dexterity", out rawValue)) mani.Stats.Dex = int.Parse(rawValue);
-                if (curr.TryGetValue("Intelect", out rawValue)) mani.Stats.Int = int.Parse(rawValue);
-                if (curr.TryGetValue("Perception", out rawValue)) mani.Stats.Per = int.Parse(rawValue);
-                if (curr.TryGetValue("Endurence", out rawValue)) mani.Stats.End = int.Parse(rawValue);
+                if (creatureContainer.TryGetValue("Strength", out rawValue)) mani.Stats.Str = int.Parse(rawValue);
+                if (creatureContainer.TryGetValue("Dexterity", out rawValue)) mani.Stats.Dex = int.Parse(rawValue);
+                if (creatureContainer.TryGetValue("Intelect", out rawValue)) mani.Stats.Int = int.Parse(rawValue);
+                if (creatureContainer.TryGetValue("Perception", out rawValue)) mani.Stats.Per = int.Parse(rawValue);
+                if (creatureContainer.TryGetValue("Endurence", out rawValue)) mani.Stats.End = int.Parse(rawValue);
 
-                for (int j = 0; j < curr.Childs.Length; j++)
+                for (int j = 0; j < creatureContainer.Childs.Length; j++)
                 {
-                    Container child = curr.Childs[j];
+                    Container bodyContainer = creatureContainer.Childs[j];
 
                     string name = "";
 
-                    if (child.TryGetValue("Default", out rawValue)) name = rawValue;
+                    if (bodyContainer.TryGetValue("Default", out rawValue)) name = rawValue;
 
-                    TissueLayer[] layers = new TissueLayer[child.Childs.Length];
-                    for (int k = 0; k < child.Childs.Length; k++)
+                    TissueLayer[] layers = new TissueLayer[bodyContainer.Childs.Length];
+                    for (int k = 0; k < bodyContainer.Childs.Length; k++)
                     {
-                        Container tissueContainer = child.Childs[k];
+                        Container tissueContainer = bodyContainer.Childs[k];
                         TissueManifest tMani = new TissueManifest();
 
                         if (tissueContainer.TryGetValue("Default", out rawValue)) tMani.Essential = bool.Parse(rawValue);
@@ -58,7 +58,7 @@ namespace Mentula.Content.MM
                         if (tissueContainer.TryGetValue("Thickness", out rawValue)) tMani.Thickness = float.Parse(rawValue);
                         if (tissueContainer.TryGetValue("Area", out rawValue)) tMani.MaxArea = float.Parse(rawValue);
 
-                        layers[i] = new TissueLayer(new MaterialLayer(tMani.Id, tMani.Name, Vector3.Zero, tMani.Thickness, tMani.MaxArea), tMani.Essential, tMani.InfluencesEffectiveness);
+                        layers[k] = new TissueLayer(new MaterialLayer(tMani.Id, tMani.Name, Vector3.Zero, tMani.Thickness, tMani.MaxArea), tMani.Essential, tMani.InfluencesEffectiveness);
                     }
 
                     mani.BodyParts.Add(new BodyParts(name, layers));

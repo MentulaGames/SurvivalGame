@@ -19,10 +19,10 @@ namespace Mentula.Content
             Weight = 0;
         }
 
-        internal MaterialLayer(int id, string name, Vector3 stats, float thickness, float area)
-            : base(id, name, stats.X, stats.Y, stats.Z)
+        internal MaterialLayer(int id, string name, Vector3 stats, float thickness, float area, bool client = false)
+            : base(id, name, stats.X, stats.Y, stats.Z, client)
         {
-            Thickness = thickness;
+            Thickness = client ? thickness : thickness / 10;
             MaxArea = area;
             CurrArea = area;
             BiggestHoleSize = 0;

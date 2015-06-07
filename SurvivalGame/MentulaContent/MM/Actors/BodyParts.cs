@@ -24,5 +24,17 @@ namespace Mentula.Content
             Name = name;
             Layers = tissueLayers;
         }
+
+        public float GetTotalWeight()
+        {
+            float result = 0;
+
+            for (int i = 0; i < Layers.Length; i++)
+            {
+                result += Layers[i].GetWeight();
+            }
+
+            return result;
+        }
     }
 }

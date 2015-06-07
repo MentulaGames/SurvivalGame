@@ -23,6 +23,7 @@
 			}
 		}
 	}
+
 	[Item: id=1, name="Human"]
 	{
 		[Texture: 0]
@@ -36,7 +37,6 @@
 
 		[BodyPart: "Right Leg"]
 		{
-
 			[TissueLayer: false]
 			{
 				[Type: "Biomass"]
@@ -67,7 +67,6 @@
 
 		[BodyPart: "Left Leg"]
 		{
-
 			[TissueLayer: false]
 			{
 				[Type: "Biomass"]
@@ -98,7 +97,6 @@
 
 		[BodyPart: "Right Arm"]
 		{
-
 			[TissueLayer: false]
 			{
 				[Type: "Biomass"]
@@ -129,7 +127,6 @@
 
 		[BodyPart: "Left Arm"]
 		{
-
 			[TissueLayer: false]
 			{
 				[Type: "Biomass"]
@@ -160,7 +157,6 @@
 
 		[BodyPart: "Torso"]
 		{
-
 			[TissueLayer: true]
 			{
 				[Type: "Biomass"]
@@ -200,7 +196,6 @@
 
 		[BodyPart: "Head"]
 		{
-
 			[TissueLayer: true]
 			{
 				[Type: "Biomass"]
