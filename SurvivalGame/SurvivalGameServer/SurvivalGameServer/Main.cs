@@ -47,9 +47,9 @@ namespace Mentula.SurvivalGameServer
 
         public void Initialize()
         {
+            content = new Content(ref Content);
             InitServer();
             InitMap();
-            content = new Content(ref Content);
         }
 
         public void Start()
@@ -155,7 +155,7 @@ namespace Mentula.SurvivalGameServer
                             case (DataType.InitialMap_Both):
                                 id = msg.GetId();
                                 IntVector2 chunkPos = players[id].ChunkPos;
-                                map.Generate(chunkPos);
+                                map.Generate(chunkPos, ref content);
                                 map.LoadChunks(chunkPos);
 
                                 NOM nom = server.CreateMessage();
@@ -202,7 +202,7 @@ namespace Mentula.SurvivalGameServer
 
                                 players[id].ReSet(chunkPos, pos);
 
-                                if (map.Generate(chunkPos) && SimpleMessage != null) SimpleMessage("Generated at: {0}.", chunkPos);
+                                if (map.Generate(chunkPos, ref content) && SimpleMessage != null) SimpleMessage("Generated at: {0}.", chunkPos);
                                 map.LoadChunks(chunkPos);
 
                                 nom = server.CreateMessage();
@@ -241,7 +241,7 @@ namespace Mentula.SurvivalGameServer
         private void InitMap()
         {
             map = new Map();
-            if (map.Generate(IntVector2.Zero) && SimpleMessage != null) SimpleMessage("Generated at: {0}.", IntVector2.Zero);
+            if (map.Generate(IntVector2.Zero, ref content) && SimpleMessage != null) SimpleMessage("Generated at: {0}.", IntVector2.Zero);
             map.LoadChunks(IntVector2.Zero);
         }
     }

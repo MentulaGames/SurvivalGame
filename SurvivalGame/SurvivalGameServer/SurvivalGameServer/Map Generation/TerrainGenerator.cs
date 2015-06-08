@@ -12,7 +12,7 @@ namespace Mentula.SurvivalGameServer
         private static IntVector2 _pos;
         private static Random r;
 
-        public static Chunk GenerateAll(IntVector2 pos,ref  Content c)
+        public static Chunk GenerateAll(IntVector2 pos, ref  Content c)
         {
             Init(pos);
             GenerateRain();

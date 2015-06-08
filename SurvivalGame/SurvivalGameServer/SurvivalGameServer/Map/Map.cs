@@ -23,7 +23,7 @@ namespace Mentula.SurvivalGameServer
 
         }
 
-        public bool Generate(IntVector2 pos)
+        public bool Generate(IntVector2 pos, ref Content c)
         {
             bool gen = false;
 
@@ -101,7 +101,7 @@ namespace Mentula.SurvivalGameServer
                         else
                         {
                             gen = true;
-                            Chunk generatedChunk = TerrainGenerator.GenerateAll(new IntVector2(x + pos.X, y + pos.Y));
+                            Chunk generatedChunk = TerrainGenerator.GenerateAll(new IntVector2(x + pos.X, y + pos.Y), ref c);
                             ChunkList.Add(generatedChunk);
                         }
                     }
