@@ -1,6 +1,7 @@
 ﻿using Mentula.General;
 using Mentula.General.Resources;
 using System;
+using Mentula.Content;
 
 namespace Mentula.SurvivalGameServer
 {
@@ -11,22 +12,14 @@ namespace Mentula.SurvivalGameServer
         private static IntVector2 _pos;
         private static Random r;
 
-        public static Chunk GenerateAll(IntVector2 pos)
+        public static Chunk GenerateAll(IntVector2 pos,ref  Content c)
         {
             Init(pos);
             GenerateRain();
             GenerateTerrain();
             GenerateLakes();
             GenerateTrees();
-            GenerateCreatures();
-            return chunk;
-        }
-        public static Chunk GenerateTer(IntVector2 pos)
-        {
-            Init(pos);
-            GenerateRain();
-            GenerateTerrain();
-            GenerateTrees();
+            GenerateCreatures(c);
             return chunk;
         }
 
@@ -123,7 +116,7 @@ namespace Mentula.SurvivalGameServer
             }
         }
 
-        private static void GenerateCreatures()
+        private static void GenerateCreatures(Content c)
         {
             for (int i = 0; i < Res.ChunkSize * Res.ChunkSize; i++)
             {
@@ -142,7 +135,7 @@ namespace Mentula.SurvivalGameServer
                     float chanceToSpawnDif = (rainArray[i] - 50) / 50;
                     if (r.NextDouble() * 100 <= chanceToSpawnRabbits)
                     {
-                        //chunk.Creatures.Add(new Creature(ForestWildLife.CreatureList[0], _pos, p.ToVector2()));
+                        chunk.Creatures.Add(new Creature(c.Creatures[0], _pos, p.ToVector2()));
                     }
                     else if (r.NextDouble() * 100 <= chanceToSpawnDif)
                     {

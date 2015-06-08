@@ -9,6 +9,7 @@ namespace Mentula.Content
         public readonly int Id;
         public readonly Color SkinColor;
         public readonly int Texture;
+        public bool Alive;
         public string Name;
         public Stats Stats;
         public BodyParts[] Parts;
@@ -16,6 +17,7 @@ namespace Mentula.Content
         internal Creature(int id, string name, Stats stats, BodyParts[] bodyParts, Color skinColor, int texture)
             : base()
         {
+            Alive = true;
             Id = id;
             Name = name;
             Stats = stats;
@@ -27,6 +29,7 @@ namespace Mentula.Content
         public Creature(Creature c, IntVector2 chunkPos, Vector2 tilePos)
             : base(chunkPos, tilePos)
         {
+            Alive = true;
             Name = c.Name;
             Stats = c.Stats;
             Parts = c.Parts;

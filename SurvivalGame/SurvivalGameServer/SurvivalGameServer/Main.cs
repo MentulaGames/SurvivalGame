@@ -217,21 +217,8 @@ namespace Mentula.SurvivalGameServer
 
                                 List<Creature> crs = ((Creature[])map.LoadedChunks[chunkIndex].Creatures.ToArray().Clone()).ToList();
                                 crs.AddRange(players.Values);
-                                ImpactObject sword = new ImpactObject(content.Metals[0], 14,256, 6);
+                                ImpactObject sword = new ImpactObject(content.Metals[0], 14,256, 10);
                                 List<Creature> t = Combat.AttackCreatures(players[id], sword, crs.ToArray(), rot, 120, 2);
-                                for (int i = 0; i < t.Count; i++)
-                                {
-                                    for (int j = 0; j < t[i].Parts.Length; j++)
-                                    {
-                                        for (int k = 0; k < t[i].Parts[j].Layers.Length; k++)
-                                        {
-                                            if (t[i].Parts[j].Layers[k].essential & t[i].Parts[j].Layers[k].BiggestHoleSize > 0)
-                                            {
-                                                int blaze = 420;
-                                            }
-                                        }
-                                    }
-                                }
 
                                 map.LoadedChunks[chunkIndex].Creatures = t.Where(c => !players.Values.Contains(c)).ToList();
                                 break;

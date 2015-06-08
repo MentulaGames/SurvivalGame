@@ -35,9 +35,18 @@ namespace Mentula.SurvivalGameServer
                         float bdeg = MEx.VectorToDegrees(bpos - apos+new Vector2(0.5f,0.5f));
                         if (MEx.DifferenceBetweenDegrees(degrees, bdeg) < arc / 2)
                         {
+
                             int b =(int)(r.NextDouble()*creatures[i].Parts.Length);
-                            MaterialLayer[] ml = creatures[i].Parts[b].Layers;
+                            TissueLayer[] a = creatures[i].Parts[b].Layers;
+                            MaterialLayer[] ml = a;
                             ImpactSimulator.OnHit(ref ml,ref im);
+                            for (int j = 0; j < a.Length; j++)
+                            {
+                                if (a[j].essential&a[j].BiggestHoleSize>0)
+                                {
+                                    creatureArray[i].Alive = false;
+                                }
+                            }
                         }
                     }
                 }

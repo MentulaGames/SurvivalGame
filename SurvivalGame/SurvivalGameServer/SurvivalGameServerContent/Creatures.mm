@@ -24,7 +24,7 @@
 		}
 	}
 
-	[Item: id=1, name="Human"]
+	[Item: id=1, name="Hoomons"]
 	{
 		[Texture: 0]
 		[Color: R=244, G=164, B=96, A=255]
