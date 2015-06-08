@@ -47,6 +47,18 @@ namespace Mentula.Network.Xna
             }
         }
 
+        public override string ToString()
+        {
+            string v = "";
+
+            for (int i = 0; i < States.Length; i++)
+            {
+                v += States[i].ToString() + "|";
+            }
+
+            return v;
+        }
+
         public struct UInt3 : IComparable, IFormattable, IComparable<UInt3>, IEquatable<UInt3>
         {
             public const int MaxValue = 7;

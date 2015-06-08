@@ -1,9 +1,11 @@
 ﻿using Mentula.General;
 using Mentula.Network.Xna;
 using Microsoft.Xna.Framework;
+using System.Diagnostics;
 
 namespace Mentula.Content
 {
+    [DebuggerDisplay("{GetState()}")]
     public class Creature : Actor
     {
         public readonly int Id;
