@@ -222,6 +222,7 @@ namespace Mentula.SurvivalGame
                         {
                             batch.Draw(pTexture, relPos, Color.White);
                             batch.DrawString(nameF, p.Name, relPos - nameOffset, Color.Black);
+                            batch.DrawString(nameF, p.State.States[0].ToString(), relPos - new Vector2(0, 32), Color.Red);
                         }
                     }
 

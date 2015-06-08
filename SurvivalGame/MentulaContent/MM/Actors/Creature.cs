@@ -1,4 +1,5 @@
 ﻿using Mentula.General;
+using Mentula.Network.Xna;
 using Microsoft.Xna.Framework;
 
 namespace Mentula.Content
@@ -35,7 +36,7 @@ namespace Mentula.Content
 
         public C_Player ToPlayer()
         {
-            return new C_Player(Name, ChunkPos, tilePos);
+            return new C_Player(Name, ChunkPos, tilePos, GetState());
         }
 
         public float GetTotalWeight()
@@ -48,6 +49,18 @@ namespace Mentula.Content
             }
 
             return result;
+        }
+
+        public PlayerState GetState()
+        {
+            PlayerState.UInt3[] states = new PlayerState.UInt3[Parts.Length];
+
+            for (int i = 0; i < Parts.Length; i++)
+            {
+                states[i] = Parts[i].GetState();
+            }
+
+            return new PlayerState(states);
         }
 
         public override string ToString()

@@ -4,6 +4,7 @@ using Mentula.General;
 using Mentula.General.Resources;
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections;
 
 namespace Mentula.Network.Xna
 {
@@ -95,12 +96,6 @@ namespace Mentula.Network.Xna
             }
         }
 
-        public static void Write(this NetBuffer msg, C_Player value)
-        {
-            msg.Write(value.ChunkPos);
-            msg.Write(value.GetTilePos());
-        }
-
         public static void Write(this NetBuffer msg, C_Player[] value)
         {
             msg.Write((Int16)value.Length);
@@ -112,6 +107,23 @@ namespace Mentula.Network.Xna
                 msg.Write(p.Name);
                 msg.Write(p.ChunkPos);
                 msg.Write(p.GetTilePos());
+                msg.Write(p.State);
+            }
+        }
+
+        public static void Write(this NetBuffer msg, PlayerState value)
+        {
+            msg.Write((Int16)value.States.Length);
+
+            for (int i = 0; i < value.States.Length; i++)
+            {
+                BitArray c = value.States[i].GetRaw();
+                msg.Write((byte)c.Length);
+
+                for (int j = 0; j < c.Length; j++)
+                {
+                    msg.Write(c[j]);
+                }
             }
         }
 
@@ -212,7 +224,7 @@ namespace Mentula.Network.Xna
 
             for (int i = 0; i < length; i++)
             {
-                result[i] = new C_Player(msg.ReadString(), msg.ReadVector(), msg.ReadVector2());
+                result[i] = new C_Player(msg.ReadString(), msg.ReadVector(), msg.ReadVector2(), msg.ReadState());
             }
 
             return result;
@@ -221,6 +233,27 @@ namespace Mentula.Network.Xna
         public static TEnum ReadEnum<TEnum>(this NetBuffer msg)
         {
             return (TEnum)Enum.ToObject(typeof(TEnum), msg.ReadByte());
+        }
+
+        public static PlayerState ReadState(this NetBuffer msg)
+        {
+            int length = msg.ReadInt16();
+            PlayerState.UInt3[] a_U = new PlayerState.UInt3[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                byte l = msg.ReadByte();
+                bool[] values = new bool[l];
+
+                for (int j = 0; j < l; j++)
+                {
+                    values[j] = msg.ReadBoolean();
+                }
+
+                a_U[i] = new PlayerState.UInt3(values);
+            }
+
+            return new PlayerState(a_U);
         }
     }
 }
