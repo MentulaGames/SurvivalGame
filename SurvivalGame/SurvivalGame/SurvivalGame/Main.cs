@@ -337,22 +337,29 @@ namespace Mentula.SurvivalGame
                                 C_Creature c = msg.ReadCreature();
                                 Vector2 totalPos = (c.ChunkPos.ToVector2() * Res.ChunkSize) + c.Pos;
 
-                                C_Player p = players.Values.FirstOrDefault(v => v.GetTotalPos() == totalPos);
-                                if (p != null)
+                                if (player.GetTotalPos() == totalPos)
                                 {
-                                    players[p.Name] = new C_Player(p.Name, c.ChunkPos, c.Pos, c.State);
-
-                                    drawer.Players = players;
+                                    player = new C_Player(player.Name, c.ChunkPos, c.Pos, c.State);
                                 }
                                 else
                                 {
-                                    C_Creature cr = creatures.FirstOrDefault(v => v.ChunkPos == c.ChunkPos && v.Pos == c.Pos);
-
-                                    if (cr != null)
+                                    C_Player p = players.Values.FirstOrDefault(v => v.GetTotalPos() == totalPos);
+                                    if (p != null)
                                     {
-                                        creatures[creatures.IndexOf(cr)] = c;
+                                        players[p.Name] = new C_Player(p.Name, c.ChunkPos, c.Pos, c.State);
 
-                                        drawer.Creatures = creatures;
+                                        drawer.Players = players;
+                                    }
+                                    else
+                                    {
+                                        C_Creature cr = creatures.FirstOrDefault(v => v.ChunkPos == c.ChunkPos && v.Pos == c.Pos);
+
+                                        if (cr != null)
+                                        {
+                                            creatures[creatures.IndexOf(cr)] = c;
+
+                                            drawer.Creatures = creatures;
+                                        }
                                     }
                                 }
                                 break;

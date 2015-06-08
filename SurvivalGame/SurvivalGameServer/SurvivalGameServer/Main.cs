@@ -227,6 +227,12 @@ namespace Mentula.SurvivalGameServer
                                     {
                                         Creature c = t[i];
 
+                                        if (players.ContainsValue(c))
+                                        {
+                                            long index = players.First(p => p.Value == c).Key;
+                                            players[index] = c;
+                                        }
+
                                         nom = server.CreateMessage();
                                         nom.Write((byte)DataType.CreatureChange_SSend);
                                         nom.Write(new C_Creature(c.ChunkPos, c.GetTilePos(), c.SkinColor, c.Id, c.GetState()));

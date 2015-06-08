@@ -149,12 +149,7 @@ namespace Mentula.Network.Xna
 
             public override string ToString()
             {
-                string t = "";
-                for (int i = 0; i < C.Length; i++)
-                {
-                    t += C[i].ToString() + "|";
-                }
-                return t + "|" +Value.ToString();
+                return Value.ToString();
             }
         }
     }
