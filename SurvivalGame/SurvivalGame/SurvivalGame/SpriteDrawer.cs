@@ -37,10 +37,15 @@ namespace Mentula.SurvivalGame
         private SpriteFont nameF;
         private SpriteFont menuF;
         private SpriteFont debugF;
+
+        private Texture2D background;
+        private GuiItem error;
         private GuiItem main;
+
         private int tabIndex;
         private bool tabDown;
         private bool vDown;
+        private byte errorResult;
 
         private Action onVSync;
 
@@ -65,7 +70,13 @@ namespace Mentula.SurvivalGame
             };
         }
 
-        public void Load(ContentManager content, ref C_Player player, string textures, string debugFont, string menuFont, string nameFont, string pTexture, Action<string> onDiscovery)
+        public void Initialize(Action<string> onDiscovery)
+        {
+            InitMain(onDiscovery);
+            InitError();
+        }
+
+        public void Load(ContentManager content, ref C_Player player, string textures, string debugFont, string menuFont, string nameFont, string pTexture)
         {
             batch = new SpriteBatch(GraphicsDevice);
             cam = new Camera(GraphicsDevice, IntVector2.Zero, Vector2.Zero);
@@ -75,11 +86,10 @@ namespace Mentula.SurvivalGame
             nameF = content.Load<SpriteFont>(nameFont);
             menuF = content.Load<SpriteFont>(menuFont);
             debugF = content.Load<SpriteFont>(debugFont);
+            background = content.Load<Texture2D>("MainMenuBackground");
 
             this.pTexture = content.Load<Texture2D>(pTexture);
             this.player = player;
-
-            InitMain(onDiscovery, content.Load<Texture2D>("MainMenuBackground"));
         }
 
         public void SetData(ref List<C_Tile> tiles, ref List<C_Destrucible> dest, ref List<C_Creature> crs)
@@ -159,6 +169,40 @@ namespace Mentula.SurvivalGame
             else if (k_S.IsKeyUp(Keys.V)) vDown = false;
         }
 
+        public void UpdateError(float delta, MouseState m_S, string text, Action onOk, Action onAbort, Action onRetry, bool first = false)
+        {
+            if (first) (error.Controls["lblError"] as Label).Text = text;
+            else
+            {
+                error.Update(m_S);
+
+                for (int i = 0; i < error.Controls.Count; i++)
+                {
+                    GuiItem g = error.Controls[i];
+
+                    if (g is Button) (g as Button).Update(m_S, delta);
+                }
+
+                if (errorResult != 0)
+                {
+                    switch (errorResult)
+                    {
+                        case (1):
+                            onOk();
+                            break;
+                        case (2):
+                            onAbort();
+                            break;
+                        case (3):
+                            onRetry();
+                            break;
+                    }
+
+                    errorResult = 0;
+                }
+            }
+        }
+
         public void UpdateGame(float delta, ref C_Player player)
         {
             const int ARROW_OFFSET = 24;
@@ -182,6 +226,9 @@ namespace Mentula.SurvivalGame
             {
                 case (GameState.MainMenu):
                     main.Draw(batch);
+                    break;
+                case(GameState.Error):
+                    error.Draw(batch);
                     break;
                 case (GameState.Game):
                     Vector2 relPos;
@@ -251,7 +298,7 @@ namespace Mentula.SurvivalGame
             batch.End();
         }
 
-        private void InitMain(Action<string> onDisc, Texture2D background)
+        private void InitMain(Action<string> onDisc)
         {
             int scrW = GraphicsDevice.Viewport.Width;
             int scrH = GraphicsDevice.Viewport.Height;
@@ -319,7 +366,7 @@ namespace Mentula.SurvivalGame
                     PreferredBackBufferWidth = scrW;
                     ApplyChanges();
                     cam = new Camera(GraphicsDevice, player.ChunkPos, player.GetTilePos());
-                    InitMain(onDisc, background);
+                    Initialize(onDisc);
                 }
                 else System.Windows.Forms.MessageBox.Show(string.Format("The screen {0}({1}) is an invalid value!", scrH < 1 ? "height" : "width", scrH < 1 ? scrH : scrW), "Invalid dimentions!");
             };
@@ -328,6 +375,23 @@ namespace Mentula.SurvivalGame
                     btnVSync.Text = btnVSync.Text == "Toggle VSync: off" ? "Toggle VSync: on" : "Toggle VSync: off";
                     onVSync();
                 };
+        }
+
+        private void InitError()
+        {
+            int scrW = GraphicsDevice.Viewport.Width;
+            int scrH = GraphicsDevice.Viewport.Height;
+
+            error = new GuiItem(GraphicsDevice, GraphicsDevice.Viewport.Bounds) { BackgroundImage = background };
+
+            Label lblError = new Label(GraphicsDevice, error, new Rectangle(scrW >> 1, scrH / 3, scrW >> 1, 22), menuF) { AutoSize = true, BackColor = Color.Transparent, Text = "Error: NULL", Name = "lblError" };
+            Button btnOk = new Button(GraphicsDevice, error, new Rectangle((scrW >> 1) - 150, scrH / 3 + 22, 150, 22), menuF) { Text = "Ok" };
+            Button btnAbort = new Button(GraphicsDevice, error, new Rectangle(scrW >> 1, scrH / 3 + 22, 150, 22), menuF) { Text = "Abort" };
+            Button btnRetry = new Button(GraphicsDevice, error, new Rectangle((scrW >> 1) + 150, scrH / 3 + 22, 150, 22), menuF) { Text = "Retry" };
+
+            btnOk.LeftClick += (obj, e) => errorResult = 1;
+            btnAbort.LeftClick += (obj, e) => errorResult = 2;
+            btnRetry.LeftClick += (obj, e) => errorResult = 3;
         }
 
         public bool TakeScreenshot()

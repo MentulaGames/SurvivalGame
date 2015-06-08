@@ -5,6 +5,7 @@
         Constructing,
         Initializing,
         Loading,
+        Error,
         MainMenu,
         Game,
     }

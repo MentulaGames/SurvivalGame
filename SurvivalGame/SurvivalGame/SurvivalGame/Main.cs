@@ -30,6 +30,9 @@ namespace Mentula.SurvivalGame
         private NetClient client;
         private GameState state;
 
+        private string error;
+        private Action onRetry;
+
         private C_Player player;
         private IntVector2 oldPos;
         private double nextSend;
@@ -72,7 +75,8 @@ namespace Mentula.SurvivalGame
             player = new C_Player();
             oldPos = player.ChunkPos;
 
-            drawer.Load(Content, ref player, "R/Textures", "Fonts/ConsoleFont", "Fonts/MenuFont", "Fonts/NameFont", "Actors/Player_Temp", name =>
+            drawer.Load(Content, ref player, "R/Textures", "Fonts/ConsoleFont", "Fonts/MenuFont", "Fonts/NameFont", "Actors/Player_Temp");
+            drawer.Initialize(name =>
             {
                 player.Name = name;
 #if LOCAL
@@ -92,155 +96,162 @@ namespace Mentula.SurvivalGame
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
             KeyboardState k_State = Keyboard.GetState();
 
-            if (state == GameState.Game & IsActive)
+            if (IsActive)
             {
-                IsMouseVisible = false;
-                Vector2 inp = default(Vector2);
-
-                if (k_State.IsKeyDown(Keys.Escape)) this.Exit();
-                if (k_State.IsKeyDown(Keys.PrintScreen)) drawer.TakeScreenshot();
-                if (k_State.IsKeyDown(Keys.F)) { drawer.ToggleFullScreen(); drawer.ApplyChanges(); }
-
-                if (k_State.IsKeyDown(Keys.W)) inp.Y -= 1;
-                if (k_State.IsKeyDown(Keys.S)) inp.Y += 1;
-                if (k_State.IsKeyDown(Keys.A)) inp.X -= 1;
-                if (k_State.IsKeyDown(Keys.D)) inp.X += 1;
-
-                if (inp != default(Vector2))
+                if (state == GameState.Game)
                 {
-                    inp = Vector2.Normalize(inp) * C_Player.Movement * delta;
-                    Vector2 outp = default(Vector2);
+                    IsMouseVisible = false;
+                    Vector2 inp = default(Vector2);
 
-                    player.Move(inp);
+                    if (k_State.IsKeyDown(Keys.Escape)) this.Exit();
+                    if (k_State.IsKeyDown(Keys.PrintScreen)) drawer.TakeScreenshot();
+                    if (k_State.IsKeyDown(Keys.F)) { drawer.ToggleFullScreen(); drawer.ApplyChanges(); }
+
+                    if (k_State.IsKeyDown(Keys.W)) inp.Y -= 1;
+                    if (k_State.IsKeyDown(Keys.S)) inp.Y += 1;
+                    if (k_State.IsKeyDown(Keys.A)) inp.X -= 1;
+                    if (k_State.IsKeyDown(Keys.D)) inp.X += 1;
+
+                    if (inp != default(Vector2))
+                    {
+                        inp = Vector2.Normalize(inp) * C_Player.Movement * delta;
+                        Vector2 outp = default(Vector2);
+
+                        player.Move(inp);
 #if COLLISION
-                    IntVector2 NW_CPos = player.ChunkPos;
-                    IntVector2 NE_CPos = player.GetTilePos().X + C_Player.Diff >= Res.ChunkSize ? player.ChunkPos + IntVector2.UnitX : player.ChunkPos;
-                    IntVector2 SW_CPos = player.GetTilePos().Y + C_Player.Diff >= Res.ChunkSize ? player.ChunkPos + IntVector2.UnitY : player.ChunkPos;
-                    IntVector2 SE_CPos = new IntVector2(NE_CPos.X, SW_CPos.Y);
+                        IntVector2 NW_CPos = player.ChunkPos;
+                        IntVector2 NE_CPos = player.GetTilePos().X + C_Player.Diff >= Res.ChunkSize ? player.ChunkPos + IntVector2.UnitX : player.ChunkPos;
+                        IntVector2 SW_CPos = player.GetTilePos().Y + C_Player.Diff >= Res.ChunkSize ? player.ChunkPos + IntVector2.UnitY : player.ChunkPos;
+                        IntVector2 SE_CPos = new IntVector2(NE_CPos.X, SW_CPos.Y);
 
-                    IntVector2 NW_TPos = new IntVector2(player.GetTilePos());
-                    IntVector2 NE_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(C_Player.Diff, 0)));
-                    IntVector2 SW_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(0, C_Player.Diff)));
-                    IntVector2 SE_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(C_Player.Diff)));
+                        IntVector2 NW_TPos = new IntVector2(player.GetTilePos());
+                        IntVector2 NE_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(C_Player.Diff, 0)));
+                        IntVector2 SW_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(0, C_Player.Diff)));
+                        IntVector2 SE_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(C_Player.Diff)));
 
-                    bool? NW_T = null;
-                    bool? NE_T = null;
-                    bool? SW_T = null;
-                    bool? SE_T = null;
+                        bool? NW_T = null;
+                        bool? NE_T = null;
+                        bool? SW_T = null;
+                        bool? SE_T = null;
 
-                    for (int i = 0; i < dest.Count; i++)
-                    {
-                        C_Destrucible d = dest[i];
-
-                        if (!NW_T.HasValue & d.ChunkPos == NW_CPos & d.Pos == NW_TPos) NW_T = d;
-                        if (!NE_T.HasValue & d.ChunkPos == NE_CPos & d.Pos == NE_TPos) NE_T = d;
-                        if (!SW_T.HasValue & d.ChunkPos == SW_CPos & d.Pos == SW_TPos) SW_T = d;
-                        if (!SE_T.HasValue & d.ChunkPos == SE_CPos & d.Pos == SE_TPos) SE_T = d;
-
-                        if (NW_T.HasValue & NE_T.HasValue & SW_T.HasValue & SE_T.HasValue) break;
-                    }
-
-                    bool NW = NW_T.HasValue ? NW_T.Value : false;
-                    bool NE = NE_T.HasValue ? NE_T.Value : false;
-                    bool SW = SW_T.HasValue ? SW_T.Value : false;
-                    bool SE = SE_T.HasValue ? SE_T.Value : false;
-
-                    if ((NE | SE) & inp.X > 0 & inp.Y == 0) outp.X = -inp.X;        // Move right false
-                    else if ((NW | SW) & inp.X < 0 & inp.Y == 0) outp.X = -inp.X;   // Move left false
-                    else if ((SE | SW) & inp.Y > 0 & inp.X == 0) outp.Y = -inp.Y;   // Move down false
-                    else if ((NE | NW) & inp.Y < 0 & inp.X == 0) outp.Y = -inp.Y;   // Move up false
-                    else if (inp.X > 0 & inp.Y > 0)                                 // Move right, down
-                    {
-                        if (SE & !NE & !SW)
+                        for (int i = 0; i < dest.Count; i++)
                         {
-                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (SE_CPos * Res.ChunkSize + SE_TPos).ToVector2());
-                            if (dist.X > dist.Y) outp.X = -inp.X;
-                            else if (dist.X < dist.Y) outp.Y = -inp.Y;
-                            else outp = -inp;
-                        }
-                        else if ((SE | NE) & !SW) outp.X = -inp.X;                  // Move right false, down
-                        else if ((SE | SW) & !NE) outp.Y = -inp.Y;                  // Move right, down false
-                        else if (SE & SW & NE) outp = -inp;                         // Move right false, down false
-                    }
-                    else if (inp.X > 0 & inp.Y < 0)                                 // Move right, up
-                    {
-                        if (NE & !SE & !NW)
-                        {
-                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (NE_CPos * Res.ChunkSize + NE_TPos).ToVector2());
-                            if (dist.X > dist.Y) outp.X = -inp.X;
-                            else if (dist.X < dist.Y) outp.Y = -inp.Y;
-                            else outp = -inp;
-                        }
-                        else if ((NE | SE) & !NW) outp.X = -inp.X;                  // Move right false, up
-                        else if ((NE | NW) & !SE) outp.Y = -inp.Y;                  // Move righ, up false
-                        else if (NE & NW & SE) outp = -inp;                         // Move right false, up false
-                    }
-                    else if (inp.X < 0 & inp.Y > 0)                                 // Move left, down
-                    {
-                        if (SW & !NW & !SE)
-                        {
-                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (SW_CPos * Res.ChunkSize + SW_TPos).ToVector2());
-                            if (dist.X > dist.Y) outp.X = -inp.X;
-                            else if (dist.X < dist.Y) outp.Y = -inp.Y;
-                            else outp = -inp;
-                        }
-                        else if ((SW | NW) & !SE) outp.X = -inp.X;                  // Move left false, down
-                        else if ((SE | SW) & !NW) outp.Y = -inp.Y;                  // Move left, down false
-                        else if (SE & SW & NW) outp = -inp;                         // Move left false, down false
-                    }
-                    else if (inp.X < 0 & inp.Y < 0)                                 // Move left, up
-                    {
-                        if (NW & !SW & !NE)
-                        {
-                            Vector2 dist = MEx.Abs(player.GetTotalPos() - (NW_CPos * Res.ChunkSize + NW_TPos).ToVector2());
-                            if (dist.X > dist.Y) outp.X = -inp.X;
-                            else if (dist.X < dist.Y) outp.Y = -inp.Y;
-                            else outp = -inp;
-                        }
-                        else if ((NW | SW) & !NE) outp.X = -inp.X;                  // Move left false, up
-                        else if ((NE | NW) & !SW) outp.Y = -inp.Y;                  // Move left, up false
-                        else if (NE & NW & SW) outp = -inp;                         // Move left false, up false
-                    }
+                            C_Destrucible d = dest[i];
 
-                    if (outp != default(Vector2)) player.Move(outp);
+                            if (!NW_T.HasValue & d.ChunkPos == NW_CPos & d.Pos == NW_TPos) NW_T = d;
+                            if (!NE_T.HasValue & d.ChunkPos == NE_CPos & d.Pos == NE_TPos) NE_T = d;
+                            if (!SW_T.HasValue & d.ChunkPos == SW_CPos & d.Pos == SW_TPos) SW_T = d;
+                            if (!SE_T.HasValue & d.ChunkPos == SE_CPos & d.Pos == SE_TPos) SE_T = d;
+
+                            if (NW_T.HasValue & NE_T.HasValue & SW_T.HasValue & SE_T.HasValue) break;
+                        }
+
+                        bool NW = NW_T.HasValue ? NW_T.Value : false;
+                        bool NE = NE_T.HasValue ? NE_T.Value : false;
+                        bool SW = SW_T.HasValue ? SW_T.Value : false;
+                        bool SE = SE_T.HasValue ? SE_T.Value : false;
+
+                        if ((NE | SE) & inp.X > 0 & inp.Y == 0) outp.X = -inp.X;        // Move right false
+                        else if ((NW | SW) & inp.X < 0 & inp.Y == 0) outp.X = -inp.X;   // Move left false
+                        else if ((SE | SW) & inp.Y > 0 & inp.X == 0) outp.Y = -inp.Y;   // Move down false
+                        else if ((NE | NW) & inp.Y < 0 & inp.X == 0) outp.Y = -inp.Y;   // Move up false
+                        else if (inp.X > 0 & inp.Y > 0)                                 // Move right, down
+                        {
+                            if (SE & !NE & !SW)
+                            {
+                                Vector2 dist = MEx.Abs(player.GetTotalPos() - (SE_CPos * Res.ChunkSize + SE_TPos).ToVector2());
+                                if (dist.X > dist.Y) outp.X = -inp.X;
+                                else if (dist.X < dist.Y) outp.Y = -inp.Y;
+                                else outp = -inp;
+                            }
+                            else if ((SE | NE) & !SW) outp.X = -inp.X;                  // Move right false, down
+                            else if ((SE | SW) & !NE) outp.Y = -inp.Y;                  // Move right, down false
+                            else if (SE & SW & NE) outp = -inp;                         // Move right false, down false
+                        }
+                        else if (inp.X > 0 & inp.Y < 0)                                 // Move right, up
+                        {
+                            if (NE & !SE & !NW)
+                            {
+                                Vector2 dist = MEx.Abs(player.GetTotalPos() - (NE_CPos * Res.ChunkSize + NE_TPos).ToVector2());
+                                if (dist.X > dist.Y) outp.X = -inp.X;
+                                else if (dist.X < dist.Y) outp.Y = -inp.Y;
+                                else outp = -inp;
+                            }
+                            else if ((NE | SE) & !NW) outp.X = -inp.X;                  // Move right false, up
+                            else if ((NE | NW) & !SE) outp.Y = -inp.Y;                  // Move righ, up false
+                            else if (NE & NW & SE) outp = -inp;                         // Move right false, up false
+                        }
+                        else if (inp.X < 0 & inp.Y > 0)                                 // Move left, down
+                        {
+                            if (SW & !NW & !SE)
+                            {
+                                Vector2 dist = MEx.Abs(player.GetTotalPos() - (SW_CPos * Res.ChunkSize + SW_TPos).ToVector2());
+                                if (dist.X > dist.Y) outp.X = -inp.X;
+                                else if (dist.X < dist.Y) outp.Y = -inp.Y;
+                                else outp = -inp;
+                            }
+                            else if ((SW | NW) & !SE) outp.X = -inp.X;                  // Move left false, down
+                            else if ((SE | SW) & !NW) outp.Y = -inp.Y;                  // Move left, down false
+                            else if (SE & SW & NW) outp = -inp;                         // Move left false, down false
+                        }
+                        else if (inp.X < 0 & inp.Y < 0)                                 // Move left, up
+                        {
+                            if (NW & !SW & !NE)
+                            {
+                                Vector2 dist = MEx.Abs(player.GetTotalPos() - (NW_CPos * Res.ChunkSize + NW_TPos).ToVector2());
+                                if (dist.X > dist.Y) outp.X = -inp.X;
+                                else if (dist.X < dist.Y) outp.Y = -inp.Y;
+                                else outp = -inp;
+                            }
+                            else if ((NW | SW) & !NE) outp.X = -inp.X;                  // Move left false, up
+                            else if ((NE | NW) & !SW) outp.Y = -inp.Y;                  // Move left, up false
+                            else if (NE & NW & SW) outp = -inp;                         // Move left false, up false
+                        }
+
+                        if (outp != default(Vector2)) player.Move(outp);
 #endif
+                    }
+
+                    if (Mouse.GetState().LeftButton == BtnSt.Pressed & now > attackTime)    // If the player tyd to attack and can attack.
+                    {
+                        Vector2 playerPos = new Vector2(drawer.PreferredBackBufferWidth >> 1, drawer.PreferredBackBufferHeight >> 1);
+                        float rot = MEx.VectorToDegrees(MentulaExtensions.GetMousePos() - playerPos);
+
+                        NOM nom = client.CreateMessage();
+                        nom.Write((byte)DataType.Attack_CSend);
+                        nom.Write(rot);
+                        client.SendMessage(nom, NetDeliveryMethod.Unreliable);
+                        attackTime = NetTime.Now + .5f;
+                    }
+
+                    if (oldPos != player.ChunkPos)
+                    {
+                        NOM nom = client.CreateMessage();
+                        nom.Write((byte)DataType.ChunkRequest_Both);
+
+                        nom.Write(player.ChunkPos);
+                        nom.Write(oldPos);
+                        client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
+                        oldPos = player.ChunkPos;
+                    }
+
                 }
-
-                if (Mouse.GetState().LeftButton == BtnSt.Pressed & now > attackTime)    // If the player tyd to attack and can attack.
+                else if (state == GameState.MainMenu)    // If the player is in the main menu.
                 {
-                    Vector2 playerPos = new Vector2(drawer.PreferredBackBufferWidth >> 1, drawer.PreferredBackBufferHeight >> 1);
-                    float rot = MEx.VectorToDegrees(MentulaExtensions.GetMousePos() - playerPos);
+                    IsMouseVisible = true;
 
-                    NOM nom = client.CreateMessage();
-                    nom.Write((byte)DataType.Attack_CSend);
-                    nom.Write(rot);
-                    client.SendMessage(nom, NetDeliveryMethod.Unreliable);
-                    attackTime = NetTime.Now + .5f;
+                    if (client.ConnectionStatus == NCS.Connected)   // If the client has connected to the server.
+                    {
+                        state = GameState.Loading;
+                        nextSend = NetTime.Now;
+                        NOM nom = client.CreateMessage();
+                        nom.Write((byte)DataType.InitialMap_Both);
+                        client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
+                    }
                 }
-
-                if (oldPos != player.ChunkPos)
+                else if (state == GameState.Error)
                 {
-                    NOM nom = client.CreateMessage();
-                    nom.Write((byte)DataType.ChunkRequest_Both);
-
-                    nom.Write(player.ChunkPos);
-                    nom.Write(oldPos);
-                    client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
-                    oldPos = player.ChunkPos;
-                }
-
-            }
-            else if (state == GameState.MainMenu & IsActive)    // If the player is in the main menu.
-            {
-                IsMouseVisible = true;
-
-                if (client.ConnectionStatus == NCS.Connected)   // If the client has connected to the server.
-                {
-                    state = GameState.Loading;
-                    nextSend = NetTime.Now;
-                    NOM nom = client.CreateMessage();
-                    nom.Write((byte)DataType.InitialMap_Both);
-                    client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
+                    IsMouseVisible = true;
                 }
             }
 
@@ -272,20 +283,19 @@ namespace Mentula.SurvivalGame
                                 player.SetTilePos(Vector2.Zero);
                                 break;
                             case (NCS.Disconnected):    // The client has been disconected from the server.
-                                string message = msg.ReadString();
+                                error = msg.ReadString();
+                                state = GameState.Error;
+                                drawer.UpdateError(0, new MouseState(), error, null, null, null, true);
 
-                                Forms.DialogResult result = Forms.MessageBox.Show(message, "The server closed the connection.", Forms.MessageBoxButtons.AbortRetryIgnore);
-
-                                switch (result)
-                                {
-                                    case (System.Windows.Forms.DialogResult.Abort):
-                                        this.Exit();
-                                        break;
-                                    case (Forms.DialogResult.Retry):
-                                        nom = client.CreateMessage(player.Name);    // Resent a connection request.
-                                        client.Connect(msg.SenderEndPoint, nom);
-                                        break;
-                                }
+                                onRetry = () =>
+                                    {
+                                        if (client.ServerConnection != null)
+                                        {
+                                            nom = client.CreateMessage(player.Name);    // Resent a connection request.
+                                            client.Connect(msg.SenderEndPoint, nom);
+                                        }
+                                        else state = GameState.MainMenu;
+                                    };
                                 break;
                         }
                         break;
@@ -372,6 +382,9 @@ namespace Mentula.SurvivalGame
             {
                 case (GameState.MainMenu):
                     drawer.UpdateMain(delta, Mouse.GetState(), ref k_State);
+                    break;
+                case(GameState.Error):
+                    drawer.UpdateError(delta, Mouse.GetState(), error, () => state = GameState.MainMenu, () => Exit(), onRetry);
                     break;
                 case (GameState.Game):
                     drawer.UpdateGame(delta, ref player);

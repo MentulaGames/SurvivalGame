@@ -60,7 +60,7 @@ namespace Mentula.SurvivalGameServer
         {
             players = new Dictionary<long, Creature>();
             addQueue = new Dictionary<long, string>();
-            server.Shutdown(string.Format("{0} Exiting", Res.AppName));
+            server.Shutdown(string.Format("The server has shut down.", Res.AppName));
         }
 
         public void Update()
