@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections;
 
 namespace Mentula.Network.Xna
@@ -6,10 +7,44 @@ namespace Mentula.Network.Xna
     public struct PlayerState
     {
         public readonly UInt3[] States;
+        public readonly Color[] Colors;
 
         public PlayerState(UInt3[] parts)
         {
-            States = parts;   
+            States = parts;
+            Colors = new Color[States.Length];
+
+            for (int i = 0; i < States.Length; i++)
+            {
+                Color temp = Color.Transparent;
+
+                switch (States[i])
+                {
+                    case (0):
+                        temp = Color.DarkGreen;
+                        break;
+                    case (1):
+                        temp = Color.LightGreen;
+                        break;
+                    case (2):
+                        temp = Color.Yellow;
+                        break;
+                    case (3):
+                        temp = Color.Orange;
+                        break;
+                    case (4):
+                        temp = Color.Red;
+                        break;
+                    case (5):
+                        temp = Color.DarkRed;
+                        break;
+                    default:
+                        temp = Color.Gray;
+                        break;
+                }
+
+                Colors[i] = temp;
+            }
         }
 
         public struct UInt3 : IComparable, IFormattable, IComparable<UInt3>, IEquatable<UInt3>
@@ -18,15 +53,15 @@ namespace Mentula.Network.Xna
             public const int MinValue = 0;
 
             private readonly BitArray C;
-            private int Value 
+            private int Value
             {
-                get 
+                get
                 {
                     int v = 0;
 
-                    for (int i = 1; i <= C.Length; i++)
+                    for (int i = 0; i < C.Length; i++)
                     {
-                        v += C[i - 1] ? i * i : 0;
+                        v += C[i] ? 1 << i : 0;
                     }
 
                     return v;
@@ -114,7 +149,12 @@ namespace Mentula.Network.Xna
 
             public override string ToString()
             {
-                return Value.ToString();
+                string t = "";
+                for (int i = 0; i < C.Length; i++)
+                {
+                    t += C[i].ToString() + "|";
+                }
+                return t + "|" +Value.ToString();
             }
         }
     }

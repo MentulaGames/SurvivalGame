@@ -51,8 +51,8 @@ namespace Mentula.Content
                 maxarea += t.MaxArea;
                 currarea += t.CurrArea;
             }
-
-            return (uint)(NUM_OF_STATES - (currarea / maxarea * NUM_OF_STATES));
+            uint u = (uint)(NUM_OF_STATES - (currarea / maxarea * NUM_OF_STATES));
+            return u > PlayerState.UInt3.MaxValue ? PlayerState.UInt3.MaxValue : u;
         }
     }
 }

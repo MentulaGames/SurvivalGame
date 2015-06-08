@@ -210,7 +210,11 @@ namespace Mentula.SurvivalGame
                         if (cam.TryGetRelativePosition(c.ChunkPos, c.Pos, out relPos))
                         {
                             batch.Draw(texC[c.TextureId], relPos, c.Color, PLAYER_LAYER);
-                            batch.DrawString(nameF, c.Health.ToString(), relPos - nameOffset, Color.Black);
+
+                            for (int j = 0; j < c.State.States.Length; j++)
+                            {
+                                batch.DrawString(nameF, c.State.States[j].ToString(), relPos - new Vector2(0, j * 25 + Res.TileSize), c.State.Colors[j]);
+                            }
                         }
                     }
 
@@ -222,7 +226,11 @@ namespace Mentula.SurvivalGame
                         {
                             batch.Draw(pTexture, relPos, Color.White);
                             batch.DrawString(nameF, p.Name, relPos - nameOffset, Color.Black);
-                            batch.DrawString(nameF, p.State.States[0].ToString(), relPos - new Vector2(0, 32), Color.Red);
+
+                            for (int j = 0; j < p.State.States.Length; j++)
+                            {
+                                batch.DrawString(nameF, p.State.States[j].ToString(), relPos - new Vector2(0, j * 25 + Res.TileSize), p.State.Colors[j]);
+                            }
                         }
                     }
 

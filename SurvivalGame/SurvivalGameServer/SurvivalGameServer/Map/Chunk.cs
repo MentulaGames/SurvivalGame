@@ -68,7 +68,7 @@ namespace Mentula.SurvivalGameServer
 
         public static explicit operator C_Creature[](Chunk chunk)
         {
-            return chunk.Creatures.Select(c => new C_Creature(chunk.Pos, c.GetTilePos(), c.SkinColor, 1, c.Texture)).ToArray();
+            return chunk.Creatures.Select(c => new C_Creature(chunk.Pos, c.GetTilePos(), c.SkinColor, c.Texture, c.GetState())).ToArray();
         }
     }
 }

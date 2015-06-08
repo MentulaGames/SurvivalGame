@@ -17,7 +17,6 @@ using NIMT = Lidgren.Network.NetIncomingMessageType;
 using NOM = Lidgren.Network.NetOutgoingMessage;
 using NPConf = Lidgren.Network.NetPeerConfiguration;
 
-
 namespace Mentula.SurvivalGameServer
 {
     public class Main
@@ -217,8 +216,23 @@ namespace Mentula.SurvivalGameServer
 
                                 List<Creature> crs = ((Creature[])map.LoadedChunks[chunkIndex].Creatures.ToArray().Clone()).ToList();
                                 crs.AddRange(players.Values);
-                                ImpactObject sword = new ImpactObject(content.Metals[0], 14,256, 10);
-                                List<Creature> t = Combat.AttackCreatures(players[id], sword, crs.ToArray(), rot, 120, 2);
+                                ImpactObject sword = new ImpactObject(content.Metals[0], 14, 256, 10);
+
+                                bool[] output;
+                                List<Creature> t = Combat.AttackCreatures(players[id], sword, crs.ToArray(), rot, 120, 2, out output);
+
+                                for (int i = 0; i < output.Length; i++)
+                                {
+                                    if (output[i])
+                                    {
+                                        Creature c = t[i];
+
+                                        nom = server.CreateMessage();
+                                        nom.Write((byte)DataType.CreatureChange_SSend);
+                                        nom.Write(new C_Creature(c.ChunkPos, c.GetTilePos(), c.SkinColor, c.Id, c.GetState()));
+                                        server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.Unreliable);
+                                    }
+                                }
 
                                 map.LoadedChunks[chunkIndex].Creatures = t.Where(c => !players.Values.Contains(c)).ToList();
                                 break;

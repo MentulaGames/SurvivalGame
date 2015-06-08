@@ -18,10 +18,12 @@ namespace Mentula.SurvivalGameServer
             r = new Random();
         }
 
-        public static List<Creature> AttackCreatures(Creature attacker,ImpactObject im, Creature[] creatures, float degrees, float arc, float range)
+        public static List<Creature> AttackCreatures(Creature attacker, ImpactObject im, Creature[] creatures, float degrees, float arc, float range, out bool[] output)
         {
             Vector2 apos = attacker.GetTotalPos();
             List<Creature> creatureArray = creatures.ToList();
+            output = new bool[creatureArray.Count];
+
             for (int i = 0; i < creatureArray.Count; )
             {
                 bool remain = true;
@@ -32,22 +34,24 @@ namespace Mentula.SurvivalGameServer
                     float dist = (apos - bpos).Length();
                     if (dist < range)
                     {
-                        float bdeg = MEx.VectorToDegrees(bpos - apos+new Vector2(0.5f,0.5f));
+                        float bdeg = MEx.VectorToDegrees(bpos - apos + new Vector2(0.5f, 0.5f));
                         if (MEx.DifferenceBetweenDegrees(degrees, bdeg) < arc / 2)
                         {
 
-                            int b =(int)(r.NextDouble()*creatures[i].Parts.Length);
+                            int b = (int)(r.NextDouble() * creatures[i].Parts.Length);
                             TissueLayer[] a = creatures[i].Parts[b].Layers;
                             MaterialLayer[] ml = a;
-                            ImpactSimulator.OnHit(ref ml,ref im);
+                            ImpactSimulator.OnHit(ref ml, ref im);
                             for (int j = 0; j < a.Length; j++)
                             {
-                                if (a[j].essential&a[j].BiggestHoleSize>0)
+                                if (a[j].essential & a[j].BiggestHoleSize > 0)
                                 {
                                     creatureArray[i].Alive = false;
                                 }
                             }
                         }
+
+                        output[i] = true;
                     }
                 }
 

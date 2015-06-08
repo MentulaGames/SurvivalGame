@@ -13,9 +13,9 @@ namespace Mentula.SurvivalGameServer
             r = new Random();
         }
 
-        public static void OnHit(ref MaterialLayer[] layers,ref  ImpactObject impacter)
+        public static void OnHit(ref MaterialLayer[] layers, ref  ImpactObject impacter)
         {
-            for (int i = layers.Length-1; i >=0 ; i--)
+            for (int i = layers.Length - 1; i >= 0; i--)
             {
                 float lintr = layers[i].CurrArea / layers[i].MaxArea;
                 float dNeeded = layers[i].Thickness * MEx.Lerp(lintr * lintr, (float)Math.Sqrt(lintr), (float)r.NextDouble());
@@ -25,11 +25,15 @@ namespace Mentula.SurvivalGameServer
                     layers[i].BiggestHoleSize = impacter.ContactArea;
                     layers[i].CurrArea -= impacter.ContactArea;
                     impacter.SetMPa(impacter.MPa - dNeeded * layers[i].Tensile_Strain_At_Yield);
+
+                    if (layers[i].CurrArea < 0) layers[i].CurrArea = 0;
                 }
                 else
                 {
                     layers[i].CurrArea -= impacter.ContactArea * d / dNeeded;
                     impacter.SetMPa(0);
+
+                    if (layers[i].CurrArea < 0) layers[i].CurrArea = 0;
                     break;
                 }
             }

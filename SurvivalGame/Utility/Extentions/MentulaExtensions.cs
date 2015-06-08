@@ -74,8 +74,8 @@ namespace Mentula.Network.Xna
             msg.Write(value.ChunkPos);
             msg.Write(value.Pos);
             msg.Write(value.Color.PackedValue);
-            msg.Write(value.Health);
             msg.Write(value.TextureId);
+            msg.Write(value.State);
         }
 
         public static void Write(this NetBuffer msg, C_Creature[] value)
@@ -91,8 +91,8 @@ namespace Mentula.Network.Xna
                 C_Creature curC = value[i];
                 msg.Write(curC.Pos);
                 msg.Write(curC.Color.PackedValue);
-                msg.Write(curC.Health);
                 msg.Write(curC.TextureId);
+                msg.Write(curC.State);
             }
         }
 
@@ -191,7 +191,7 @@ namespace Mentula.Network.Xna
 
         public static C_Creature ReadCreature(this NetBuffer msg)
         {
-            return new C_Creature(msg.ReadVector(), msg.ReadVector2(), new Color() { PackedValue = msg.ReadUInt32() }, msg.ReadFloat(), msg.PeekInt32());
+            return new C_Creature(msg.ReadVector(), msg.ReadVector2(), new Color() { PackedValue = msg.ReadUInt32() }, msg.ReadInt32(), msg.ReadState());
         }
 
         public static C_Creature[] ReadCreatureArr(this NetBuffer msg)
@@ -206,7 +206,7 @@ namespace Mentula.Network.Xna
 
             for (int i = 0; i < length; i++)
             {
-                result[i] = new C_Creature(chunkPos, msg.ReadVector2(), new Color() { PackedValue = msg.ReadUInt32() }, msg.ReadFloat(), msg.ReadInt32());
+                result[i] = new C_Creature(chunkPos, msg.ReadVector2(), new Color() { PackedValue = msg.ReadUInt32() }, msg.ReadInt32(), msg.ReadState());
             }
 
             return result;
