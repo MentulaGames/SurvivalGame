@@ -54,6 +54,8 @@ namespace Mentula.SurvivalGameServer
         public void Start()
         {
             server.Start();
+
+            if (SimpleMessage != null) SimpleMessage("Starting server");
         }
 
         public void Stop()
@@ -61,6 +63,8 @@ namespace Mentula.SurvivalGameServer
             players = new Dictionary<long, Creature>();
             addQueue = new Dictionary<long, string>();
             server.Shutdown(string.Format("The server has shut down.", Res.AppName));
+
+            if (SimpleMessage != null) SimpleMessage("Shutting down server");
         }
 
         public void Update()

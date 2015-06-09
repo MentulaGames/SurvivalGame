@@ -49,7 +49,7 @@ namespace Mentula.SurvivalGameServer.GUI
         {
             InvokeIfRequired(dGrid_Connections, () => dGrid_Connections.Rows.RemoveAt(players[IP]));
         }
-        
+
         public void ClearPlayers()
         {
             InvokeIfRequired(dGrid_Connections, () => dGrid_Connections.Rows.Clear());
@@ -146,8 +146,15 @@ namespace Mentula.SurvivalGameServer.GUI
 
         private void InvokeIfRequired(Control control, MethodInvoker action)
         {
-            if (control.InvokeRequired) control.Invoke(action);
-            else action();
+            try
+            {
+                if (control.InvokeRequired && !control.IsDisposed) control.Invoke(action);
+                else action();
+            }
+            catch (ObjectDisposedException e)
+            {
+                if (!control.IsDisposed) WriteLine(NIMT.Error, "Cannot perform action on '{0}'.\nInnenException: {1}", control.Name, e);
+            }
         }
 
         private void txt_Console_MouseDown(object sender, MouseEventArgs e)
@@ -177,7 +184,17 @@ namespace Mentula.SurvivalGameServer.GUI
 
         private void btn_Restart_Click(object sender, EventArgs e)
         {
-            WriteLine(new NotImplementedException().Message);
+            if (!Program.ServerDown)
+            {
+                WriteLine(NIMT.ErrorMessage, "The server must be stopped before it can restart!");
+            }
+            else
+            {
+                Program.Exit = false;
+                Program.updateThread = new Thread(Program.StartService);
+                Program.updateThread.Start();
+                WriteLine("Server is restarting.");
+            }
         }
     }
 }

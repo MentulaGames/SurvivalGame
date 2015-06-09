@@ -69,6 +69,15 @@ namespace Mentula.SurvivalGameServer
             GUI.UpdateStats(true);
             GUI.ClearPlayers();
             main.Stop();
+
+            DateTime start = DateTime.Now;
+            while (!ServerDown)
+            {
+                TimeSpan diff = DateTime.Now - start;
+                if (diff.Seconds > 5) break;
+            }
+
+            GUI.WriteLine("Server has stopped.");
         }
     }
 }
