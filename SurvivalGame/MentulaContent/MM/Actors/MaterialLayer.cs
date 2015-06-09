@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Diagnostics;
 
 namespace Mentula.Content
 {
+    [DebuggerDisplay("Id={Id}, Name={Name}, Thickness={Thickness}, Weight={GetWeight()}")]
     public class MaterialLayer : Material
     {
         public readonly float MaxArea;

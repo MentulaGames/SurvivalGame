@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 
 namespace Mentula.Content
 {
+    [DebuggerDisplay("Id={Id}, Name={Name}")]
     public abstract class Material
     {
         public int Id { get; private set; }

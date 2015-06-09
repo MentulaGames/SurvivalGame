@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Diagnostics;
 
 namespace Mentula.Content
 {
+    [DebuggerDisplay("{ToString()}")]
     public struct StateOfMatter
     {
         public readonly float MeltingPoint;

@@ -1,5 +1,8 @@
-﻿namespace Mentula.Content
+﻿using System.Diagnostics;
+
+namespace Mentula.Content
 {
+    [DebuggerDisplay("{ToString()}")]
     public class Stats
     {
         public float Str;
@@ -53,6 +56,11 @@
         public static Stats operator *(Stats s, float c)
         {
             return new Stats(s.Str * c, s.Dex * c, s.Int * c, s.Per * c, s.End * c);
+        }
+
+        public override string ToString()
+        {
+            return "Str=" + Str.ToString() + " Dex=" + Dex.ToString() + " Int=" + Int.ToString() + " Per=" + Per.ToString() + " End=" + End.ToString();
         }
     }
 }

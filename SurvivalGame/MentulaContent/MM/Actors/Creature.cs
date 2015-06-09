@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Mentula.Content
 {
-    [DebuggerDisplay("{GetState()}")]
+    [DebuggerDisplay("Name={Name}, State={GetState()}")]
     public class Creature : Actor
     {
         public readonly int Id;

@@ -1,5 +1,8 @@
-﻿namespace Mentula.Content
+﻿using System.Diagnostics;
+
+namespace Mentula.Content
 {
+    [DebuggerDisplay("Material={Name}, Essential={essential}")]
     public class TissueLayer : MaterialLayer
     {
         public readonly bool essential;

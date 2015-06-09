@@ -1,8 +1,10 @@
 ﻿using Mentula.Network.Xna;
 using System;
+using System.Diagnostics;
 
 namespace Mentula.Content
 {
+    [DebuggerDisplay("Name={Name}, State={GetState()}")]
     public class BodyParts
     {
         public readonly string Name;
