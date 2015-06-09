@@ -5,6 +5,7 @@ using Mentula.General.Resources;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Mentula.Network.Xna
 {
@@ -117,7 +118,8 @@ namespace Mentula.Network.Xna
 
             for (int i = 0; i < value.States.Length; i++)
             {
-                BitArray c = value.States[i].GetRaw();
+                BitArray c = value.States[i].Value.GetRaw();
+                msg.Write(value.States[i].Key);
                 msg.Write((byte)c.Length);
 
                 for (int j = 0; j < c.Length; j++)
@@ -238,11 +240,12 @@ namespace Mentula.Network.Xna
         public static PlayerState ReadState(this NetBuffer msg)
         {
             int length = msg.ReadInt16();
-            PlayerState.UInt3[] a_U = new PlayerState.UInt3[length];
+            KeyValuePair<string, PlayerState.UInt3>[] a_U = new KeyValuePair<string, PlayerState.UInt3>[length];
 
             for (int i = 0; i < length; i++)
             {
                 byte l = msg.ReadByte();
+                string name = msg.ReadString();
                 bool[] values = new bool[l];
 
                 for (int j = 0; j < l; j++)
@@ -250,7 +253,7 @@ namespace Mentula.Network.Xna
                     values[j] = msg.ReadBoolean();
                 }
 
-                a_U[i] = new PlayerState.UInt3(values);
+                a_U[i] = new KeyValuePair<string, PlayerState.UInt3>(name, new PlayerState.UInt3(values));
             }
 
             return new PlayerState(a_U);

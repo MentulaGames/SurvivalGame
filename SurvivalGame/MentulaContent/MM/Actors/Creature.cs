@@ -1,6 +1,7 @@
 ﻿using Mentula.General;
 using Mentula.Network.Xna;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Mentula.Content
@@ -58,7 +59,7 @@ namespace Mentula.Content
 
         public PlayerState GetState()
         {
-            PlayerState.UInt3[] states = new PlayerState.UInt3[Parts.Length];
+            KeyValuePair<string, PlayerState.UInt3>[] states = new KeyValuePair<string,PlayerState.UInt3>[Parts.Length];
 
             for (int i = 0; i < Parts.Length; i++)
             {

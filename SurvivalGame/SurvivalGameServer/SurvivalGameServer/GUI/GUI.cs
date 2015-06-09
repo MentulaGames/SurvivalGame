@@ -151,7 +151,7 @@ namespace Mentula.SurvivalGameServer.GUI
                 if (control.InvokeRequired && !control.IsDisposed) control.Invoke(action);
                 else action();
             }
-            catch (ObjectDisposedException e)
+            catch (Exception e)
             {
                 if (!control.IsDisposed) WriteLine(NIMT.Error, "Cannot perform action on '{0}'.\nInnenException: {1}", control.Name, e);
             }

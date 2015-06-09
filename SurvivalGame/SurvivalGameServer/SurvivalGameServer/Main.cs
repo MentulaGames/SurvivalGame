@@ -220,7 +220,7 @@ namespace Mentula.SurvivalGameServer
 
                                 List<Creature> crs = ((Creature[])map.LoadedChunks[chunkIndex].Creatures.ToArray().Clone()).ToList();
                                 crs.AddRange(players.Values);
-                                ImpactObject sword = new ImpactObject(content.Metals[0], 14, 256, 10);
+                                ImpactObject sword = new ImpactObject(content.Metals[0], 14, 25600, 1000);
 
                                 bool[] output;
                                 List<Creature> t = Combat.AttackCreatures(players[id], sword, crs.ToArray(), rot, 120, 2, out output);

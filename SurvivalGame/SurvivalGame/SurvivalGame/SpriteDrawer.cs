@@ -276,7 +276,7 @@ namespace Mentula.SurvivalGame
 
                             for (int j = 0; j < p.State.States.Length; j++)
                             {
-                                batch.DrawString(nameF, p.State.States[j].ToString(), relPos - new Vector2(0, j * 25 + Res.TileSize), p.State.Colors[j]);
+                                batch.DrawString(nameF, p.State.States[j].Key, relPos - new Vector2(0, j * 25 + Res.TileSize), p.State.Colors[j]);
                             }
                         }
                     }

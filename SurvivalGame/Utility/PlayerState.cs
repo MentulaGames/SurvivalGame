@@ -1,15 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Mentula.Network.Xna
 {
     public struct PlayerState
     {
-        public readonly UInt3[] States;
+        public readonly KeyValuePair<string, UInt3>[] States;
         public readonly Color[] Colors;
 
-        public PlayerState(UInt3[] parts)
+        public PlayerState(KeyValuePair<string, UInt3>[] parts)
         {
             States = parts;
             Colors = new Color[States.Length];
@@ -18,7 +19,7 @@ namespace Mentula.Network.Xna
             {
                 Color temp = Color.Transparent;
 
-                switch (States[i])
+                switch (States[i].Value)
                 {
                     case (0):
                         temp = Color.DarkGreen;
