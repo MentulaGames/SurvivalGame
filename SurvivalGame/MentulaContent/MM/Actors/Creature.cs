@@ -57,16 +57,16 @@ namespace Mentula.Content
             return result;
         }
 
-        public PlayerState GetState()
+        public CreatureState GetState()
         {
-            KeyValuePair<string, PlayerState.UInt3>[] states = new KeyValuePair<string,PlayerState.UInt3>[Parts.Length];
+            KeyValuePair<string, CreatureState.UInt3>[] states = new KeyValuePair<string,CreatureState.UInt3>[Parts.Length];
 
             for (int i = 0; i < Parts.Length; i++)
             {
                 states[i] = Parts[i].GetState();
             }
 
-            return new PlayerState(states);
+            return new CreatureState(states);
         }
 
         public override string ToString()

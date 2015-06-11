@@ -8,11 +8,11 @@ namespace Mentula.General
     {
         public IntVector2 ChunkPos;
         public Vector2 Pos;
-        public PlayerState State;
+        public CreatureState State;
         public Color Color;
         public int TextureId;
 
-        public C_Creature(IntVector2 chunkPos, Vector2 pos, Color color, int id, PlayerState state)
+        public C_Creature(IntVector2 chunkPos, Vector2 pos, Color color, int id, CreatureState state)
         {
             ChunkPos = chunkPos;
             Pos = pos;

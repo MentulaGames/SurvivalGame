@@ -41,7 +41,7 @@ namespace Mentula.Content
             return result;
         }
 
-        public KeyValuePair<string, PlayerState.UInt3> GetState()
+        public KeyValuePair<string, CreatureState.UInt3> GetState()
         {
             const int NUM_OF_STATES = 6;
             float maxarea = 0;
@@ -55,7 +55,7 @@ namespace Mentula.Content
                 currarea += t.CurrArea;
             }
             uint u = (uint)(NUM_OF_STATES - (currarea / maxarea * NUM_OF_STATES));
-            return new KeyValuePair<string, PlayerState.UInt3>(Name, u > PlayerState.UInt3.MaxValue ? PlayerState.UInt3.MaxValue : u);
+            return new KeyValuePair<string, CreatureState.UInt3>(Name, u > CreatureState.UInt3.MaxValue ? CreatureState.UInt3.MaxValue : u);
         }
     }
 }

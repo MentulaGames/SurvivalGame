@@ -112,7 +112,7 @@ namespace Mentula.Network.Xna
             }
         }
 
-        public static void Write(this NetBuffer msg, PlayerState value)
+        public static void Write(this NetBuffer msg, CreatureState value)
         {
             msg.Write((Int16)value.States.Length);
 
@@ -131,19 +131,30 @@ namespace Mentula.Network.Xna
 
         public static BytePoint ReadPoint(this NetBuffer msg)
         {
-            return new BytePoint(msg.ReadByte(), msg.ReadByte());
+            byte x = msg.ReadByte();
+            byte y = msg.ReadByte();
+            return new BytePoint(x, y);
         }
 
         public static IntVector2 ReadVector(this NetBuffer msg)
         {
-            return new IntVector2(msg.ReadInt32(), msg.ReadInt32());
+            int x = msg.ReadInt32();
+            int y = msg.ReadInt32();
+            return new IntVector2(x, y);
         }
 
         public static C_Tile ReadTile(this NetBuffer msg)
         {
-            IntVector2 chunkPos = new IntVector2(msg.ReadInt32(), msg.ReadInt32());
+            int x = msg.ReadInt32();
+            int y = msg.ReadInt32();
+            IntVector2 chunkPos = new IntVector2(x, y);
+
             IntVector2 pos = (IntVector2)msg.ReadPoint();
-            return new C_Tile(chunkPos, pos, msg.ReadByte(), msg.ReadByte(), msg.ReadBoolean());
+            byte texture = msg.ReadByte();
+            byte layer = msg.ReadByte();
+            bool walkable = msg.ReadBoolean();
+
+            return new C_Tile(chunkPos, pos, texture, layer, walkable);
         }
 
         public static C_Tile[] ReadTileArr(this NetBuffer msg)
@@ -151,13 +162,18 @@ namespace Mentula.Network.Xna
             int length = msg.ReadInt16();
             C_Tile[] result = new C_Tile[length];
 
+            if (length == 0) return result;
+
             IntVector2 chunkPos = msg.ReadVector();
             IntVector2 pos = (IntVector2)msg.ReadPoint();
             byte layer = msg.ReadByte();
 
             for (int i = 0; i < length; i++)
             {
-                C_Tile newTile = new C_Tile(chunkPos, pos, msg.ReadByte(), layer, msg.ReadBoolean());
+                byte texture = msg.ReadByte();
+                bool walkable = msg.ReadBoolean();
+
+                C_Tile newTile = new C_Tile(chunkPos, pos, texture, layer, walkable);
                 result[i] = newTile;
 
                 pos.X++;
@@ -193,7 +209,13 @@ namespace Mentula.Network.Xna
 
         public static C_Creature ReadCreature(this NetBuffer msg)
         {
-            return new C_Creature(msg.ReadVector(), msg.ReadVector2(), new Color() { PackedValue = msg.ReadUInt32() }, msg.ReadInt32(), msg.ReadState());
+            IntVector2 chunkPos = msg.ReadVector();
+            Vector2 tilePos = msg.ReadVector2();
+            Color color = new Color() { PackedValue = msg.ReadUInt32() };
+            int id = msg.ReadInt32();
+            CreatureState state = msg.ReadState();
+
+            return new C_Creature(chunkPos, tilePos, color, id, state);
         }
 
         public static C_Creature[] ReadCreatureArr(this NetBuffer msg)
@@ -208,7 +230,12 @@ namespace Mentula.Network.Xna
 
             for (int i = 0; i < length; i++)
             {
-                result[i] = new C_Creature(chunkPos, msg.ReadVector2(), new Color() { PackedValue = msg.ReadUInt32() }, msg.ReadInt32(), msg.ReadState());
+                Vector2 tilePos = msg.ReadVector2();
+                Color color = new Color() { PackedValue = msg.ReadUInt32() };
+                int id = msg.ReadInt32();
+                CreatureState state = msg.ReadState();
+
+                result[i] = new C_Creature(chunkPos, tilePos, color, id, state);
             }
 
             return result;
@@ -216,7 +243,10 @@ namespace Mentula.Network.Xna
 
         public static void ReadReSetPlayer(this NetBuffer msg, ref C_Player player)
         {
-            player.ReSet(msg.ReadVector(), msg.ReadVector2());
+            IntVector2 chunkPos = msg.ReadVector();
+            Vector2 tilePos = msg.ReadVector2();
+
+            player.ReSet(chunkPos, tilePos);
         }
 
         public static C_Player[] ReadPlayers(this NetBuffer msg)
@@ -226,7 +256,12 @@ namespace Mentula.Network.Xna
 
             for (int i = 0; i < length; i++)
             {
-                result[i] = new C_Player(msg.ReadString(), msg.ReadVector(), msg.ReadVector2(), msg.ReadState());
+                string name = msg.ReadString();
+                IntVector2 chunkPos = msg.ReadVector();
+                Vector2 tilePos = msg.ReadVector2();
+                CreatureState state = msg.ReadState();
+
+                result[i] = new C_Player(name, chunkPos, tilePos, state);
             }
 
             return result;
@@ -237,10 +272,10 @@ namespace Mentula.Network.Xna
             return (TEnum)Enum.ToObject(typeof(TEnum), msg.ReadByte());
         }
 
-        public static PlayerState ReadState(this NetBuffer msg)
+        public static CreatureState ReadState(this NetBuffer msg)
         {
             int length = msg.ReadInt16();
-            KeyValuePair<string, PlayerState.UInt3>[] a_U = new KeyValuePair<string, PlayerState.UInt3>[length];
+            KeyValuePair<string, CreatureState.UInt3>[] a_U = new KeyValuePair<string, CreatureState.UInt3>[length];
 
             for (int i = 0; i < length; i++)
             {
@@ -253,10 +288,10 @@ namespace Mentula.Network.Xna
                     values[j] = msg.ReadBoolean();
                 }
 
-                a_U[i] = new KeyValuePair<string, PlayerState.UInt3>(name, new PlayerState.UInt3(values));
+                a_U[i] = new KeyValuePair<string, CreatureState.UInt3>(name, new CreatureState.UInt3(values));
             }
 
-            return new PlayerState(a_U);
+            return new CreatureState(a_U);
         }
     }
 }

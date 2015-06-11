@@ -127,7 +127,6 @@ namespace Mentula.SurvivalGameServer
 
                                 if (result)
                                 {
-
                                     players.Add(id, new Creature(content.Creatures[1], IntVector2.Zero, Vector2.Zero) { Name = addQueue[id] });
                                     addQueue.Remove(id);
                                     if (CustomMessage != null) CustomMessage(NIMT.StatusChanged, "{0}({1}) connected!", NetUtility.ToHexString(id), players[id].Name);

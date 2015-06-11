@@ -9,7 +9,7 @@ namespace Mentula.General
         public const float Movement = 10f;
 
         public string Name;
-        public PlayerState State;
+        public CreatureState State;
 
         public C_Player()
             : base()
@@ -17,7 +17,7 @@ namespace Mentula.General
             Name = "NameLess";
         }
 
-        public C_Player(string name, IntVector2 chunkPos, Vector2 tilePos, PlayerState state)
+        public C_Player(string name, IntVector2 chunkPos, Vector2 tilePos, CreatureState state)
             : base(chunkPos, tilePos)
         {
             Name = name;
