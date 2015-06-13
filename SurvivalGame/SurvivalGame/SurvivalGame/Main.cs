@@ -80,7 +80,7 @@ namespace Mentula.SurvivalGame
             {
                 player.Name = name;
 #if LOCAL
-                client.DiscoverLocalPeers(Ips.PORT);
+                client.DiscoverKnownPeer("localhost", Ips.PORT);
 #endif
 #if !LOCAL
                 client.DiscoverKnownPeer(Ips.EndJoëll);

@@ -238,7 +238,7 @@ namespace Mentula.SurvivalGameServer
 
                                         nom = server.CreateMessage();
                                         nom.Write((byte)DataType.CreatureChange_SSend);
-                                        nom.Write(new C_Creature(c.ChunkPos, c.GetTilePos(), c.SkinColor, c.Id, c.GetState()));
+                                        nom.Write(new C_Creature(c.ChunkPos, c.GetTilePos(), c.SkinColor, c.Texture, c.GetState()));
                                         server.SendMessage(nom, msg.SenderConnection, NetDeliveryMethod.Unreliable);
                                     }
                                 }

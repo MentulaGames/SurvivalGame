@@ -1,22 +1,8 @@
 ﻿using Lidgren.Network;
-using Lidgren.Network.Xna;
-using Mentula.General;
-using Mentula.General.Resources;
-using Mentula.Network.Xna;
 using Mentula.SurvivalGameServer.GUI;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Windows.Forms;
-using NCS = Lidgren.Network.NetConnectionStatus;
-using NIMT = Lidgren.Network.NetIncomingMessageType;
-using NOM = Lidgren.Network.NetOutgoingMessage;
-using NPConf = Lidgren.Network.NetPeerConfiguration;
 
 namespace Mentula.SurvivalGameServer
 {

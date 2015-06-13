@@ -279,8 +279,8 @@ namespace Mentula.Network.Xna
 
             for (int i = 0; i < length; i++)
             {
-                byte l = msg.ReadByte();
                 string name = msg.ReadString();
+                byte l = msg.ReadByte();
                 bool[] values = new bool[l];
 
                 for (int j = 0; j < l; j++)

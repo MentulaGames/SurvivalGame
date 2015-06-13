@@ -2,7 +2,7 @@
 {
 	[Item: id=0, name="Rabbit"]
 	{
-		[Texture: 0]
+		[Texture: 6]
 		[Color: R=244, G=164, B=96, A=255]
 
 		[Strength: 2]
