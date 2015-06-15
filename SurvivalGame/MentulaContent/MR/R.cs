@@ -22,7 +22,7 @@ namespace Mentula.Content
                 for (int j = 0; j < iA.Value.Length; j++)
                 {
                     KeyValuePair<int, string> item = iA.Value[j];
-                    values.Add(item.Key, string.Format("{0}/{1}", iA.Key, item.Value));
+                    values.Add(item.Key, iA.Key + "/" + item.Value);
                 }
             }
         }

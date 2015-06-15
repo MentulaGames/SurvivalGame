@@ -8,7 +8,7 @@ namespace Mentula.SurvivalGame
 {
     public class Camera
     {
-        public Rectangle CameraWorld;
+        public Rectangle CameraViewPort;
 
         private Vector2 Position;
         private Vector2 DesiredPosition;
@@ -22,8 +22,8 @@ namespace Mentula.SurvivalGame
             DesiredPosition = Position;
 
             CameraOffset = Position;
-            CameraWorld = new Rectangle(-Res.TileSize, -Res.TileSize, device.Viewport.Width + Res.TileSize, device.Viewport.Height + Res.TileSize);
-            LookAtOffset = new Point(CameraWorld.Width >> 1, CameraWorld.Height >> 1);
+            CameraViewPort = new Rectangle(-Res.TileSize, -Res.TileSize, device.Viewport.Width + Res.TileSize, device.Viewport.Height + Res.TileSize);
+            LookAtOffset = new Point(CameraViewPort.Width >> 1, CameraViewPort.Height >> 1);
         }
 
         public void Move(Vector2 unitMove)
@@ -71,7 +71,7 @@ namespace Mentula.SurvivalGame
         {
             Vector2 pos = (chunkPos * Res.ChunkSize).ToVector2() * Res.TileSize + position * Res.TileSize;
             relative = pos - CameraOffset;
-            return CameraWorld.Contains((int)relative.X, (int)relative.Y);
+            return CameraViewPort.Contains((int)relative.X, (int)relative.Y);
         }
     }
 }

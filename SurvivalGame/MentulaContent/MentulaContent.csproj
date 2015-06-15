@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cheats.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="MM\Biomass\MBioProcessor.cs" />
     <Compile Include="MM\Biomass\MBioReader.cs" />
     <Compile Include="MM\Biomass\MBioWriter.cs" />
