@@ -3,17 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Mentula.Content.MR
+namespace Mentula.Content.MM
 {
     internal class MRReader : ContentTypeReader<R>
     {
         protected override R Read(ContentReader input, R existingInstance)
         {
-            Dictionary<string, KeyValuePair<int, string>[]> raw = new Dictionary<string, KeyValuePair<int, string>[]>();
-
             try
             {
                 int diff = input.ReadInt32();
+                KeyValuePair<string, KeyValuePair<int, string>[]>[] raw = new KeyValuePair<string, KeyValuePair<int, string>[]>[diff];
 
                 for (int i = 0; i < diff; i++)
                 {
@@ -29,7 +28,7 @@ namespace Mentula.Content.MR
                         items[j] = new KeyValuePair<int, string>(id, name);
                     }
 
-                    raw.Add(dir, items);
+                    raw[i] = new KeyValuePair<string, KeyValuePair<int, string>[]>(dir, items);
                 }
 
                 return new R(raw);
