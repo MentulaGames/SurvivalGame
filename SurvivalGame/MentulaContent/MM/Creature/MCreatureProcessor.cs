@@ -16,26 +16,127 @@ namespace Mentula.Content.MM
             for (int i = 0; i < result.Length; i++)
             {
                 Container creatureContainer = input.Container.Childs[i];
-                Manifest mani = new Manifest();
-                mani.BodyParts = new List<BodyParts>();
-                mani.Stats = new Stats();
+                Manifest mani = new Manifest()
+                    {
+                        BodyParts = new List<BodyParts>(),
+                        Stats = new Stats()
+                    };
 
                 string rawValue = "";
 
-                if (creatureContainer.TryGetValue("Id", out rawValue)) mani.Id = int.Parse(rawValue);
-                if (creatureContainer.TryGetValue("Name", out rawValue)) mani.Name = rawValue;
+                const string ID = "Id";
+                if (creatureContainer.TryGetValue(ID, out rawValue))
+                {
+                    int raw = 0;
 
-                if (creatureContainer.TryGetValue("Texture", out rawValue)) mani.TextureId = int.Parse(rawValue);
-                if (creatureContainer.TryGetValue("Color.R", out rawValue)) mani.Color.R = byte.Parse(rawValue);
-                if (creatureContainer.TryGetValue("Color.G", out rawValue)) mani.Color.G = byte.Parse(rawValue);
-                if (creatureContainer.TryGetValue("Color.B", out rawValue)) mani.Color.B = byte.Parse(rawValue);
-                if (creatureContainer.TryGetValue("Color.A", out rawValue)) mani.Color.A = byte.Parse(rawValue);
+                    if (int.TryParse(rawValue, out raw)) mani.Id = raw;
+                    else throw new ParameterException(ID, rawValue, typeof(int));
+                }
+                else throw new ParameterNullException(ID);
 
-                if (creatureContainer.TryGetValue("Strength", out rawValue)) mani.Stats.Str = int.Parse(rawValue);
-                if (creatureContainer.TryGetValue("Dexterity", out rawValue)) mani.Stats.Dex = int.Parse(rawValue);
-                if (creatureContainer.TryGetValue("Intelect", out rawValue)) mani.Stats.Int = int.Parse(rawValue);
-                if (creatureContainer.TryGetValue("Perception", out rawValue)) mani.Stats.Per = int.Parse(rawValue);
-                if (creatureContainer.TryGetValue("Endurence", out rawValue)) mani.Stats.End = int.Parse(rawValue);
+                const string NAME = "Name";
+                if (creatureContainer.TryGetValue(NAME, out rawValue)) mani.Name = rawValue;
+                else throw new ParameterNullException(NAME);
+
+                const string TEXTURE = "Texture";
+                if (creatureContainer.TryGetValue(TEXTURE, out rawValue))
+                {
+                    int raw = 0;
+
+                    if (int.TryParse(rawValue, out raw)) mani.TextureId = raw;
+                    else throw new ParameterException(TEXTURE, rawValue, typeof(int));
+                }
+                else throw new ParameterNullException(TEXTURE);
+
+                const string R = "Color.R";
+                if (creatureContainer.TryGetValue(R, out rawValue))
+                {
+                    byte raw = 0;
+
+                    if (byte.TryParse(rawValue, out raw)) mani.Color.R = raw;
+                    else throw new ParameterException(R, rawValue, typeof(byte));
+                }
+                else throw new ParameterNullException(R);
+
+                const string G = "Color.G";
+                if (creatureContainer.TryGetValue(G, out rawValue))
+                {
+                    byte raw = 0;
+
+                    if (byte.TryParse(rawValue, out raw)) mani.Color.G = raw;
+                    else throw new ParameterException(G, rawValue, typeof(byte));
+                }
+                else throw new ParameterNullException(G);
+
+                const string B = "Color.B";
+                if (creatureContainer.TryGetValue(B, out rawValue))
+                {
+                    byte raw = 0;
+
+                    if (byte.TryParse(rawValue, out raw)) mani.Color.B = raw;
+                    else throw new ParameterException(B, rawValue, typeof(byte));
+                }
+                else throw new ParameterNullException(B);
+
+                const string A = "Color.A";
+                if (creatureContainer.TryGetValue(A, out rawValue))
+                {
+                    byte raw = 0;
+
+                    if (byte.TryParse(rawValue, out raw)) mani.Color.A = raw;
+                    else throw new ParameterException(A, rawValue, typeof(byte));
+                }
+                else throw new ParameterNullException(A);
+
+                const string STR = "Strength";
+                if (creatureContainer.TryGetValue(STR, out rawValue))
+                {
+                    int raw = 0;
+
+                    if (int.TryParse(rawValue, out raw)) mani.Stats.Str = raw;
+                    else throw new ParameterException(STR, rawValue, typeof(int));
+                }
+                else throw new ParameterNullException(STR);
+
+                const string DEX = "Dexterity";
+                if (creatureContainer.TryGetValue(DEX, out rawValue))
+                {
+                    int raw = 0;
+
+                    if (int.TryParse(rawValue, out raw)) mani.Stats.Dex = raw;
+                    else throw new ParameterException(DEX, rawValue, typeof(int));
+                }
+                else throw new ParameterNullException(DEX);
+
+                const string INT = "Intelect";
+                if (creatureContainer.TryGetValue(INT, out rawValue))
+                {
+                    int raw = 0;
+
+                    if (int.TryParse(rawValue, out raw)) mani.Stats.Int = raw;
+                    else throw new ParameterException(INT, rawValue, typeof(int));
+                }
+                else throw new ParameterNullException(INT);
+
+                const string PERC = "Perception";
+                if (creatureContainer.TryGetValue(PERC, out rawValue))
+                {
+                    int raw = 0;
+
+                    if (int.TryParse(rawValue, out raw)) mani.Stats.Per = raw;
+                    else throw new ParameterException(PERC, rawValue, typeof(int));
+                }
+                else throw new ParameterNullException(PERC);
+
+                const string END = "Endurence";
+                if (creatureContainer.TryGetValue(END, out rawValue))
+                {
+                    int raw = 0;
+
+                    if (int.TryParse(rawValue, out raw)) mani.Stats.End = raw;
+                    else throw new ParameterException(END, rawValue, typeof(int));
+                }
+                else throw new ParameterNullException(END);
 
                 for (int j = 0; j < creatureContainer.Childs.Length; j++)
                 {
@@ -44,6 +145,7 @@ namespace Mentula.Content.MM
                     string name = "";
 
                     if (bodyContainer.TryGetValue("Default", out rawValue)) name = rawValue;
+                    else throw new ParameterNullException("Name");
 
                     TissueLayer[] layers = new TissueLayer[bodyContainer.Childs.Length];
                     for (int k = 0; k < bodyContainer.Childs.Length; k++)
@@ -51,12 +153,58 @@ namespace Mentula.Content.MM
                         Container tissueContainer = bodyContainer.Childs[k];
                         TissueManifest tMani = new TissueManifest();
 
-                        if (tissueContainer.TryGetValue("Default", out rawValue)) tMani.Essential = bool.Parse(rawValue);
+                        const string ESS = "Essential";
+                        if (tissueContainer.TryGetValue("Default", out rawValue))
+                        {
+                            bool raw = false;
+
+                            if (bool.TryParse(rawValue, out raw)) tMani.Essential = raw;
+                            else throw new ParameterException(ESS, rawValue, typeof(bool));
+                        }
+                        else throw new ParameterNullException(ESS);
+
+                        const string TYPE = "Type";
                         if (tissueContainer.TryGetValue("Type", out rawValue)) tMani.Name = rawValue;
-                        if (tissueContainer.TryGetValue("Id", out rawValue)) tMani.Id = int.Parse(rawValue);
-                        if (tissueContainer.TryGetValue("InfluencesEffectiveness", out rawValue)) tMani.InfluencesEffectiveness = bool.Parse(rawValue);
-                        if (tissueContainer.TryGetValue("Thickness", out rawValue)) tMani.Thickness = float.Parse(rawValue);
-                        if (tissueContainer.TryGetValue("Area", out rawValue)) tMani.MaxArea = float.Parse(rawValue);
+                        else throw new ParameterNullException(TYPE);
+
+                        if (tissueContainer.TryGetValue(ID, out rawValue))
+                        {
+                            int raw = 0;
+
+                            if (int.TryParse(rawValue, out raw)) tMani.Id = raw;
+                            else throw new ParameterException(ID, rawValue, typeof(int));
+                        }
+                        else throw new ParameterNullException(ID);
+
+                        const string INF = "InfluencesEffectiveness";
+                        if (tissueContainer.TryGetValue(INF, out rawValue))
+                        {
+                            bool raw = false;
+
+                            if (bool.TryParse(rawValue, out raw)) tMani.InfluencesEffectiveness = raw;
+                            else throw new ParameterException(INF, rawValue, typeof(bool));
+                        }
+                        else throw new ParameterNullException(INF);
+
+                        const string THICK = "Thickness";
+                        if (tissueContainer.TryGetValue(THICK, out rawValue))
+                        {
+                            float raw = 0;
+
+                            if (float.TryParse(rawValue, out raw)) tMani.Thickness = raw;
+                            else throw new ParameterException(THICK, rawValue, typeof(float));
+                        }
+                        else throw new ParameterNullException(THICK);
+
+                        const string AREA = "Area";
+                        if (tissueContainer.TryGetValue(AREA, out rawValue))
+                        {
+                            float raw = 0;
+
+                            if (float.TryParse(rawValue, out raw)) tMani.MaxArea = raw;
+                            else throw new ParameterException(AREA, rawValue, typeof(float));
+                        }
+                        else throw new ParameterNullException(AREA);
 
                         layers[k] = new TissueLayer(new MaterialLayer(tMani.Id, tMani.Name, Vector3.Zero, tMani.Thickness, tMani.MaxArea), tMani.Essential, tMani.InfluencesEffectiveness);
                     }
