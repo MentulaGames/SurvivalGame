@@ -22,13 +22,13 @@ namespace Mentula.Content
             Density = float.PositiveInfinity;
         }
 
-        internal Material(int id, string name, float UTS, float TSAY, float density, bool client = false)
+        internal Material(int id, string name, float UTS, float TSAY, float density)
         {
             Id = id;
             Name = name;
             Ultimate_Tensile_Strength = UTS;
             Tensile_Strain_At_Yield = TSAY;
-            Density = client ? density : density / 1000;
+            Density = density;
         }
 
         internal Material(Material m)

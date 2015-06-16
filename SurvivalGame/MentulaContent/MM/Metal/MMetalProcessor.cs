@@ -37,7 +37,7 @@ namespace Mentula.Content.MM
                 {
                     float raw = 0;
 
-                    if (float.TryParse(rawValue, out raw)) mani.Values.X = raw;
+                    if (Utils.TryParse(rawValue, out raw)) mani.Values.X = raw;
                     else throw new ParameterException(UTS, rawValue, typeof(float));
                 }
                 else throw new ParameterNullException(NAME);
@@ -47,7 +47,7 @@ namespace Mentula.Content.MM
                 {
                     float raw = 0;
 
-                    if (float.TryParse(rawValue, out raw)) mani.Values.Y = raw;
+                    if (Utils.TryParse(rawValue, out raw)) mani.Values.Y = raw;
                     else throw new ParameterException(TSAY, rawValue, typeof(float));
                 }
                 else throw new ParameterNullException(TSAY);
@@ -57,7 +57,7 @@ namespace Mentula.Content.MM
                 {
                     float raw = 0;
 
-                    if (float.TryParse(rawValue, out raw)) mani.Values.Z = raw;
+                    if (Utils.TryParse(rawValue, out raw)) mani.Values.Z = raw;
                     else throw new ParameterException(DENS, rawValue, typeof(float));
                 }
                 else throw new ParameterNullException(DENS);
@@ -67,7 +67,7 @@ namespace Mentula.Content.MM
                 {
                     float raw = 0;
 
-                    if (float.TryParse(rawValue, out raw)) mani.States.X = raw;
+                    if (Utils.TryParse(rawValue, out raw)) mani.States.X = raw;
                     else throw new ParameterException(MELT, rawValue, typeof(float));
                 }
                 else throw new ParameterNullException(MELT);
@@ -77,7 +77,7 @@ namespace Mentula.Content.MM
                 {
                     float raw = 0;
 
-                    if (float.TryParse(rawValue, out raw)) mani.States.Y = raw;
+                    if (Utils.TryParse(rawValue, out raw)) mani.States.Y = raw;
                     else throw new ParameterException(VAP, rawValue, typeof(float));
                 }
                 else throw new ParameterNullException(VAP);
@@ -87,7 +87,7 @@ namespace Mentula.Content.MM
                 {
                     float raw = 0;
 
-                    if (float.TryParse(rawValue, out raw)) mani.States.Z = raw;
+                    if (Utils.TryParse(rawValue, out raw)) mani.States.Z = raw;
                     else throw new ParameterException(VAP, rawValue, typeof(float));
                 }
                 else throw new ParameterNullException(VAP);

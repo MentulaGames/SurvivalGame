@@ -2,7 +2,7 @@
 {
     public class Cheats
     {
-        public static Metal Unobtanium { get; private set; }
+        public static readonly Metal Unobtanium;
 
         static Cheats()
         {

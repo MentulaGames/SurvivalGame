@@ -21,7 +21,7 @@ namespace Mentula.Content.MM
                 mani.Burn = input.ReadSingle();
                 mani.Nutr = input.ReadSingle();
 
-                result[i] = new Biomass(mani.Burn, mani.Nutr, mani.Id, mani.Name, mani.Values, true);
+                result[i] = new Biomass(mani.Burn, mani.Nutr, mani.Id, mani.Name, mani.Values);
             }
 
             return result;

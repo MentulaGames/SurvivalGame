@@ -47,7 +47,7 @@ namespace Mentula.Content.MM
                         matMani.stats.Y = input.ReadSingle();
                         matMani.stats.Z = input.ReadSingle();
 
-                        cur.Layers[k] = new TissueLayer(new MaterialLayer(matMani.Id, matMani.Name, matMani.stats, matMani.Thick, matMani.Max, true), matMani.Ess, matMani.Inf);
+                        cur.Layers[k] = new TissueLayer(new MaterialLayer(matMani.Id, matMani.Name, matMani.stats, matMani.Thick, matMani.Max), matMani.Ess, matMani.Inf);
                     }
 
                     mani.BodyParts.Add(cur);

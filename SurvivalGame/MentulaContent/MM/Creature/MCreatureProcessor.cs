@@ -191,7 +191,7 @@ namespace Mentula.Content.MM
                         {
                             float raw = 0;
 
-                            if (float.TryParse(rawValue, out raw)) tMani.Thickness = raw;
+                            if (Utils.TryParse(rawValue, out raw)) tMani.Thickness = raw;
                             else throw new ParameterException(THICK, rawValue, typeof(float));
                         }
                         else throw new ParameterNullException(THICK);
@@ -201,7 +201,7 @@ namespace Mentula.Content.MM
                         {
                             float raw = 0;
 
-                            if (float.TryParse(rawValue, out raw)) tMani.MaxArea = raw;
+                            if (Utils.TryParse(rawValue, out raw)) tMani.MaxArea = raw;
                             else throw new ParameterException(AREA, rawValue, typeof(float));
                         }
                         else throw new ParameterNullException(AREA);

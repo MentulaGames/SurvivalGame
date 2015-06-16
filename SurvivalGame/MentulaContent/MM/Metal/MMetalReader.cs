@@ -20,7 +20,7 @@ namespace Mentula.Content.MM
                 mani.Values.Z = input.ReadSingle();
                 mani.States = input.ReadVector3();
 
-                result[i] = new Metal(new StateOfMatter(mani.States), mani.Id, mani.Name, mani.Values, true);
+                result[i] = new Metal(new StateOfMatter(mani.States), mani.Id, mani.Name, mani.Values);
             }
 
             return result;
