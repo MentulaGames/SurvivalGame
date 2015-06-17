@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Mentula.Content.MM
 {
-    [ContentImporter(".mm", DefaultProcessor = "MMProcessor", DisplayName = "Mentula Material Importer")]
+    [ContentImporter(".mm", DefaultProcessor = "MMProcessor", DisplayName = "Mentula Importer")]
     internal class MMImporter : ContentImporter<MMSource>
     {
         public override MMSource Import(string filename, ContentImporterContext context)

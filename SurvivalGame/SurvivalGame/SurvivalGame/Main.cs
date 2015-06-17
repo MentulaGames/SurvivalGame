@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using BtnSt = Microsoft.Xna.Framework.Input.ButtonState;
-using Forms = System.Windows.Forms;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using MEx = Mentula.General.MathExtensions.Math;
 using NCS = Lidgren.Network.NetConnectionStatus;
@@ -104,8 +103,22 @@ namespace Mentula.SurvivalGame
                     Vector2 inp = default(Vector2);
 
                     if (k_State.IsKeyDown(Keys.Escape)) this.Exit();
-                    if (k_State.IsKeyDown(Keys.PrintScreen)) drawer.TakeScreenshot();
-                    if (k_State.IsKeyDown(Keys.F)) { drawer.ToggleFullScreen(); drawer.ApplyChanges(); }
+                    if (k_State.IsKeyDown(Keys.PrintScreen))
+                    {
+                        bool result = drawer.TakeScreenshot();
+                        if(!result)
+                        {
+                            state = GameState.Error;
+                            error = "An error occured while taking a screenshot.";
+                            drawer.UpdateError(0, new MouseState(), error, null, null, null, true);
+                            onRetry = () => state = GameState.MainMenu;
+                        }
+                    }
+                    if (k_State.IsKeyDown(Keys.F)) 
+                    {
+                        drawer.ToggleFullScreen(); 
+                        drawer.ApplyChanges(); 
+                    }
 
                     if (k_State.IsKeyDown(Keys.W)) inp.Y -= 1;
                     if (k_State.IsKeyDown(Keys.S)) inp.Y += 1;
@@ -114,20 +127,20 @@ namespace Mentula.SurvivalGame
 
                     if (inp != default(Vector2))
                     {
-                        inp = Vector2.Normalize(inp) * C_Player.Movement * delta;
+                        inp = Vector2.Normalize(inp) * C_Player.MOVEMENT * delta;
                         Vector2 outp = default(Vector2);
 
                         player.Move(inp);
 #if COLLISION
                         IntVector2 NW_CPos = player.ChunkPos;
-                        IntVector2 NE_CPos = player.GetTilePos().X + C_Player.Diff >= Res.ChunkSize ? player.ChunkPos + IntVector2.UnitX : player.ChunkPos;
-                        IntVector2 SW_CPos = player.GetTilePos().Y + C_Player.Diff >= Res.ChunkSize ? player.ChunkPos + IntVector2.UnitY : player.ChunkPos;
+                        IntVector2 NE_CPos = player.GetTilePos().X + C_Player.DIFF >= Res.ChunkSize ? player.ChunkPos + IntVector2.UnitX : player.ChunkPos;
+                        IntVector2 SW_CPos = player.GetTilePos().Y + C_Player.DIFF >= Res.ChunkSize ? player.ChunkPos + IntVector2.UnitY : player.ChunkPos;
                         IntVector2 SE_CPos = new IntVector2(NE_CPos.X, SW_CPos.Y);
 
                         IntVector2 NW_TPos = new IntVector2(player.GetTilePos());
-                        IntVector2 NE_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(C_Player.Diff, 0)));
-                        IntVector2 SW_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(0, C_Player.Diff)));
-                        IntVector2 SE_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(C_Player.Diff)));
+                        IntVector2 NE_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(C_Player.DIFF, 0)));
+                        IntVector2 SW_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(0, C_Player.DIFF)));
+                        IntVector2 SE_TPos = new IntVector2(Actor.FormatPos(player.GetTilePos() + new Vector2(C_Player.DIFF)));
 
                         bool? NW_T = null;
                         bool? NE_T = null;
@@ -235,6 +248,15 @@ namespace Mentula.SurvivalGame
                         oldPos = player.ChunkPos;
                     }
 
+                    if (now > nextSend)
+                    {
+                        NOM nom = client.CreateMessage();
+                        nom.Write((byte)DataType.PlayerUpdate_Both);
+                        nom.Write(player.ChunkPos);
+                        nom.Write(player.GetTilePos());
+                        client.SendMessage(nom, NetDeliveryMethod.UnreliableSequenced);
+                        nextSend += .033f;
+                    }
                 }
                 else if (state == GameState.MainMenu)    // If the player is in the main menu.
                 {
@@ -253,16 +275,6 @@ namespace Mentula.SurvivalGame
                 {
                     IsMouseVisible = true;
                 }
-            }
-
-            if (now > nextSend)
-            {
-                NOM nom = client.CreateMessage();
-                nom.Write((byte)DataType.PlayerUpdate_Both);
-                nom.Write(player.ChunkPos);
-                nom.Write(player.GetTilePos());
-                client.SendMessage(nom, NetDeliveryMethod.UnreliableSequenced);
-                nextSend += .033f;
             }
 
             NIM msg = null;
@@ -383,7 +395,7 @@ namespace Mentula.SurvivalGame
                 case (GameState.MainMenu):
                     drawer.UpdateMain(delta, Mouse.GetState(), ref k_State);
                     break;
-                case(GameState.Error):
+                case (GameState.Error):
                     drawer.UpdateError(delta, Mouse.GetState(), error, () => state = GameState.MainMenu, () => Exit(), onRetry);
                     break;
                 case (GameState.Game):
