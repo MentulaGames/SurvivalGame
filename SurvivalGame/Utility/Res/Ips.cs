@@ -4,7 +4,7 @@ namespace Mentula.General.Resources
 {
     public static class Ips
     {
-        public const int PORT = 25565;
+        public const int PORT = 7777;
 
         public static IPEndPoint EndJoëll;
         public static IPEndPoint EndShitPc;

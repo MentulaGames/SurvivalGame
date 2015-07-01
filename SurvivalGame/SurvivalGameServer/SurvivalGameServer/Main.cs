@@ -93,7 +93,7 @@ namespace Mentula.SurvivalGameServer
                             msg.SenderConnection.Deny("You have been banned from this server!");
                             break;
                         }
-                        else if (players.ContainsKey(id))
+                        else if (players.ContainsKey(id) || addQueue.ContainsKey(id))
                         {
                             msg.SenderConnection.Deny("You are still connected to the service!\nPlease wait some time before trying again.");
                             break;
@@ -156,7 +156,9 @@ namespace Mentula.SurvivalGameServer
                         {
                             case (DataType.InitialMap_Both):
                                 id = msg.GetId();
-                                IntVector2 chunkPos = players[id].ChunkPos;
+                                IntVector2 chunkPos = msg.ReadVector();
+                                players[id].ChunkPos = chunkPos;
+
                                 map.Generate(chunkPos, ref content);
                                 map.LoadChunks(chunkPos);
 

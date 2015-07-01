@@ -45,7 +45,7 @@ namespace Mentula.SurvivalGame
         public Main()
         {
             state = GameState.Constructing;
-            drawer = new SpriteDrawer(this, true) { SynchronizeWithVerticalRetrace = false };
+            drawer = new SpriteDrawer(this, false) { SynchronizeWithVerticalRetrace = false };
             IsFixedTimeStep = false;
 
             Content.RootDirectory = "Content";
@@ -72,6 +72,7 @@ namespace Mentula.SurvivalGame
         {
             state = GameState.Loading;
             player = new C_Player();
+            player.SetTilePos(new Vector2(1200, 900));
             oldPos = player.ChunkPos;
 
             drawer.Load(Content, ref player, "R/Textures", "Fonts/ConsoleFont", "Fonts/MenuFont", "Fonts/NameFont", "Actors/Player_Temp");
@@ -268,6 +269,7 @@ namespace Mentula.SurvivalGame
                         nextSend = NetTime.Now;
                         NOM nom = client.CreateMessage();
                         nom.Write((byte)DataType.InitialMap_Both);
+                        nom.Write(player.ChunkPos);
                         client.SendMessage(nom, NetDeliveryMethod.ReliableUnordered);
                     }
                 }

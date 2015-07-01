@@ -1,4 +1,6 @@
-﻿using Mentula.General;
+﻿//#define COMBAT_STATS
+
+using Mentula.General;
 using Mentula.General.Resources;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -258,10 +260,12 @@ namespace Mentula.SurvivalGame
                         {
                             batch.Draw(texC[c.TextureId], relPos, c.Color, PLAYER_LAYER);
 
+#if COMBAT_STATS
                             for (int j = 0; j < c.State.States.Length; j++)
                             {
                                 batch.DrawString(nameF, c.State.States[j].Key.ToString(), relPos - new Vector2(0, j * 25 + Res.TileSize), c.State.Colors[j]);
                             }
+#endif
                         }
                     }
 
@@ -274,10 +278,12 @@ namespace Mentula.SurvivalGame
                             batch.Draw(pTexture, relPos, Color.White);
                             batch.DrawString(nameF, p.Name, relPos - nameOffset, Color.Black);
 
+#if COMBAT_STATS
                             for (int j = 0; j < p.State.States.Length; j++)
                             {
                                 batch.DrawString(nameF, p.State.States[j].Key, relPos - new Vector2(0, j * 25 + Res.TileSize), p.State.Colors[j]);
                             }
+#endif
                         }
                     }
 
